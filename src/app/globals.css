@@ -1,0 +1,339 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --font-jetbrains-mono: "JetBrains Mono", monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-28: 28px;
+  --radius-32: 32px;
+  --radius-48: 48px;
+  --radius-60: 60px;
+
+  /* Custom Color Utilities */
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-80: var(--brand-80);
+  --color-brand-50: var(--brand-50);
+  --color-brand-20: var(--brand-20);
+  --color-brand-5: var(--brand-5);
+
+  --color-warning: var(--warning);
+  --color-warning-80: var(--warning-80);
+  --color-warning-50: var(--warning-50);
+  --color-warning-20: var(--warning-20);
+  --color-warning-5: var(--warning-5);
+
+  --color-kpi-teal: var(--kpi-teal);
+  --color-kpi-blue: var(--kpi-blue);
+  --color-kpi-purple: var(--kpi-purple);
+  --color-kpi-sky: var(--kpi-sky);
+
+  --color-success: var(--success);
+  --color-success-80: var(--success-80);
+  --color-success-50: var(--success-50);
+  --color-success-20: var(--success-20);
+  --color-success-5: var(--success-5);
+
+  --color-error: var(--error);
+  --color-error-80: var(--error-80);
+  --color-error-50: var(--error-50);
+  --color-error-20: var(--error-20);
+  --color-error-5: var(--error-5);
+
+  --color-chart-muted: var(--chart-muted);
+  --color-chart-grid: var(--chart-grid);
+
+  /* Chart Colors */
+  --color-chart-surface: var(--chart-surface);
+  --color-chart-border: var(--chart-border);
+  --color-chart-track: var(--chart-track);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-text: var(--chart-text);
+  --color-chart-text-muted: var(--chart-text-muted);
+  --color-chart-primary: var(--chart-primary);
+  --color-chart-primary-dark: var(--chart-primary-dark);
+  --color-chart-tooltip-bg: var(--chart-tooltip-bg);
+  --color-chart-tooltip-text: var(--chart-tooltip-text);
+
+  --color-soft-white: var(--soft-white);
+  --color-soft-blue: var(--soft-blue);
+  --color-title: var(--foreground);
+  --color-subtitle: var(--muted-foreground);
+  --color-text-description: var(--text-description);
+  --color-text-secondary: var(--text-secondary);
+
+  /* Dashboard */
+  --color-dashboard-bg: var(--dashboard-bg);
+  --color-dashboard-surface: var(--dashboard-surface);
+  --color-error-accent: var(--error-accent);
+
+  /* Custom design token mappings */
+  --color-card-bg: var(--background);
+  --color-Strok-Color: var(--border);
+  --color-Less-opacity-Color: color-mix(in srgb, var(--card) 8%, transparent);
+  --color-Primary-Color: var(--card);
+  --color-text-stroke-card-color-text-strong: var(--foreground);
+  --color-text-stroke-card-color-text-weak: var(--muted-foreground);
+}
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A; /* Text title */
+  --soft-white: #ffffff;
+  --soft-blue: #00B4D8;
+
+  /* Main Content Card */
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+
+  /* Primary Brand - Raantech Cyan */
+  --primary: #00B4D8;
+  --primary-foreground: #FFFFFF;
+
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #475569;
+  --sidebar-primary: #00B4D8;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(0, 180, 216, 0.1);
+  --sidebar-accent-foreground: #0089A7;
+  --sidebar-border: #E2E8F0;
+
+  /* Dashboard layout */
+  --dashboard-bg: #F1F5F9;
+  --dashboard-surface: #FFFFFF;
+  --error-accent: rgba(230, 71, 93, 0.1);
+
+  /* Borders & Inputs */
+  --border: #E2E8F0;
+  --input: #FFFFFF;
+  --ring: #00B4D8;
+
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B; /* Text sub-title */
+  --text-description: #475569; /* Feature description text */
+  --text-secondary: #94A3B8; /* Secondary text / muted copy */
+
+  --radius: 12px;
+
+  /* Brand Colors & Shades - Cyan */
+  --brand: #00B4D8;
+  --brand-dark: #0089A7;
+  --brand-80: color-mix(in srgb, var(--brand) 80%, transparent);
+  --brand-50: color-mix(in srgb, var(--brand) 50%, transparent);
+  --brand-20: color-mix(in srgb, var(--brand) 20%, transparent);
+  --brand-5: color-mix(in srgb, var(--brand) 5%, transparent);
+
+  /* Warning Colors */
+  --warning: #ffd451;
+  --warning-80: color-mix(in srgb, var(--warning) 80%, transparent);
+  --warning-50: color-mix(in srgb, var(--warning) 50%, transparent);
+  --warning-20: color-mix(in srgb, var(--warning) 20%, transparent);
+  --warning-5: color-mix(in srgb, var(--warning) 5%, transparent);
+
+  /* KPI Colors */
+  --kpi-teal: #63cf73;
+  --kpi-blue: #00B4D8;
+  --kpi-purple: #e6475d;
+  --kpi-sky: #ffd451;
+
+  /* Success Colors */
+  --success: #63cf73;
+  --success-80: color-mix(in srgb, var(--success) 80%, transparent);
+  --success-50: color-mix(in srgb, var(--success) 50%, transparent);
+  --success-20: color-mix(in srgb, var(--success) 20%, transparent);
+  --success-5: color-mix(in srgb, var(--success) 5%, transparent);
+
+  /* Error Colors */
+  --error: #e6475d;
+  --error-80: color-mix(in srgb, var(--error) 80%, transparent);
+  --error-50: color-mix(in srgb, var(--error) 50%, transparent);
+  --error-20: color-mix(in srgb, var(--error) 20%, transparent);
+  --error-5: color-mix(in srgb, var(--error) 5%, transparent);
+
+  /* Chart Colors */
+  --chart-muted: rgba(255, 255, 255, 0.1);
+  --chart-grid: rgba(255, 255, 255, 0.05);
+
+  /* Chart Colors */
+  --chart-surface: #FFFFFF;
+  --chart-border: #E2E8F0;
+  --chart-track: rgba(0, 0, 0, 0.05);
+  --chart-grid: rgba(0, 0, 0, 0.05);
+  --chart-text: #0F172A;
+  --chart-text-muted: #64748B;
+  --chart-primary: #ffd451;
+  --chart-primary-dark: #B45309;
+  --chart-tooltip-bg: #FFFFFF;
+  --chart-tooltip-text: #0F172A;
+}
+
+/* === BASE LAYER STYLES === */
+/* 
+ * Base layer applies fundamental styles to all elements
+ * These styles have the lowest specificity and can be overridden
+ */
+@layer base {
+  /* === BODY STYLES === */
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased;
+  }
+
+  /* === UNIVERSAL STYLES === */
+  * {
+    /* Apply border and ring colors to all elements */
+    @apply border-border outline-ring/50;
+  }
+
+  /* === CUSTOM UTILITY CLASSES === */
+  .customContainer {
+    max-width: 1440px;
+  }
+
+  .mainPadding {
+    padding: 40px 16px;
+  }
+
+  @media (min-width: 768px) {
+    .mainPadding {
+      padding: 60px 40px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mainPadding {
+      padding: 80px 60px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .mainPadding {
+      padding: 100px 120px;
+    }
+  }
+}
+
+@utility customWidth {
+  @apply mx-auto max-w-360 px-4 pt-24;
+}
+
+/* Scrollbar refinement - subtle but visible */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-20);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-50);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Custom Theme Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand) 30%, transparent);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--brand) 60%, transparent);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--brand) 30%, transparent) transparent;
+}
+
+.golden-gradient-card {
+  border-radius: 16px;
+  border-top: 0.3px solid #b4b4b4;
+  background: linear-gradient(
+    90deg,
+    #ffd451 1.1%,
+    #fff7a4 74.38%,
+    #ffd73c 99.75%
+  );
+}
+
+.glass-card {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* Base button and input styling overrides */
+input[type="email"], input[type="password"], input[type="text"] {
+  color: var(--foreground);
+}
+
+.auth-card-shadow {
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+}
+
