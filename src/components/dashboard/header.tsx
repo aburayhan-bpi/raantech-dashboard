@@ -170,8 +170,17 @@ export function Header({
             aria-expanded={showDropdown}
             aria-haspopup="true"
           >
-            <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold shadow-inner border border-[#0089A7]/20">
-              {user?.name?.charAt(0).toUpperCase() || "U"}
+            <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold shadow-inner border border-[#0089A7]/20 overflow-hidden">
+              {profileImage && profileImage !== "/logo.png" ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={profileImage}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user?.name?.charAt(0).toUpperCase() || "U"
+              )}
             </div>
             <div className="hidden md:block text-left mr-1">
               <p className="text-sm font-bold text-slate-700">{user?.name}</p>

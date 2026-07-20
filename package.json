@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "next dev -p 3648",
     "lint": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit",
     "prebuild": "echo '🔍 Running checks before build...' && (pnpm run lint && pnpm run type-check) || (echo '❌ ERROR: Fix ESLint or TypeScript issues before build!' && exit 1)",
     "build": "next build",
-    "start": "next start -p 3002",
+    "start": "next start -p 3648",
     "check": "pnpm run build"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.9.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",

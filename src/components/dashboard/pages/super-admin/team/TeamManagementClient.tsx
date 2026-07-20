@@ -24,10 +24,14 @@ import {
   useGetUsersQuery,
   useInviteUserMutation,
   useUpdateUserMutation,
+  useLazyGetUserByIdQuery,
 } from "@/redux/api/users/userApi";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { ITeamUser } from "@/types/global";
 import { useSelector } from "react-redux";
+import { Controller } from "react-hook-form";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AVAILABLE_PERMISSIONS = [
   { id: "manage_sales", label: "Sales & Exchange" },
@@ -62,6 +66,7 @@ export default function TeamManagementClient() {
   const [inviteUser, { isLoading: isInviting }] = useInviteUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [getUserById, { isFetching: isFetchingUser }] = useLazyGetUserByIdQuery();
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -104,14 +109,22 @@ export default function TeamManagementClient() {
     resolver: zodResolver(editSchema),
   });
 
-  const openEditModal = (user: ITeamUser) => {
-    resetEditForm({
-      name: user.name,
-      role: user.role as "ADMIN" | "STAFF",
-      status: (user.status as any) || "ACTIVE",
-      permissions: user.permissions || [],
-    });
-    setEditModalData(user);
+  const openEditModal = async (user: ITeamUser) => {
+    try {
+      const response = await getUserById(user._id).unwrap();
+      const freshUser = response.data;
+      if (freshUser) {
+        resetEditForm({
+          name: freshUser.name,
+          role: freshUser.role as "ADMIN" | "STAFF",
+          status: (freshUser.status as any) || "ACTIVE",
+          permissions: freshUser.permissions || [],
+        });
+        setEditModalData(freshUser);
+      }
+    } catch (error) {
+      toast.error("Failed to load user details");
+    }
   };
 
   const onEdit = async (formData: EditFormData) => {
@@ -274,10 +287,11 @@ export default function TeamManagementClient() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEditModal(user)}
-                            className="p-1.5 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
+                            disabled={isFetchingUser}
+                            className="p-1.5 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors disabled:opacity-50"
                             title="Edit User"
                           >
-                            <Pencil className="w-4 h-4" />
+                            {isFetchingUser ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
                           </button>
                           <button
                             onClick={() => setDeleteModalData(user)}
@@ -361,13 +375,21 @@ export default function TeamManagementClient() {
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Role
                 </label>
-                <select
-                  {...registerInvite("role")}
-                  className="w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all"
-                >
-                  <option value="STAFF">Staff</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
+                <Controller
+                  name="role"
+                  control={controlInvite}
+                  render={({ field }) => (
+                    <CustomDropdown
+                      options={[
+                        { value: "STAFF", label: "Staff" },
+                        { value: "ADMIN", label: "Admin" },
+                      ]}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select Role"
+                    />
+                  )}
+                />
                 {inviteErrors.role && (
                   <p className="text-xs text-red-500 mt-1">
                     {inviteErrors.role.message}
@@ -380,24 +402,38 @@ export default function TeamManagementClient() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Module Permissions
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {AVAILABLE_PERMISSIONS.map((permission) => (
-                    <label
-                      key={permission.id}
-                      className="flex items-center gap-2 cursor-pointer group"
-                    >
-                      <input
-                        type="checkbox"
-                        value={permission.id}
-                        {...registerInvite("permissions")}
-                        className="w-4 h-4 rounded text-[#0089A7] focus:ring-[#0089A7] border-slate-300 transition-colors"
-                      />
-                      <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                        {permission.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                <Controller
+                  name="permissions"
+                  control={controlInvite}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-2 gap-3">
+                      {AVAILABLE_PERMISSIONS.map((permission) => {
+                        const isChecked = field.value?.includes(permission.id) || false;
+                        return (
+                          <label
+                            key={permission.id}
+                            className="flex items-center gap-2 cursor-pointer group"
+                          >
+                            <Checkbox
+                              checked={isChecked}
+                              onCheckedChange={(checked) => {
+                                const current = field.value || [];
+                                const next = checked
+                                  ? [...current, permission.id]
+                                  : current.filter((id) => id !== permission.id);
+                                field.onChange(next);
+                              }}
+                              className="border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] data-[state=checked]:border-[#0089A7] data-[state=checked]:text-white transition-colors"
+                            />
+                            <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
+                              {permission.label}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
               </div>
 
               <div className="pt-4 flex gap-3 sticky bottom-0 bg-white">
@@ -460,13 +496,21 @@ export default function TeamManagementClient() {
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Role
                 </label>
-                <select
-                  {...registerEdit("role")}
-                  className="w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all"
-                >
-                  <option value="STAFF">Staff</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
+                <Controller
+                  name="role"
+                  control={controlEdit}
+                  render={({ field }) => (
+                    <CustomDropdown
+                      options={[
+                        { value: "STAFF", label: "Staff" },
+                        { value: "ADMIN", label: "Admin" },
+                      ]}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select Role"
+                    />
+                  )}
+                />
                 {editErrors.role && (
                   <p className="text-xs text-red-500 mt-1">
                     {editErrors.role.message}
@@ -477,13 +521,21 @@ export default function TeamManagementClient() {
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Status
                 </label>
-                <select
-                  {...registerEdit("status")}
-                  className="w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all"
-                >
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                </select>
+                <Controller
+                  name="status"
+                  control={controlEdit}
+                  render={({ field }) => (
+                    <CustomDropdown
+                      options={[
+                        { value: "ACTIVE", label: "Active" },
+                        { value: "INACTIVE", label: "Inactive" },
+                      ]}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select Status"
+                    />
+                  )}
+                />
               </div>
 
               {/* Permissions Checkboxes */}
@@ -491,24 +543,38 @@ export default function TeamManagementClient() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Module Permissions
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {AVAILABLE_PERMISSIONS.map((permission) => (
-                    <label
-                      key={permission.id}
-                      className="flex items-center gap-2 cursor-pointer group"
-                    >
-                      <input
-                        type="checkbox"
-                        value={permission.id}
-                        {...registerEdit("permissions")}
-                        className="w-4 h-4 rounded text-[#0089A7] focus:ring-[#0089A7] border-slate-300 transition-colors"
-                      />
-                      <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                        {permission.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                <Controller
+                  name="permissions"
+                  control={controlEdit}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-2 gap-3">
+                      {AVAILABLE_PERMISSIONS.map((permission) => {
+                        const isChecked = field.value?.includes(permission.id) || false;
+                        return (
+                          <label
+                            key={permission.id}
+                            className="flex items-center gap-2 cursor-pointer group"
+                          >
+                            <Checkbox
+                              checked={isChecked}
+                              onCheckedChange={(checked) => {
+                                const current = field.value || [];
+                                const next = checked
+                                  ? [...current, permission.id]
+                                  : current.filter((id) => id !== permission.id);
+                                field.onChange(next);
+                              }}
+                              className="border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] data-[state=checked]:border-[#0089A7] data-[state=checked]:text-white transition-colors"
+                            />
+                            <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
+                              {permission.label}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
               </div>
 
               <div className="pt-4 flex gap-3 sticky bottom-0 bg-white">

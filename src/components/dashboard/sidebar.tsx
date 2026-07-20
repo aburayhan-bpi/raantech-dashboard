@@ -193,21 +193,6 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
 
           {/* User profile / Active Workspace details */}
           <div className="p-3 mt-auto border-t border-sidebar-border bg-sidebar-accent/20 flex flex-col gap-3">
-            {user?.role === "STAFF" && (
-              <Link
-                href="/dashboard/staff/subscription"
-                onClick={onClose}
-                className={cn(
-                  "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-semibold transition-all cursor-pointer shadow-[0_0_15px_rgba(255,212,81,0.2)]",
-                  "golden-gradient-card border-none! text-background hover:opacity-90 transition-all duration-200",
-                  isCollapsed ? "px-2" : "px-4",
-                )}
-                title={isCollapsed ? "Get Premium" : undefined}
-              >
-                <Icons.PiCrownSimpleFill className="w-5 h-5 shrink-0" />
-                {!isCollapsed && <span>Get Premium</span>}
-              </Link>
-            )}
             <LogoutButton isCollapsed={isCollapsed} />
           </div>
         </div>

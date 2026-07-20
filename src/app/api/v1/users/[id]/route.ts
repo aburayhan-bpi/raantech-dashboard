@@ -11,6 +11,27 @@ const UpdateUserSchema = z.object({
   permissions: z.array(z.string()).optional(),
 });
 
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const auth = await verifyAuth();
+    if (!auth || auth.role !== 'SUPER_ADMIN') {
+      return ApiResponse.error('Forbidden: Super Admin access required', 403);
+    }
+
+    const { id } = await params;
+    await dbConnect();
+    
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+      return ApiResponse.error('User not found', 404);
+    }
+
+    return ApiResponse.success(user, 'User fetched successfully');
+  } catch (error: unknown) {
+    return ApiResponse.serverError(error);
+  }
+}
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await verifyAuth();

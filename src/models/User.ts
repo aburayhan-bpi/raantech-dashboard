@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF';
+  profileImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +21,7 @@ const UserSchema: Schema = new Schema(
       default: 'STAFF',
     },
     permissions: [{ type: String }],
+    profileImage: { type: String },
   },
   { timestamps: true }
 );

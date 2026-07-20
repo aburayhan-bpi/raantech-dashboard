@@ -223,6 +223,8 @@ export interface ITeamUser {
   role: "SUPER_ADMIN" | "ADMIN" | "STAFF";
   status?: string;
   permissions?: string[];
+  profileImage?: string;
+  lastLogin?: string;
   createdAt: string;
   updatedAt: string;
 }

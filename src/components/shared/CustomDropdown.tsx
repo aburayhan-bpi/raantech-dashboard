@@ -169,15 +169,14 @@ export const CustomDropdown = ({
         type="button"
         onClick={toggleDropdown}
         className={cn(
-          "flex w-full items-center justify-between rounded-16 border border-border bg-white px-4 py-3 text-sm font-medium text-chart-text shadow-sm transition-all duration-200 hover:border-chart-border/30 hover:bg-chart-primary/5 focus:outline-none focus:ring-2 focus:ring-chart-primary/20",
+          "flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]",
           triggerClassName,
         )}
       >
         <span
           className={cn(
-            "truncate text-left",
-            !value &&
-              "bg-linear-to-r from-chart-primary-dark to-chart-primary bg-clip-text text-transparent",
+            "truncate text-left font-normal",
+            !value && "text-slate-500",
           )}
         >
           {value && lastSelectedLabel ? lastSelectedLabel : placeholder}
@@ -233,13 +232,13 @@ export const CustomDropdown = ({
                   type="button"
                   onClick={() => handleSelect(option.value)}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-16 px-3 py-2.5 text-sm text-chart-text-muted transition-colors duration-150 hover:bg-chart-primary/5 hover:text-chart-text",
+                    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-900",
                     optionClassName,
                   )}
                 >
                   <span className="text-left">{option.label}</span>
                   {value === option.value && (
-                    <Check className="h-4 w-4 text-chart-primary" />
+                    <Check className="h-4 w-4 text-[#0089A7]" />
                   )}
                 </button>
               ))

@@ -66,6 +66,14 @@ export const SIDEBAR_ITEMS = [
     roles: ["SUPER_ADMIN"],
     group: "SYSTEM",
   },
+  {
+    id: "dashboard-settings",
+    label: "Settings",
+    href: "/settings",
+    icon: "IoSettingsSharp",
+    roles: ["SUPER_ADMIN", "ADMIN", "STAFF"],
+    group: "SYSTEM",
+  },
 ];
 
 // website details like name, url, logo , etc
