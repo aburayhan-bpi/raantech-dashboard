@@ -109,6 +109,7 @@ export interface IAdminProfile {
   permissions?: string[];
   status: string;
   isVerified: string;
+  address?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -224,6 +225,8 @@ export interface ITeamUser {
   status?: string;
   permissions?: string[];
   profileImage?: string;
+  isDeleted?: boolean;
+  address?: string;
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;

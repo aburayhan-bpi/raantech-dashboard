@@ -48,7 +48,7 @@ export function Avatar({ name, src, size = 36 }: AvatarProps) {
   if (src && !imgError) {
     return (
       <div style={containerStyle}>
-        <Image
+        <Image draggable={false}
           src={src}
           alt={name}
           fill

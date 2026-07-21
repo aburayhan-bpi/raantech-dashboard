@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import Image from "next/image";
 
 import useAuth from "@/hooks/useAuth";
 import { useLogout } from "@/hooks/useLogout";
@@ -10,6 +11,7 @@ import { useAppSelector } from "@/redux/hook";
 import { Icons } from "@/utils/icons";
 import { useEffect, useRef, useState } from "react";
 import { NotificationModal } from "./notification-modal";
+import { formatStatusText } from "@/utils/formatStatusText";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -170,13 +172,13 @@ export function Header({
             aria-expanded={showDropdown}
             aria-haspopup="true"
           >
-            <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold shadow-inner border border-[#0089A7]/20 overflow-hidden">
+            <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold shadow-inner border border-[#0089A7]/20 overflow-hidden relative">
               {profileImage && profileImage !== "/logo.png" ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
+                <Image draggable={false}
                   src={profileImage}
                   alt={displayName}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 user?.name?.charAt(0).toUpperCase() || "U"
@@ -185,11 +187,7 @@ export function Header({
             <div className="hidden md:block text-left mr-1">
               <p className="text-sm font-bold text-slate-700">{user?.name}</p>
               <p className="text-xs text-slate-500 font-medium">
-                {user?.role === "SUPER_ADMIN"
-                  ? "Super Admin"
-                  : user?.role === "ADMIN"
-                    ? "Admin"
-                    : "Staff"}
+                {formatStatusText(user?.role || "USER")}
               </p>
             </div>
             <Icons.ChevronDown

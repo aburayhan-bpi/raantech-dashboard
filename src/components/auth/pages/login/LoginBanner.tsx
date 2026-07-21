@@ -13,14 +13,14 @@ export default function LoginBanner() {
     >
       {/* Background Glow / Image Placeholder */}
       <div className="absolute inset-0 z-0">
-        <Image
+        <Image draggable={false}
           src="/login/login_side_bg.jpg"
           alt="Login Banner Background"
           fill
           priority
           sizes="50vw"
           className="object-cover opacity-50 mix-blend-lighten"
-          draggable={false}
+          
         />
       </div>
 
@@ -31,12 +31,12 @@ export default function LoginBanner() {
         transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
         className="relative z-10"
       >
-        <Image
+        <Image draggable={false}
           src="/logo.png"
           alt="logo"
           width={50}
           height={50}
-          draggable={false}
+          
         />
       </motion.div>
 

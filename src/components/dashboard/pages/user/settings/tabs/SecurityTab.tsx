@@ -3,7 +3,7 @@
 
 import PassViewToggleBtn from "@/components/shared/PassViewToggleBtn";
 import { cn } from "@/lib/utils";
-import { useChangePasswordMutation } from "@/redux/api/auth/authApi";
+import { useChangePasswordMutation, useRequestPasswordOtpMutation } from "@/redux/api/users/userApi";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { useAppSelector } from "@/redux/hook";
 import { Icons } from "@/utils/icons";
@@ -20,8 +20,9 @@ import DeleteAccountModal from "./DeleteAccountModal";
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    otp: z.string().length(6, "OTP must be 6 digits").optional(),
+    newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
+    confirmPassword: z.string().min(1, "Please confirm your password").optional(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
@@ -46,8 +47,9 @@ export default function SecurityTab() {
     
   const user = useAppSelector(selectUser);
 
-  const [changePassword, { isLoading: isChangingPassword }] =
-    useChangePasswordMutation();
+  const [requestPasswordOtp, { isLoading: isRequestingOtp }] = useRequestPasswordOtpMutation();
+  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [otpStep, setOtpStep] = useState(false);
 
   const [showPasswords, setShowPasswords] = useState({
     currentPassword: false,
@@ -77,10 +79,28 @@ export default function SecurityTab() {
   });
 
   const onChangePassword = async (data: ChangePasswordData) => {
+    if (!otpStep) {
+      try {
+        const result = await requestPasswordOtp({ currentPassword: data.currentPassword }).unwrap();
+        if (result?.success) {
+          toast.success(result.message || "OTP sent to your email!");
+          setOtpStep(true);
+        }
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to send OTP");
+      }
+      return;
+    }
+
     try {
+      if (!data.otp || !data.newPassword) {
+        toast.error("Please fill in OTP and new password");
+        return;
+      }
       const payload = {
-        oldPassword: data.currentPassword,
+        currentPassword: data.currentPassword,
         newPassword: data.newPassword,
+        otp: data.otp,
       };
 
       const result = await changePassword(payload).unwrap();
@@ -88,6 +108,7 @@ export default function SecurityTab() {
       if (result?.success) {
         toast.success(result.message || "Password changed successfully");
         resetChangePwd();
+        setOtpStep(false);
         setShowPasswords((prev) => ({
           ...prev,
           currentPassword: false,
@@ -96,9 +117,7 @@ export default function SecurityTab() {
         }));
       }
     } catch (error: any) {
-      const errMsg =
-        error?.message || error?.data?.message || "Something went wrong!";
-      toast.error(errMsg);
+      toast.error(error?.data?.message || "Something went wrong!");
     }
   };
 
@@ -165,68 +184,108 @@ export default function SecurityTab() {
                 {changePwdErrors.currentPassword.message}
               </span>
             )}
+            <div className="text-right mt-1 mb-2">
+              <span className="text-xs text-muted-foreground">
+                An OTP will be sent to your email to confirm the change.
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-2 relative">
-            <label className="text-sm font-medium text-muted-foreground">
-              New Password
-            </label>
-            <input
-              type={showPasswords.newPassword ? "text" : "password"}
-              placeholder="Enter a new password"
-              {...registerChangePwd("newPassword")}
-              className={cn(
-                "w-full h-12 bg-transparent border rounded-xl px-4 pr-12 text-foreground focus:outline-none transition-colors",
-                changePwdErrors.newPassword
-                  ? "border-error focus:border-error"
-                  : "border-border focus:border-brand",
-              )}
-            />
-            <PassViewToggleBtn
-              field="newPassword"
-              showPassword={showPasswords.newPassword}
-              setShowPassword={setShowPasswords}
-            />
-            {changePwdErrors.newPassword && (
-              <span className="text-xs text-error">
-                {changePwdErrors.newPassword.message}
-              </span>
-            )}
-          </div>
+          {otpStep && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="flex flex-col gap-5"
+            >
+              <div className="flex flex-col gap-2 relative">
+                <label className="text-sm font-medium text-muted-foreground">
+                  6-Digit OTP
+                </label>
+                <input
+                  type="text"
+                  maxLength={6}
+                  placeholder="Enter OTP from your email"
+                  {...registerChangePwd("otp")}
+                  className={cn(
+                    "w-full h-12 bg-transparent border rounded-xl px-4 text-foreground focus:outline-none transition-colors",
+                    changePwdErrors.otp
+                      ? "border-error focus:border-error"
+                      : "border-border focus:border-brand",
+                  )}
+                />
+                {changePwdErrors.otp && (
+                  <span className="text-xs text-error">
+                    {changePwdErrors.otp.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-col gap-2 relative">
-            <label className="text-sm font-medium text-muted-foreground">
-              Confirm Password
-            </label>
-            <input
-              type={showPasswords.confirmPassword ? "text" : "password"}
-              placeholder="Enter new confirm password"
-              {...registerChangePwd("confirmPassword")}
-              className={cn(
-                "w-full h-12 bg-transparent border rounded-xl px-4 pr-12 text-foreground focus:outline-none transition-colors",
-                changePwdErrors.confirmPassword
-                  ? "border-error focus:border-error"
-                  : "border-border focus:border-brand",
-              )}
-            />
-            <PassViewToggleBtn
-              field="confirmPassword"
-              showPassword={showPasswords.confirmPassword}
-              setShowPassword={setShowPasswords}
-            />
-            {changePwdErrors.confirmPassword && (
-              <span className="text-xs text-error">
-                {changePwdErrors.confirmPassword.message}
-              </span>
-            )}
-          </div>
+              <div className="flex flex-col gap-2 relative">
+                <label className="text-sm font-medium text-muted-foreground">
+                  New Password
+                </label>
+                <input
+                  type={showPasswords.newPassword ? "text" : "password"}
+                  placeholder="Enter new password"
+                  {...registerChangePwd("newPassword")}
+                  className={cn(
+                    "w-full h-12 bg-transparent border rounded-xl px-4 pr-12 text-foreground focus:outline-none transition-colors",
+                    changePwdErrors.newPassword
+                      ? "border-error focus:border-error"
+                      : "border-border focus:border-brand",
+                  )}
+                />
+                <PassViewToggleBtn
+                  field="newPassword"
+                  showPassword={showPasswords.newPassword}
+                  setShowPassword={setShowPasswords}
+                />
+                {changePwdErrors.newPassword && (
+                  <span className="text-xs text-error">
+                    {changePwdErrors.newPassword.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2 relative">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Confirm Password
+                </label>
+                <input
+                  type={showPasswords.confirmPassword ? "text" : "password"}
+                  placeholder="Confirm new password"
+                  {...registerChangePwd("confirmPassword")}
+                  className={cn(
+                    "w-full h-12 bg-transparent border rounded-xl px-4 pr-12 text-foreground focus:outline-none transition-colors",
+                    changePwdErrors.confirmPassword
+                      ? "border-error focus:border-error"
+                      : "border-border focus:border-brand",
+                  )}
+                />
+                <PassViewToggleBtn
+                  field="confirmPassword"
+                  showPassword={showPasswords.confirmPassword}
+                  setShowPassword={setShowPasswords}
+                />
+                {changePwdErrors.confirmPassword && (
+                  <span className="text-xs text-error">
+                    {changePwdErrors.confirmPassword.message}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          )}
 
           <button
             type="submit"
-            disabled={isChangingPassword}
+            disabled={isChangingPassword || isRequestingOtp}
             className="w-full h-12 mt-4 golden-gradient-card border-none! hover:opacity-90 text-primary-foreground font-semibold hover:cursor-pointer disabled:opacity-50 transition-all duration-300 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
           >
-            {isChangingPassword ? "Saving..." : "Confirm"}
+            {isChangingPassword || isRequestingOtp
+              ? "Processing..."
+              : otpStep
+              ? "Confirm Password Change"
+              : "Request OTP"}
           </button>
         </form>
       </div>

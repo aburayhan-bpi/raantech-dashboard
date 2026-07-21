@@ -17,7 +17,7 @@ interface EmailPayload {
 export const sendEmail = async ({ to, subject, html }: EmailPayload) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Raantech Dashboard" <${process.env.CONTACT_EMAIL_USER}>`,
+      from: `Raantech Dashboard <${process.env.CONTACT_EMAIL_USER}>`,
       to,
       subject,
       html,

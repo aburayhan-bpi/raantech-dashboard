@@ -23,6 +23,28 @@ let cached = (global as unknown as { mongoose: any }).mongoose;
 if (!cached) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cached = (global as unknown as { mongoose: any }).mongoose = { conn: null, promise: null };
+
+  // Global plugin to rename _id to id and remove __v and _id from all API responses globally
+  mongoose.plugin((schema) => {
+    schema.set('toJSON', {
+      virtuals: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transform: (doc, ret: any) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      },
+    });
+    schema.set('toObject', {
+      virtuals: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transform: (doc, ret: any) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      },
+    });
+  });
 }
 
 async function dbConnect() {

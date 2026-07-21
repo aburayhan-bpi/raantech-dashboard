@@ -367,7 +367,7 @@ export default function Users() {
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-brand/20 shrink-0 overflow-hidden relative flex items-center justify-center">
                           {user.avatar ? (
-                            <Image
+                            <Image draggable={false}
                               src={user.avatar}
                               alt={user.name}
                               fill

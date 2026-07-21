@@ -46,7 +46,7 @@ function UserInfoCard() {
   return (
     <div className="bg-card rounded-3xl p-8 border border-white/5 flex flex-col items-center justify-center">
       <div className="w-24 h-24 rounded-full overflow-hidden mb-4 relative ring-4 ring-white/5">
-        <Image
+        <Image draggable={false}
           src="/icon2.png"
           alt="Hamid Hasan"
           fill

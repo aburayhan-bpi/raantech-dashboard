@@ -1,7 +1,9 @@
 "use client";
+import Image from "next/image";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import PassViewToggleBtn from "@/components/shared/PassViewToggleBtn";
 import {
   Calendar,
   Key,
@@ -10,6 +12,7 @@ import {
   Save,
   ShieldCheck,
   User,
+  MapPin,
   Camera,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -19,15 +22,18 @@ import { z } from "zod";
 import { 
   useGetProfileQuery, 
   useUpdateProfileMutation, 
-  useChangePasswordMutation 
+  useChangePasswordMutation,
+  useRequestPasswordOtpMutation
 } from "@/redux/api/users/userApi";
 import { useLazyGetMeQuery } from "@/redux/api/getMe/getMeApi";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/features/user/authSlice";
-import { uploadImageToImgBB } from "@/lib/uploadImage";
+import { uploadImageToCloudinary } from "@/lib/uploadImage";
+import { formatStatusText } from "@/utils/formatStatusText";
 
 const updateProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  address: z.string().optional(),
 });
 type UpdateProfileForm = z.infer<typeof updateProfileSchema>;
 
@@ -36,6 +42,7 @@ const changePasswordSchema = z
     currentPassword: z.string().min(1, "Current password is required"),
     newPassword: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Confirm password is required"),
+    otp: z.string().optional(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -45,6 +52,12 @@ const changePasswordSchema = z
 type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
 
 export function ProfileSettings() {
+  const [showPassword, setShowPassword] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -52,7 +65,9 @@ export function ProfileSettings() {
 
   const { data: profileResponse, isLoading: isProfileLoading } = useGetProfileQuery();
   const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
+  const [requestOtp, { isLoading: isRequestingOtp }] = useRequestPasswordOtpMutation();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [otpSent, setOtpSent] = useState(false);
   const [getMe] = useLazyGetMeQuery();
   const dispatch = useDispatch();
 
@@ -83,6 +98,7 @@ export function ProfileSettings() {
     if (user) {
       resetProfile({
         name: user.name,
+        address: user.address || "",
       });
     }
   }, [user, resetProfile]);
@@ -100,7 +116,7 @@ export function ProfileSettings() {
 
   const onProfileSubmit = async (data: UpdateProfileForm) => {
     try {
-      await updateProfile({ name: data.name }).unwrap();
+      await updateProfile({ name: data.name, address: data.address }).unwrap();
       await fetchAndSetFreshData();
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -115,7 +131,7 @@ export function ProfileSettings() {
 
     try {
       setIsUploadingImage(true);
-      const imageUrl = await uploadImageToImgBB(file);
+      const imageUrl = await uploadImageToCloudinary(file);
       await updateProfile({ profileImage: imageUrl }).unwrap();
       await fetchAndSetFreshData();
       toast.success("Profile image updated!");
@@ -132,15 +148,29 @@ export function ProfileSettings() {
 
   const onPasswordSubmit = async (data: ChangePasswordForm) => {
     try {
+      if (!otpSent) {
+        await requestOtp({ currentPassword: data.currentPassword }).unwrap();
+        setOtpSent(true);
+        toast.success("OTP sent to your email!");
+        return;
+      }
+
+      if (!data.otp) {
+        toast.error("Please enter the OTP");
+        return;
+      }
+
       await changePassword({
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
+        otp: data.otp,
       }).unwrap();
       toast.success("Password updated successfully!");
       resetPassword();
+      setOtpSent(false);
     } catch (error) {
       const err = error as { data?: { message?: string } };
-      toast.error(err?.data?.message || "Failed to update password");
+      toast.error(err?.data?.message || "An error occurred");
     }
   };
 
@@ -192,10 +222,14 @@ export function ProfileSettings() {
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div className="flex items-center gap-6">
                 <div className="relative group">
-                  <div className="w-24 h-24 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] text-4xl font-bold uppercase shadow-inner border-2 border-[#0089A7]/20 overflow-hidden">
+                  <div className="w-24 h-24 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] text-4xl font-bold uppercase shadow-inner border-2 border-[#0089A7]/20 overflow-hidden relative">
                     {user.profileImage ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                      <Image draggable={false} 
+                        src={user.profileImage} 
+                        alt="Profile" 
+                        fill
+                        className="object-cover" 
+                      />
                     ) : (
                       user.name.charAt(0)
                     )}
@@ -231,7 +265,7 @@ export function ProfileSettings() {
                   <div className="flex items-center gap-2 mt-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      {user.role}
+                      {formatStatusText(user.role || "")}
                     </span>
                   </div>
                 </div>
@@ -267,6 +301,17 @@ export function ProfileSettings() {
                     <div className="flex items-center h-11 px-4 bg-slate-100/60 border border-slate-200 text-sm text-slate-500 rounded-xl">
                       {user.createdAt ? format(new Date(user.createdAt), "MMMM dd, yyyy") : "-"}
                     </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                      <MapPin className="w-4 h-4" /> Address
+                    </label>
+                    <input
+                      type="text"
+                      {...registerProfile("address")}
+                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7] text-sm rounded-xl outline-none transition-all"
+                      placeholder="Enter your address"
+                    />
                   </div>
                 </div>
                 
@@ -306,11 +351,18 @@ export function ProfileSettings() {
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Current Password
                   </label>
-                  <input
-                    type="password"
-                    {...registerPassword("currentPassword")}
-                    className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.currentPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword.currentPassword ? "text" : "password"}
+                      {...registerPassword("currentPassword")}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.currentPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                    />
+                    <PassViewToggleBtn 
+                      field="currentPassword" 
+                      showPassword={showPassword.currentPassword} 
+                      setShowPassword={setShowPassword} 
+                    />
+                  </div>
                   {passwordErrors.currentPassword && (
                     <p className="text-xs text-red-500 mt-1">
                       {passwordErrors.currentPassword.message}
@@ -322,11 +374,18 @@ export function ProfileSettings() {
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     New Password
                   </label>
-                  <input
-                    type="password"
-                    {...registerPassword("newPassword")}
-                    className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.newPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword.newPassword ? "text" : "password"}
+                      {...registerPassword("newPassword")}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.newPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                    />
+                    <PassViewToggleBtn 
+                      field="newPassword" 
+                      showPassword={showPassword.newPassword} 
+                      setShowPassword={setShowPassword} 
+                    />
+                  </div>
                   {passwordErrors.newPassword && (
                     <p className="text-xs text-red-500 mt-1">
                       {passwordErrors.newPassword.message}
@@ -338,11 +397,18 @@ export function ProfileSettings() {
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Confirm New Password
                   </label>
-                  <input
-                    type="password"
-                    {...registerPassword("confirmPassword")}
-                    className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword.confirmPassword ? "text" : "password"}
+                      {...registerPassword("confirmPassword")}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                    />
+                    <PassViewToggleBtn 
+                      field="confirmPassword" 
+                      showPassword={showPassword.confirmPassword} 
+                      setShowPassword={setShowPassword} 
+                    />
+                  </div>
                   {passwordErrors.confirmPassword && (
                     <p className="text-xs text-red-500 mt-1">
                       {passwordErrors.confirmPassword.message}
@@ -350,19 +416,45 @@ export function ProfileSettings() {
                   )}
                 </div>
 
+                {otpSent && (
+                  <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Enter OTP
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        {...registerPassword("otp")}
+                        placeholder="6-digit OTP"
+                        maxLength={6}
+                        className={`w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7] text-sm rounded-xl outline-none transition-all`}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-2">
                   <button
                     type="submit"
-                    disabled={isChangingPassword}
+                    disabled={isChangingPassword || isRequestingOtp}
                     className="h-11 px-6 bg-[#0089A7] hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-all shadow-md shadow-[#0089A7]/20 flex items-center justify-center gap-2 disabled:opacity-70 w-full sm:w-auto"
                   >
-                    {isChangingPassword ? (
+                    {(isChangingPassword || isRequestingOtp) ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <Save className="w-4 h-4" />
                     )}
-                    Save Password
+                    {otpSent ? "Verify & Save Password" : "Request OTP"}
                   </button>
+                  {otpSent && (
+                    <button
+                      type="button"
+                      onClick={() => setOtpSent(false)}
+                      className="text-sm text-slate-500 hover:text-slate-700 mt-3 ml-4 underline"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </form>
             </div>

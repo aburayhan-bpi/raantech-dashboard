@@ -5,7 +5,11 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF';
+  status: 'ACTIVE' | 'INACTIVE';
+  isDeleted: boolean;
+  deletedAt: Date | null;
   profileImage?: string;
+  address?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,8 +24,16 @@ const UserSchema: Schema = new Schema(
       enum: ['SUPER_ADMIN', 'ADMIN', 'STAFF'],
       default: 'STAFF',
     },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'INACTIVE'],
+      default: 'ACTIVE',
+    },
+    isDeleted: { type: Boolean, default: false, index: true },
+    deletedAt: { type: Date, default: null },
     permissions: [{ type: String }],
     profileImage: { type: String },
+    address: { type: String },
   },
   { timestamps: true }
 );

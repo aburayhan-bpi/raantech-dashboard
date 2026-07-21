@@ -6,6 +6,7 @@ import { verifyAuth } from '@/lib/auth';
 
 const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
   role: z.enum(['ADMIN', 'STAFF']).optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   permissions: z.array(z.string()).optional(),
@@ -21,9 +22,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const { id } = await params;
     await dbConnect();
     
-    const user = await User.findById(id).select('-password');
+    const user = await User.findOne({ _id: id, isDeleted: false }).select('-password -__v');
     if (!user) {
-      return ApiResponse.error('User not found', 404);
+      return ApiResponse.error('User not found or deleted', 404);
     }
 
     return ApiResponse.success(user, 'User fetched successfully');
@@ -55,11 +56,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     await dbConnect();
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id, isDeleted: false },
       { $set: validatedData.data },
       { new: true, runValidators: true }
-    ).select('-password');
+    ).select('-password -__v');
 
     if (!updatedUser) {
       return ApiResponse.error('User not found', 404);
@@ -86,10 +87,14 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     }
 
     await dbConnect();
-    const deletedUser = await User.findByIdAndDelete(id);
+    const deletedUser = await User.findOneAndUpdate(
+      { _id: id, isDeleted: false },
+      { $set: { isDeleted: true, deletedAt: new Date(), status: 'INACTIVE' } },
+      { new: true }
+    );
 
     if (!deletedUser) {
-      return ApiResponse.error('User not found', 404);
+      return ApiResponse.error('User not found or already deleted', 404);
     }
 
     return ApiResponse.success(null, 'User deleted successfully');

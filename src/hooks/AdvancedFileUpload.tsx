@@ -77,7 +77,7 @@ const AdvancedFileUpload = ({
                 className="relative rounded-lg border overflow-hidden"
               >
                 {isImage ? (
-                  <Image
+                  <Image draggable={false}
                     src={previewUrl}
                     alt={file.name}
                     width={200}

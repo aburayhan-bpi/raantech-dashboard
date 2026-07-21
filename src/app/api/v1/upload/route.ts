@@ -3,7 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { verifyAuth } from '@/lib/auth';
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.replace(/['"]/g, '')?.trim() || "dlbrstmho",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.replace(/['"]/g, '')?.trim() || "dibrstmho",
   api_key: process.env.CLOUDINARY_API_KEY?.replace(/['"]/g, '')?.trim() || "815641187198257",
   api_secret: process.env.CLOUDINARY_API_SECRET?.replace(/['"]/g, '')?.trim() || "oNp6YBh0K63Y1gNzOfvnVq2ZaIM",
 });

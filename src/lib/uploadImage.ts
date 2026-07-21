@@ -1,10 +1,8 @@
-export const uploadImageToImgBB = async (file: File): Promise<string> => {
-  const apiKey = "14819cebf3a76eac1909552eb0e0ff1a";
-
+export const uploadImageToCloudinary = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+  const response = await fetch("/api/v1/upload", {
     method: "POST",
     body: formData,
   });
@@ -14,5 +12,5 @@ export const uploadImageToImgBB = async (file: File): Promise<string> => {
   }
 
   const data = await response.json();
-  return data.data.display_url;
+  return data.url;
 };

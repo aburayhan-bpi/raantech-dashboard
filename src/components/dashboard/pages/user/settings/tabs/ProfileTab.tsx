@@ -116,13 +116,13 @@ export default function ProfileTab() {
           >
             <div className="bg-card border border-border rounded-3xl p-8 flex flex-col items-center justify-center max-w-lg mx-auto shadow-sm">
               <div className="w-24 h-24 rounded-full overflow-hidden border border-border mb-4 bg-muted relative">
-                <Image
+                <Image draggable={false}
                   src={previewImage}
                   alt="Avatar"
                   fill
                   sizes="96px"
                   className="object-cover"
-                  draggable={false}
+                  
                 />
               </div>
               <h2 className="text-xl font-semibold text-foreground mb-1">
@@ -162,13 +162,13 @@ export default function ProfileTab() {
               <div className="flex justify-center mb-8">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full overflow-hidden border border-border bg-muted relative">
-                    <Image
+                    <Image draggable={false}
                       src={previewImage}
                       alt="Avatar"
                       fill
                       sizes="96px"
                       className="object-cover"
-                      draggable={false}
+                      
                     />
                   </div>
                   <input

@@ -26,6 +26,7 @@ export async function GET() {
 const UpdateProfileSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
   profileImage: z.string().url().optional().or(z.literal('')),
+  address: z.string().optional().or(z.literal('')),
 });
 
 export async function PUT(req: Request) {

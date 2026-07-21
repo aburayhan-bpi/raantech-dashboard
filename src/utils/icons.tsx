@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Image from "next/image";
 import {
   AlertCircle,
   Bell,
@@ -141,15 +141,23 @@ export const Icons = {
 
   // Custom image icons
   CustomTotalIcon: ({ className }: any) => (
-    <img src="/dashboard/Total.png" alt="icon" className={className} />
+    <div className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <Image draggable={false} src="/dashboard/Total.png" alt="icon" fill className="object-contain" />
+    </div>
   ),
   CustomVectorIcon: ({ className }: any) => (
-    <img src="/dashboard/Vector.png" alt="icon" className={className} />
+    <div className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <Image draggable={false} src="/dashboard/Vector.png" alt="icon" fill className="object-contain" />
+    </div>
   ),
   CustomHoldIcon: ({ className }: any) => (
-    <img src="/dashboard/hold.png" alt="icon" className={className} />
+    <div className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <Image draggable={false} src="/dashboard/hold.png" alt="icon" fill className="object-contain" />
+    </div>
   ),
   CustomActionsIcon: ({ className }: any) => (
-    <img src="/dashboard/actions.png" alt="icon" className={className} />
+    <div className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <Image draggable={false} src="/dashboard/actions.png" alt="icon" fill className="object-contain" />
+    </div>
   ),
 };

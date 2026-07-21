@@ -11,14 +11,14 @@ export default function ResetPasswordBanner() {
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="relative hidden lg:block lg:w-1/2"
     >
-      <Image
+      <Image draggable={false}
         src="/login/login_banner.webp"
         alt="Reset Password Banner"
         fill
         priority
         sizes="50vw"
         className="object-cover"
-        draggable={false}
+        
       />
     </motion.div>
   );

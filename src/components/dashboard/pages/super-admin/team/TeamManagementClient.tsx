@@ -4,6 +4,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import Image from "next/image";
 import {
   Loader2,
   Pencil,
@@ -12,8 +13,14 @@ import {
   ShieldAlert,
   ShieldCheck,
   Trash2,
+  RefreshCcw,
+  Search,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Pagination } from "@/components/dashboard/pagination";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,6 +32,7 @@ import {
   useInviteUserMutation,
   useUpdateUserMutation,
   useLazyGetUserByIdQuery,
+  useRestoreUserMutation,
 } from "@/redux/api/users/userApi";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { ITeamUser } from "@/types/global";
@@ -52,6 +60,7 @@ type InviteFormData = z.infer<typeof inviteSchema>;
 
 const editSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email"),
   role: z.enum(["ADMIN", "STAFF"]),
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   permissions: z.array(z.string()).optional(),
@@ -60,20 +69,46 @@ type EditFormData = z.infer<typeof editSchema>;
 
 export default function TeamManagementClient() {
   const currentUser = useSelector(selectUser);
-  const { data, isLoading, isError, refetch } = useGetUsersQuery();
+  const searchParams = useSearchParams();
+  const setParams = useSetParamsForPagination();
+
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const debouncedSearch = useDebounce(searchTerm, 500);
+  
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentLimit = Number(searchParams.get("limit")) || 10;
+  const isDeletedFilter = searchParams.get("isDeleted") === "true";
+
+  // Construct query string for RTK Query
+  const queryString = new URLSearchParams();
+  queryString.set("page", currentPage.toString());
+  queryString.set("limit", currentLimit.toString());
+  if (debouncedSearch) queryString.set("search", debouncedSearch);
+  if (isDeletedFilter) queryString.set("isDeleted", "true");
+
+  const { data, isLoading, isError, refetch } = useGetUsersQuery(queryString.toString());
   const users = data?.data || [];
+  const meta = data?.meta;
+
+  const previousSearch = useRef(debouncedSearch);
+
+  useEffect(() => {
+    if (previousSearch.current === debouncedSearch) return;
+    previousSearch.current = debouncedSearch;
+    setParams({ search: debouncedSearch || null, page: "1" });
+  }, [debouncedSearch, setParams]);
 
   const [inviteUser, { isLoading: isInviting }] = useInviteUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [restoreUser, { isLoading: isRestoring }] = useRestoreUserMutation();
   const [getUserById, { isFetching: isFetchingUser }] = useLazyGetUserByIdQuery();
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const [editModalData, setEditModalData] = useState<ITeamUser | null>(null);
-  const [deleteModalData, setDeleteModalData] = useState<ITeamUser | null>(
-    null,
-  );
+  const [deleteModalData, setDeleteModalData] = useState<ITeamUser | null>(null);
+  const [restoreModalData, setRestoreModalData] = useState<ITeamUser | null>(null);
 
   // Invite Form
   const {
@@ -116,6 +151,7 @@ export default function TeamManagementClient() {
       if (freshUser) {
         resetEditForm({
           name: freshUser.name,
+          email: freshUser.email,
           role: freshUser.role as "ADMIN" | "STAFF",
           status: (freshUser.status as any) || "ACTIVE",
           permissions: freshUser.permissions || [],
@@ -146,6 +182,17 @@ export default function TeamManagementClient() {
       setDeleteModalData(null);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to delete user");
+    }
+  };
+
+  const onRestoreConfirm = async () => {
+    if (!restoreModalData) return;
+    try {
+      await restoreUser(restoreModalData._id).unwrap();
+      toast.success("User restored successfully!");
+      setRestoreModalData(null);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to restore user");
     }
   };
 
@@ -183,13 +230,43 @@ export default function TeamManagementClient() {
             Manage your admins and staff members
           </p>
         </div>
-        <button
-          onClick={() => setIsInviteModalOpen(true)}
-          className="inline-flex items-center gap-2 bg-[#0089A7] hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md shadow-[#0089A7]/20"
-        >
-          <Plus className="w-4 h-4" />
-          Invite User
-        </button>
+        <div className="flex items-center gap-3">
+
+          <button
+            onClick={() => setIsInviteModalOpen(true)}
+            className="inline-flex items-center gap-2 bg-[#0089A7] hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md shadow-[#0089A7]/20"
+          >
+            <Plus className="w-4 h-4" />
+            Invite User
+          </button>
+        </div>
+      </div>
+
+      {/* Filters & Search */}
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="search"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+          />
+        </div>
+        
+        <div className="flex items-center">
+          <label className="flex items-center gap-2 cursor-pointer group bg-white border border-slate-200 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+            <Checkbox
+              checked={isDeletedFilter}
+              onCheckedChange={(checked) => setParams({ isDeleted: checked ? "true" : null, page: "1" })}
+              className="border-slate-300 text-rose-500 data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500 data-[state=checked]:text-white transition-colors"
+            />
+            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">
+              Show Deleted
+            </span>
+          </label>
+        </div>
       </div>
 
       {/* Table Section */}
@@ -207,7 +284,7 @@ export default function TeamManagementClient() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
-                <tr>
+                <tr key="loading">
                   <td
                     colSpan={5}
                     className="px-6 py-12 text-center text-slate-500"
@@ -217,7 +294,7 @@ export default function TeamManagementClient() {
                   </td>
                 </tr>
               ) : isError ? (
-                <tr>
+                <tr key="error">
                   <td
                     colSpan={5}
                     className="px-6 py-12 text-center text-red-500"
@@ -226,7 +303,7 @@ export default function TeamManagementClient() {
                   </td>
                 </tr>
               ) : users.length === 0 ? (
-                <tr>
+                <tr key="empty">
                   <td
                     colSpan={5}
                     className="px-6 py-12 text-center text-slate-500"
@@ -235,15 +312,24 @@ export default function TeamManagementClient() {
                   </td>
                 </tr>
               ) : (
-                users.map((user) => (
+                users.map((user, index) => (
                   <tr
-                    key={user._id}
+                    key={user._id || (user as any).id || index}
                     className="hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold text-sm uppercase">
-                          {user.name.charAt(0)}
+                        <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold text-sm uppercase overflow-hidden relative">
+                          {user.profileImage && user.profileImage !== "/logo.png" ? (
+                            <Image draggable={false} 
+                              src={user.profileImage} 
+                              alt={user.name} 
+                              fill
+                              className="object-cover" 
+                            />
+                          ) : (
+                            user.name.charAt(0)
+                          )}
                         </div>
                         <div>
                           <div className="font-semibold text-slate-800">
@@ -285,21 +371,33 @@ export default function TeamManagementClient() {
                       {user._id !== currentUser?.id &&
                       user.role !== "SUPER_ADMIN" ? (
                         <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => openEditModal(user)}
-                            disabled={isFetchingUser}
-                            className="p-1.5 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors disabled:opacity-50"
-                            title="Edit User"
-                          >
-                            {isFetchingUser ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
-                          </button>
-                          <button
-                            onClick={() => setDeleteModalData(user)}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete User"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {user.isDeleted ? (
+                            <button
+                              onClick={() => setRestoreModalData(user)}
+                              className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="Restore User"
+                            >
+                              <RefreshCcw className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => openEditModal(user)}
+                                disabled={isFetchingUser}
+                                className="p-1.5 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors disabled:opacity-50"
+                                title="Edit User"
+                              >
+                                {isFetchingUser ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
+                              </button>
+                              <button
+                                onClick={() => setDeleteModalData(user)}
+                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete User"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       ) : (
                         <span className="text-xs text-slate-400 italic">
@@ -313,6 +411,18 @@ export default function TeamManagementClient() {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination */}
+        {meta && meta.total > 0 && (
+          <div className="px-6 py-4 border-t border-slate-200/80 bg-slate-50/50">
+            <Pagination 
+              currentPage={meta.page}
+              totalPages={meta.totalPage}
+              totalItems={meta.total}
+              itemsPerPage={meta.limit}
+            />
+          </div>
+        )}
       </div>
 
       {/* Invite Modal */}
@@ -494,6 +604,24 @@ export default function TeamManagementClient() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Email Address
+                </label>
+                <input
+                  {...registerEdit("email")}
+                  type="email"
+                  className={cn(
+                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all",
+                    editErrors.email && "border-red-500",
+                  )}
+                />
+                {editErrors.email && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {editErrors.email.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Role
                 </label>
                 <Controller
@@ -639,6 +767,50 @@ export default function TeamManagementClient() {
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Restore Confirmation Modal */}
+      {restoreModalData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-500 flex items-center justify-center mx-auto mb-4">
+                <RefreshCcw className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 mb-2">
+                Restore User?
+              </h3>
+              <p className="text-sm text-slate-500">
+                Are you sure you want to restore{" "}
+                <span className="font-semibold text-slate-700">
+                  {restoreModalData.name}
+                </span>
+                ? They will regain access to their account.
+              </p>
+            </div>
+            <div className="px-6 py-4 bg-slate-50 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setRestoreModalData(null)}
+                className="flex-1 h-10 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-sm rounded-xl transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={onRestoreConfirm}
+                disabled={isRestoring}
+                className="flex-1 h-10 bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70 cursor-pointer"
+              >
+                {isRestoring ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Restore"
                 )}
               </button>
             </div>

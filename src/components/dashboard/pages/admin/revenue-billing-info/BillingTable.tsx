@@ -208,7 +208,7 @@ export function BillingTable() {
                   <td className="p-4 lg:px-6 rounded-l-3xl border-y border-l border-white/5 group-hover:border-white/10">
                     <div className="flex items-center gap-3 w-full min-w-52">
                       <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden shrink-0 relative">
-                        <Image
+                        <Image draggable={false}
                           src="/icon2.png"
                           alt={item.name}
                           fill

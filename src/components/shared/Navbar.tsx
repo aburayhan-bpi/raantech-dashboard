@@ -151,12 +151,12 @@ const Navbar = () => {
             className="flex items-center gap-2 group relative z-110"
           >
             {/* <Logo className="w-44 h-12 group-hover:scale-105 transition-transform" /> */}
-            <Image
+            <Image draggable={false}
               src="/logo.png"
               alt="logo"
               width={50}
               height={50}
-              draggable={false}
+              
             />
           </Link>
 
@@ -271,12 +271,12 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
               className="flex items-center"
             >
-              <Image
+              <Image draggable={false}
                 src="/logo.png"
                 alt="logo"
                 width={45}
                 height={45}
-                draggable={false}
+                
               />
             </Link>
             <button

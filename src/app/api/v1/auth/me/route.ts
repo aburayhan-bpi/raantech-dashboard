@@ -50,6 +50,7 @@ export async function GET() {
       role: user.role,
       permissions: user.permissions || [],
       profileImage: user.profileImage || null,
+      address: user.address || '',
       status: user.status || 'ACTIVE',
       createdAt: user.createdAt,
     };

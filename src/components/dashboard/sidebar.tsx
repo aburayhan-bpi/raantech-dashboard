@@ -105,13 +105,13 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
               href="/dashboard/admin"
               className="flex flex-col items-center justify-center cursor-pointer"
             >
-              <Image
+              <Image draggable={false}
                 src={WEBSITE_DETAILS.SITE_LOGO}
                 alt={WEBSITE_DETAILS.SITE_NAME}
                 width={isCollapsed ? 36 : 70}
                 height={isCollapsed ? 36 : 70}
                 priority
-                draggable={false}
+                
                 className="object-contain transition-all duration-300"
               />
             </Link>

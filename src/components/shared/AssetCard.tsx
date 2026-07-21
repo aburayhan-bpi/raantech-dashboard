@@ -47,7 +47,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-foreground flex items-center justify-center shrink-0 overflow-hidden"
           >
             {logo ? (
-              <Image
+              <Image draggable={false}
                 src={logo}
                 alt={`${symbol} logo`}
                 width={48}

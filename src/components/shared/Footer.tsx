@@ -16,12 +16,12 @@ export default function Footer() {
           href="/"
           className="hover:opacity-80 transition-opacity cursor-pointer flex items-center shrink-0"
         >
-          <Image
+          <Image draggable={false}
             src="/logo.png"
             alt="logo"
             width={45}
             height={45}
-            draggable={false}
+            
           />
         </Link>
 

@@ -17,13 +17,20 @@ export const userApi = baseApi.injectEndpoints({
       query: () => "/profile",
       providesTags: ["Users"],
     }),
-    updateProfile: builder.mutation<IBaseResponse<ITeamUser>, { name?: string; profileImage?: string }>({
+    updateProfile: builder.mutation<IBaseResponse<ITeamUser>, { name?: string; profileImage?: string; address?: string }>({
       query: (payload) => ({
         url: "/profile",
         method: "PUT",
         body: payload,
       }),
       invalidatesTags: ["Users"],
+    }),
+    requestPasswordOtp: builder.mutation<IBaseResponse<null>, { currentPassword: string }>({
+      query: (payload) => ({
+        url: "/profile/password/request-otp",
+        method: "POST",
+        body: payload,
+      }),
     }),
     changePassword: builder.mutation<IBaseResponse<null>, Record<string, string>>({
       query: (payload) => ({
@@ -32,8 +39,8 @@ export const userApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
-    getUsers: builder.query<IUsersResponse, void>({
-      query: () => "/users",
+    getUsers: builder.query<IUsersResponse, string | void>({
+      query: (queryString) => `/users${queryString ? `?${queryString}` : ''}`,
       providesTags: ["Users"],
     }),
     getUserById: builder.query<IBaseResponse<ITeamUser>, string>({
@@ -63,16 +70,25 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Users"],
     }),
+    restoreUser: builder.mutation<IBaseResponse<ITeamUser>, string>({
+      query: (id) => ({
+        url: `/users/${id}/restore`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
 export const {
   useGetProfileQuery,
   useUpdateProfileMutation,
+  useRequestPasswordOtpMutation,
   useChangePasswordMutation,
   useGetUsersQuery,
   useLazyGetUserByIdQuery,
   useInviteUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useRestoreUserMutation,
 } = userApi;
