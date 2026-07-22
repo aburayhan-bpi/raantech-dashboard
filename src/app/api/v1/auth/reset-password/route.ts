@@ -5,6 +5,7 @@ import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import ResetToken from '@/models/ResetToken';
 import { ApiResponse } from '@/lib/apiResponse';
+import ActivityLog from '@/models/ActivityLog';
 
 const ResetPasswordSchema = z.object({
   resetToken: z.string().min(1, 'Reset token is required'),
@@ -53,6 +54,14 @@ export async function POST(req: Request) {
 
     // Delete the used token (and any others for this user to be safe)
     await ResetToken.deleteMany({ userId: user._id });
+
+    // Log Activity
+    await ActivityLog.create({
+      user: user._id,
+      action: 'PASSWORD_CHANGE',
+      entityType: 'AUTH',
+      details: 'User reset their password via email link',
+    });
 
     return ApiResponse.success(null, 'Password has been reset successfully');
   } catch (error: unknown) {

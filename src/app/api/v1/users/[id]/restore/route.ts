@@ -2,6 +2,7 @@ import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
+import ActivityLog from '@/models/ActivityLog';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,6 +24,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     if (!restoredUser) {
       return ApiResponse.error('User not found or is not deleted', 404);
     }
+
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'RESTORED',
+      entityType: 'USER',
+      details: `Restored user: ${restoredUser.email}`,
+    });
 
     return ApiResponse.success(restoredUser, 'User restored successfully');
   } catch (error: unknown) {

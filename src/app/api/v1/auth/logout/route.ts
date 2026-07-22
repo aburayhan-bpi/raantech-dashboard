@@ -1,7 +1,20 @@
 import { ApiResponse } from '@/lib/apiResponse';
+import { verifyAuth } from '@/lib/auth';
+import ActivityLog from '@/models/ActivityLog';
 
 export async function POST() {
   try {
+    const auth = await verifyAuth();
+    
+    if (auth) {
+      await ActivityLog.create({
+        user: auth.userId,
+        action: 'LOGOUT',
+        entityType: 'AUTH',
+        details: 'User logged out',
+      });
+    }
+
     const response = ApiResponse.success(null, 'Logout successful');
 
     // Clear the HTTP-Only cookies

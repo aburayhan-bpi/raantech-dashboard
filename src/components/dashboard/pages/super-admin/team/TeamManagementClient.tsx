@@ -146,7 +146,8 @@ export default function TeamManagementClient() {
 
   const openEditModal = async (user: ITeamUser) => {
     try {
-      const response = await getUserById(user._id).unwrap();
+      const targetId = user._id || (user as any).id;
+      const response = await getUserById(targetId).unwrap();
       const freshUser = response.data;
       if (freshUser) {
         resetEditForm({
@@ -166,7 +167,8 @@ export default function TeamManagementClient() {
   const onEdit = async (formData: EditFormData) => {
     if (!editModalData) return;
     try {
-      await updateUser({ id: editModalData._id, payload: formData }).unwrap();
+      const targetId = editModalData._id || (editModalData as any).id;
+      await updateUser({ id: targetId, payload: formData }).unwrap();
       toast.success("User updated successfully!");
       setEditModalData(null);
     } catch (error: any) {
@@ -177,7 +179,8 @@ export default function TeamManagementClient() {
   const onDeleteConfirm = async () => {
     if (!deleteModalData) return;
     try {
-      await deleteUser(deleteModalData._id).unwrap();
+      const targetId = deleteModalData._id || (deleteModalData as any).id;
+      await deleteUser(targetId).unwrap();
       toast.success("User deleted successfully!");
       setDeleteModalData(null);
     } catch (error: any) {
@@ -188,7 +191,8 @@ export default function TeamManagementClient() {
   const onRestoreConfirm = async () => {
     if (!restoreModalData) return;
     try {
-      await restoreUser(restoreModalData._id).unwrap();
+      const targetId = restoreModalData._id || (restoreModalData as any).id;
+      await restoreUser(targetId).unwrap();
       toast.success("User restored successfully!");
       setRestoreModalData(null);
     } catch (error: any) {
@@ -279,6 +283,7 @@ export default function TeamManagementClient() {
                 <th className="px-6 py-4">Role</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Joined At</th>
+                {isDeletedFilter && <th className="px-6 py-4">Deleted At</th>}
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -286,7 +291,7 @@ export default function TeamManagementClient() {
               {isLoading ? (
                 <tr key="loading">
                   <td
-                    colSpan={5}
+                    colSpan={isDeletedFilter ? 6 : 5}
                     className="px-6 py-12 text-center text-slate-500"
                   >
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[#0089A7]" />
@@ -296,7 +301,7 @@ export default function TeamManagementClient() {
               ) : isError ? (
                 <tr key="error">
                   <td
-                    colSpan={5}
+                    colSpan={isDeletedFilter ? 6 : 5}
                     className="px-6 py-12 text-center text-red-500"
                   >
                     Failed to load users. Please try again.
@@ -305,7 +310,7 @@ export default function TeamManagementClient() {
               ) : users.length === 0 ? (
                 <tr key="empty">
                   <td
-                    colSpan={5}
+                    colSpan={isDeletedFilter ? 6 : 5}
                     className="px-6 py-12 text-center text-slate-500"
                   >
                     No users found.
@@ -367,8 +372,13 @@ export default function TeamManagementClient() {
                     <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
                       {format(new Date(user.createdAt), "MMM dd, yyyy")}
                     </td>
+                    {isDeletedFilter && (
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-rose-500">
+                        {user.deletedAt ? format(new Date(user.deletedAt), "MMM dd, yyyy") : "-"}
+                      </td>
+                    )}
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      {user._id !== currentUser?.id &&
+                      {(user._id || (user as any).id) !== currentUser?.id &&
                       user.role !== "SUPER_ADMIN" ? (
                         <div className="flex items-center justify-end gap-2">
                           {user.isDeleted ? (

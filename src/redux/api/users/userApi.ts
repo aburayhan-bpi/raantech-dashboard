@@ -45,7 +45,6 @@ export const userApi = baseApi.injectEndpoints({
     }),
     getUserById: builder.query<IBaseResponse<ITeamUser>, string>({
       query: (id) => `/users/${id}`,
-      providesTags: ["Users"],
     }),
     inviteUser: builder.mutation<IInviteUserResponse, IInviteUserPayload>({
       query: (payload) => ({

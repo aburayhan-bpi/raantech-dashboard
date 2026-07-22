@@ -6,6 +6,7 @@ import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import { sendEmail } from '@/lib/email';
 import Otp from '@/models/Otp';
+import ActivityLog from '@/models/ActivityLog';
 
 const ChangePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -62,6 +63,14 @@ export async function PUT(req: Request) {
 
     // Delete used OTP
     await Otp.deleteOne({ _id: otpRecord._id });
+
+    // Log Activity
+    await ActivityLog.create({
+      user: user._id,
+      action: 'PASSWORD_CHANGE',
+      entityType: 'PROFILE',
+      details: 'User changed their password via profile',
+    });
 
     // Send Password Change Notification Email
     const emailHtml = `

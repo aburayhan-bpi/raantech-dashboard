@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     // 6. Log Activity
     await ActivityLog.create({
       user: auth.userId,
-      action: 'CREATED_SALE',
+      action: 'CREATED',
       entityType: 'SALE',
       details: `Sold product ${product.name} to ${customer.name} for ${salePrice} TK`,
     });

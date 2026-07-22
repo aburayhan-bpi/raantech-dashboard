@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     // Log Activity
     await ActivityLog.create({
       user: auth.userId,
-      action: 'ADDED_EXPENSE',
+      action: 'CREATED',
       entityType: 'EXPENSE',
       details: `Added expense: ${validatedData.data.description} (${validatedData.data.amount} TK)`,
     });

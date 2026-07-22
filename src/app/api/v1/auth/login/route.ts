@@ -4,6 +4,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import { ApiResponse } from '@/lib/apiResponse';
+import ActivityLog from '@/models/ActivityLog';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
 
@@ -86,6 +87,14 @@ export async function POST(req: Request) {
       sameSite: 'strict',
       maxAge: Number(process.env.JWT_REFRESH_COOKIE_MAX_AGE) || 2592000,
       path: '/',
+    });
+
+    // 6. Log Activity
+    await ActivityLog.create({
+      user: user._id,
+      action: 'LOGIN',
+      entityType: 'AUTH',
+      details: 'User logged in successfully',
     });
 
     return response;

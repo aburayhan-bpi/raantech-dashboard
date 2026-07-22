@@ -226,6 +226,7 @@ export interface ITeamUser {
   permissions?: string[];
   profileImage?: string;
   isDeleted?: boolean;
+  deletedAt?: string;
   address?: string;
   lastLogin?: string;
   createdAt: string;
@@ -250,3 +251,45 @@ export interface IUpdateUserPayload {
   status?: "ACTIVE" | "INACTIVE";
   permissions?: string[];
 }
+
+// --- ACTIVITY LOG API TYPES ---
+export interface IActivityLog {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+    profileImage?: string;
+  };
+  action: string;
+  entityType: string;
+  details: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type IActivityLogResponse = IBaseResponse<IActivityLog[]>;
+
+// --- CATEGORY API TYPES ---
+export interface ICategory {
+  _id: string;
+  name: string;
+  description?: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreateCategoryPayload {
+  name: string;
+  description?: string;
+  image?: string;
+}
+
+export interface IUpdateCategoryPayload extends Partial<ICreateCategoryPayload> {
+  id: string;
+}
+
+export type ICategoryResponse = IBaseResponse<ICategory>;
+export type ICategoriesResponse = IBaseResponse<ICategory[]>;

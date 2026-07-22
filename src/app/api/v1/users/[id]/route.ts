@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
+import ActivityLog from '@/models/ActivityLog';
 
 const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
@@ -66,6 +67,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return ApiResponse.error('User not found', 404);
     }
 
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'UPDATED',
+      entityType: 'USER',
+      details: `Updated user: ${updatedUser.email}`,
+    });
+
     return ApiResponse.success(updatedUser, 'User updated successfully');
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
@@ -96,6 +105,14 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     if (!deletedUser) {
       return ApiResponse.error('User not found or already deleted', 404);
     }
+
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'DELETED',
+      entityType: 'USER',
+      details: `Deleted user: ${deletedUser.email}`,
+    });
 
     return ApiResponse.success(null, 'User deleted successfully');
   } catch (error: unknown) {

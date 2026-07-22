@@ -3,17 +3,51 @@ import dbConnect from '@/lib/mongoose';
 import Category from '@/models/Category';
 import { verifyAuth } from '@/lib/auth';
 import { ApiResponse } from '@/lib/apiResponse';
+import ActivityLog from '@/models/ActivityLog';
+import { getPaginationParams } from '@/utils/backendPagination';
 
 const CreateCategorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
   description: z.string().optional(),
+  image: z.string().optional(),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const auth = await verifyAuth();
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+
     await dbConnect();
-    const categories = await Category.find({}).sort({ createdAt: -1 });
-    return ApiResponse.success(categories);
+
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get('search');
+    
+    // Check if it's a paginated request or just fetching all for dropdowns
+    const isPaginated = searchParams.has('page') || searchParams.has('limit');
+
+    const query: Record<string, unknown> = {};
+    if (search) {
+      query.name = { $regex: search, $options: 'i' };
+    }
+
+    if (isPaginated) {
+      const { page, limit, skip } = getPaginationParams(req);
+      const [categories, total] = await Promise.all([
+        Category.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        Category.countDocuments(query),
+      ]);
+      return ApiResponse.success(categories, "Categories retrieved successfully", {
+        page,
+        limit,
+        total,
+        totalPage: Math.ceil(total / limit),
+      });
+    } else {
+      const categories = await Category.find(query).sort({ createdAt: -1 }).lean();
+      return ApiResponse.success(categories);
+    }
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
   }
@@ -37,9 +71,17 @@ export async function POST(req: Request) {
 
     // 3. Database Operation
     await dbConnect();
-    const { name, description } = validatedData.data;
-    const newCategory = await Category.create({ name, description });
+    const { name, description, image } = validatedData.data;
+    const newCategory = await Category.create({ name, description, image });
     
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'CREATED',
+      entityType: 'CATEGORY',
+      details: `Created new category: ${name}`,
+    });
+
     // 4. Return Success
     return ApiResponse.success(newCategory, 'Category created successfully', 201);
 

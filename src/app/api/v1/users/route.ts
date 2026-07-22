@@ -6,6 +6,7 @@ import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import { sendEmail } from '@/lib/email';
 import crypto from 'crypto';
+import ActivityLog from '@/models/ActivityLog';
 
 const CreateUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -177,6 +178,14 @@ export async function POST(req: Request) {
       email: newUser.email,
       role: newUser.role,
     };
+
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'INVITED',
+      entityType: 'USER',
+      details: `Invited new user: ${email}`,
+    });
 
     return ApiResponse.success({
       user: userData,

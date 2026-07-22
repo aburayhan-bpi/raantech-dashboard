@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import Customer from '@/models/Customer';
 import { verifyAuth } from '@/lib/auth';
 import { ApiResponse } from '@/lib/apiResponse';
+import ActivityLog from '@/models/ActivityLog';
 
 const CreateCustomerSchema = z.object({
   phone: z.string().min(10, 'Valid phone number is required'),
@@ -56,6 +57,15 @@ export async function POST(req: Request) {
     }
 
     const newCustomer = await Customer.create(validatedData.data);
+
+    // Log Activity
+    await ActivityLog.create({
+      user: auth.userId,
+      action: 'CREATED',
+      entityType: 'CUSTOMER',
+      details: `Created new customer: ${newCustomer.name}`,
+    });
+
     return ApiResponse.success(newCustomer, 'Customer created successfully', 201);
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
