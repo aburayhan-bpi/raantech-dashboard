@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Using a simple check for Edge runtime since we can't use full jsonwebtoken verify easily in Edge
-// Actually Next.js middleware runs on Edge runtime where jsonwebtoken doesn't work well due to crypto dependencies.
-// Since this is an MVP, we will just check if the cookie exists. The API routes will do the actual JWT verification.
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token')?.value;
   const { pathname } = request.nextUrl;
@@ -12,6 +9,31 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/dashboard')) {
     if (!token) {
       // Redirect to login if no token
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    try {
+      // Decode JWT payload (Edge compatible)
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
+      
+      const role = payload.role as string; // 'SUPER_ADMIN', 'ADMIN', 'STAFF'
+      const rolePath = role.toLowerCase().replace('_', '-');
+      const allowedPrefix = `/dashboard/${rolePath}`;
+
+      // Cross-role protection
+      // If trying to access another role's dashboard directly, redirect to their own
+      if (!pathname.startsWith(allowedPrefix) && pathname !== '/dashboard') {
+        return NextResponse.redirect(new URL(allowedPrefix, request.url));
+      }
+
+      // Root /dashboard goes to their specific role dashboard
+      if (pathname === '/dashboard') {
+        return NextResponse.redirect(new URL(allowedPrefix, request.url));
+      }
+    } catch {
+      // If token is invalid/tampered, clear it and force login
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

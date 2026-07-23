@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { Loader2, ShieldAlert } from "lucide-react";
@@ -18,31 +18,18 @@ export function RequirePermission({
   action = "view",
 }: RequirePermissionProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const user = useSelector(selectUser);
 
-  // Cross-Role Protection calculation
-  const currentRolePath = user?.role ? user.role.toLowerCase().replace("_", "-") : "";
-  const allowedPrefix = `/dashboard/${currentRolePath}`;
-  const isCrossRole =
-    user && pathname.startsWith("/dashboard/") && !pathname.startsWith(allowedPrefix);
-
-  // Effect for redirects only
+  // Effect for unauthenticated users
+  // (Middleware handles this too, but good to have fallback)
   useEffect(() => {
-    if (user === undefined) return;
-    
-    if (!user) {
+    if (user === null) {
       router.replace("/login");
-      return;
     }
-
-    if (isCrossRole) {
-      router.replace(allowedPrefix);
-    }
-  }, [user, isCrossRole, allowedPrefix, router]);
+  }, [user, router]);
 
   // Loading state while Redux prepares user data
-  if (!user || isCrossRole) {
+  if (user === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-[#0089A7]" />
@@ -50,14 +37,17 @@ export function RequirePermission({
     );
   }
 
-  // Evaluate permission
+  // Not logged in, effect will redirect
+  if (!user) return null;
+
+  // Evaluate feature permission
   const requiredPermission = `${module}:${action}`;
   const hasAccess =
     user.role === "SUPER_ADMIN" ||
     (user.permissions && user.permissions.includes(requiredPermission)) ||
     false;
 
-  // Render Access Denied UI if they are on their own route but lack specific permissions
+  // Render Access Denied UI if they lack specific feature permissions
   if (!hasAccess) {
     return (
       <div className="w-full flex flex-col items-center justify-center min-h-[65vh] p-6 text-center">
