@@ -15,7 +15,7 @@ const CreateCustomerSchema = z.object({
 
 export async function GET(req: Request) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuth('customers:view');
     if (!auth) return ApiResponse.unauthorized();
 
     await dbConnect();
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuth('customers:create');
     if (!auth) return ApiResponse.unauthorized();
 
     const body = await req.json();

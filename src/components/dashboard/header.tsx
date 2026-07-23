@@ -6,7 +6,8 @@ import useAuth from "@/hooks/useAuth";
 import { useLogout } from "@/hooks/useLogout";
 import { cn } from "@/lib/utils";
 import { useGetMeQuery } from "@/redux/api/getMe/getMeApi";
-import { useAppSelector } from "@/redux/hook";
+import { useAppSelector, useAppDispatch } from "@/redux/hook";
+import { setUser } from "@/redux/features/user/authSlice";
 
 import { Icons } from "@/utils/icons";
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +33,7 @@ export function Header({
   const { data: userData } = useGetMeQuery(undefined, {
     skip: !isAuthenticated,
   });
+  const dispatch = useAppDispatch();
   const profile = userData?.data as
     | {
         fullName?: string;
@@ -69,6 +71,13 @@ export function Header({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Sync latest user permissions to Redux on every load/refresh
+  useEffect(() => {
+    if (userData?.data) {
+      dispatch(setUser(userData.data));
+    }
+  }, [userData, dispatch]);
 
   const hasNotifications = true;
 

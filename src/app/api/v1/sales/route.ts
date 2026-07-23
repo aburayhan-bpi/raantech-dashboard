@@ -16,7 +16,7 @@ const CreateSaleSchema = z.object({
 
 export async function GET() {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuth('sales:view');
     if (!auth) return ApiResponse.unauthorized();
 
     await dbConnect();
@@ -34,7 +34,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuth('sales:create');
     if (!auth) return ApiResponse.unauthorized();
 
     const body = await req.json();

@@ -14,8 +14,8 @@ const UpdateCategorySchema = z.object({
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
+    const auth = await verifyAuth('categories:update');
+    if (!auth) {
       return ApiResponse.unauthorized();
     }
 
@@ -61,8 +61,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
+    const auth = await verifyAuth('categories:delete');
+    if (!auth) {
       return ApiResponse.unauthorized();
     }
 

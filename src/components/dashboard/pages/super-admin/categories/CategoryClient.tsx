@@ -9,6 +9,8 @@ import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
 import { Edit2, Image as ImageIcon, Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/features/user/authSlice";
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import CategoryModal from "./CategoryModal";
@@ -36,9 +38,15 @@ export default function CategoryClient() {
   );
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(
-    null,
-  );
+  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
+
+  const currentUser = useSelector(selectUser);
+  const userPermissions = currentUser?.permissions || [];
+  const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
+
+  const canCreate = isSuperAdmin || userPermissions.includes('categories:create');
+  const canUpdate = isSuperAdmin || userPermissions.includes('categories:update');
+  const canDelete = isSuperAdmin || userPermissions.includes('categories:delete');
 
   useEffect(() => {
     if (previousSearch.current === debouncedSearch) return;
@@ -79,12 +87,14 @@ export default function CategoryClient() {
             Manage product categories
           </p>
         </div>
-        <CustomButton
-          onClick={handleAdd}
-          icon={<Plus className="w-4 h-4" />}
-          btnText="Add Category"
-          variant="default"
-        />
+        {canCreate && (
+          <CustomButton
+            onClick={handleAdd}
+            icon={<Plus className="w-4 h-4" />}
+            btnText="Add Category"
+            variant="default"
+          />
+        )}
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
@@ -161,20 +171,24 @@ export default function CategoryClient() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(category)}
-                          className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(category)}
-                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canUpdate && (
+                          <button
+                            onClick={() => handleEdit(category)}
+                            className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={() => handleDelete(category)}
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

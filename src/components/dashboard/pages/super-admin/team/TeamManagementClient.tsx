@@ -42,11 +42,11 @@ import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const AVAILABLE_PERMISSIONS = [
-  { id: "manage_sales", label: "Sales & Exchange" },
-  { id: "manage_products", label: "Products" },
-  { id: "manage_categories", label: "Categories" },
-  { id: "manage_customers", label: "Customers" },
-  { id: "manage_expenses", label: "Expenses" },
+  { id: "sales", label: "Sales & Exchange" },
+  { id: "products", label: "Products" },
+  { id: "categories", label: "Categories" },
+  { id: "customers", label: "Customers" },
+  { id: "expenses", label: "Expenses" },
 ];
 
 // --- Validation Schemas ---
@@ -526,29 +526,84 @@ export default function TeamManagementClient() {
                   name="permissions"
                   control={controlInvite}
                   render={({ field }) => (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-1 items-start">
                       {AVAILABLE_PERMISSIONS.map((permission) => {
-                        const isChecked = field.value?.includes(permission.id) || false;
+                        const isViewChecked = field.value?.includes(`${permission.id}:view`) || false;
+                        
                         return (
-                          <label
-                            key={permission.id}
-                            className="flex items-center gap-2 cursor-pointer group"
-                          >
-                            <Checkbox
-                              checked={isChecked}
-                              onCheckedChange={(checked) => {
-                                const current = field.value || [];
-                                const next = checked
-                                  ? [...current, permission.id]
-                                  : current.filter((id) => id !== permission.id);
-                                field.onChange(next);
-                              }}
-                              className="border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] data-[state=checked]:border-[#0089A7] data-[state=checked]:text-white transition-colors"
-                            />
-                            <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                              {permission.label}
-                            </span>
-                          </label>
+                          <div key={permission.id} className="flex flex-col gap-1">
+                            {/* Main Module Toggle */}
+                            <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                              <Checkbox
+                                checked={isViewChecked}
+                                onCheckedChange={(checked) => {
+                                  const current = field.value || [];
+                                  let next;
+                                  if (checked) {
+                                    // Grant view permission by default
+                                    next = [...current, `${permission.id}:view`];
+                                  } else {
+                                    // Revoke all permissions for this module
+                                    next = current.filter((id) => !id.startsWith(`${permission.id}:`));
+                                  }
+                                  field.onChange(next);
+                                }}
+                                className="w-4 h-4 rounded-[4px] border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7]"
+                              />
+                              <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+                                {permission.label}
+                              </span>
+                            </label>
+
+                            {/* Tiny Submenu */}
+                            <div 
+                              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                                isViewChecked ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+                              }`}
+                            >
+                              <div className="grid grid-cols-2 gap-y-2 gap-x-2 pl-7 pt-0.5">
+                                {["view", "create", "update", "delete"].map((action) => {
+                                  const actionId = `${permission.id}:${action}`;
+                                  const isActionChecked = field.value?.includes(actionId);
+                                  
+                                  const hasAnyOtherAction = ["create", "update", "delete"].some((act) => 
+                                    field.value?.includes(`${permission.id}:${act}`)
+                                  );
+                                  
+                                  const finalChecked = action === "view" && hasAnyOtherAction ? true : isActionChecked;
+
+                                  return (
+                                    <label key={action} className="flex items-center gap-1.5 cursor-pointer group">
+                                      <Checkbox
+                                        checked={finalChecked}
+                                        onCheckedChange={(checked) => {
+                                          const current = field.value || [];
+                                          let next;
+                                          if (checked) {
+                                            next = [...current, actionId];
+                                            if (action !== "view" && !next.includes(`${permission.id}:view`)) {
+                                              next.push(`${permission.id}:view`);
+                                            }
+                                          } else {
+                                            if (action === "view") {
+                                              next = current.filter((id) => !id.startsWith(`${permission.id}:`));
+                                            } else {
+                                              next = current.filter((id) => id !== actionId);
+                                            }
+                                          }
+                                          field.onChange(next);
+                                        }}
+                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
+                                      />
+                                      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
+                                        {action}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
                         );
                       })}
                     </div>
@@ -685,29 +740,84 @@ export default function TeamManagementClient() {
                   name="permissions"
                   control={controlEdit}
                   render={({ field }) => (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-1 items-start">
                       {AVAILABLE_PERMISSIONS.map((permission) => {
-                        const isChecked = field.value?.includes(permission.id) || false;
+                        const isViewChecked = field.value?.includes(`${permission.id}:view`) || false;
+                        
                         return (
-                          <label
-                            key={permission.id}
-                            className="flex items-center gap-2 cursor-pointer group"
-                          >
-                            <Checkbox
-                              checked={isChecked}
-                              onCheckedChange={(checked) => {
-                                const current = field.value || [];
-                                const next = checked
-                                  ? [...current, permission.id]
-                                  : current.filter((id) => id !== permission.id);
-                                field.onChange(next);
-                              }}
-                              className="border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] data-[state=checked]:border-[#0089A7] data-[state=checked]:text-white transition-colors"
-                            />
-                            <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                              {permission.label}
-                            </span>
-                          </label>
+                          <div key={permission.id} className="flex flex-col gap-1">
+                            {/* Main Module Toggle */}
+                            <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                              <Checkbox
+                                checked={isViewChecked}
+                                onCheckedChange={(checked) => {
+                                  const current = field.value || [];
+                                  let next;
+                                  if (checked) {
+                                    // Grant view permission by default
+                                    next = [...current, `${permission.id}:view`];
+                                  } else {
+                                    // Revoke all permissions for this module
+                                    next = current.filter((id) => !id.startsWith(`${permission.id}:`));
+                                  }
+                                  field.onChange(next);
+                                }}
+                                className="w-4 h-4 rounded-[4px] border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7]"
+                              />
+                              <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+                                {permission.label}
+                              </span>
+                            </label>
+
+                            {/* Tiny Submenu */}
+                            <div 
+                              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                                isViewChecked ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+                              }`}
+                            >
+                              <div className="grid grid-cols-2 gap-y-2 gap-x-2 pl-7 pt-0.5">
+                                {["view", "create", "update", "delete"].map((action) => {
+                                  const actionId = `${permission.id}:${action}`;
+                                  const isActionChecked = field.value?.includes(actionId);
+                                  
+                                  const hasAnyOtherAction = ["create", "update", "delete"].some((act) => 
+                                    field.value?.includes(`${permission.id}:${act}`)
+                                  );
+                                  
+                                  const finalChecked = action === "view" && hasAnyOtherAction ? true : isActionChecked;
+
+                                  return (
+                                    <label key={action} className="flex items-center gap-1.5 cursor-pointer group">
+                                      <Checkbox
+                                        checked={finalChecked}
+                                        onCheckedChange={(checked) => {
+                                          const current = field.value || [];
+                                          let next;
+                                          if (checked) {
+                                            next = [...current, actionId];
+                                            if (action !== "view" && !next.includes(`${permission.id}:view`)) {
+                                              next.push(`${permission.id}:view`);
+                                            }
+                                          } else {
+                                            if (action === "view") {
+                                              next = current.filter((id) => !id.startsWith(`${permission.id}:`));
+                                            } else {
+                                              next = current.filter((id) => id !== actionId);
+                                            }
+                                          }
+                                          field.onChange(next);
+                                        }}
+                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
+                                      />
+                                      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
+                                        {action}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
                         );
                       })}
                     </div>

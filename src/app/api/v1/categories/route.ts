@@ -14,7 +14,7 @@ const CreateCategorySchema = z.object({
 
 export async function GET(req: Request) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuth('categories:view');
     if (!auth) {
       return ApiResponse.unauthorized();
     }
@@ -56,8 +56,8 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     // 1. Authorization
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
+    const auth = await verifyAuth('categories:create');
+    if (!auth) {
       return ApiResponse.unauthorized();
     }
 

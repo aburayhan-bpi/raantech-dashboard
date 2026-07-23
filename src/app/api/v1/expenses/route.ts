@@ -13,9 +13,9 @@ const CreateExpenseSchema = z.object({
 
 export async function GET() {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
-      return ApiResponse.unauthorized('Only Admins can view expenses');
+    const auth = await verifyAuth('expenses:view');
+    if (!auth) {
+      return ApiResponse.unauthorized('Only Admins or authorized staff can view expenses');
     }
 
     await dbConnect();
@@ -31,9 +31,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
-      return ApiResponse.unauthorized('Only Admins can add expenses');
+    const auth = await verifyAuth('expenses:create');
+    if (!auth) {
+      return ApiResponse.unauthorized('Only Admins or authorized staff can add expenses');
     }
 
     const body = await req.json();

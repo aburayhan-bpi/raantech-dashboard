@@ -29,15 +29,15 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
     const hasRole = item.roles.includes(user?.role as any);
     if (!hasRole) return false;
 
-    // 2. Permission-based check for STAFF
-    if (user?.role === "STAFF" && user.permissions) {
+    // 2. Permission-based check for STAFF and ADMIN
+    if ((user?.role === "STAFF" || user?.role === "ADMIN") && user.permissions) {
       // Create a mapping of route paths to required permissions
       const permissionMap: Record<string, string> = {
-        "/sales": "manage_sales",
-        "/products": "manage_products",
-        "/categories": "manage_categories",
-        "/customers": "manage_customers",
-        "/expenses": "manage_expenses",
+        "/sales": "sales:view",
+        "/products": "products:view",
+        "/categories": "categories:view",
+        "/customers": "customers:view",
+        "/expenses": "expenses:view",
       };
 
       const requiredPermission = permissionMap[item.href];
