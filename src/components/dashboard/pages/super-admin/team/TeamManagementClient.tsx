@@ -124,7 +124,9 @@ export default function TeamManagementClient() {
 
   const onInvite = async (formData: InviteFormData) => {
     try {
-      await inviteUser(formData).unwrap();
+      const cleanedPermissions = formData.permissions?.filter(p => !p.startsWith('manage_')) || [];
+      const payload = { ...formData, permissions: cleanedPermissions };
+      await inviteUser(payload).unwrap();
       toast.success("User invited successfully!");
       setIsInviteModalOpen(false);
       resetInviteForm();
@@ -168,7 +170,9 @@ export default function TeamManagementClient() {
     if (!editModalData) return;
     try {
       const targetId = editModalData._id || (editModalData as any).id;
-      await updateUser({ id: targetId, payload: formData }).unwrap();
+      const cleanedPermissions = formData.permissions?.filter(p => !p.startsWith('manage_')) || [];
+      const payload = { ...formData, permissions: cleanedPermissions };
+      await updateUser({ id: targetId, payload }).unwrap();
       toast.success("User updated successfully!");
       setEditModalData(null);
     } catch (error: any) {

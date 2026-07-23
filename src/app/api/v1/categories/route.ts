@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     if (isPaginated) {
       const { page, limit, skip } = getPaginationParams(req);
       const [categories, total] = await Promise.all([
-        Category.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        Category.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
         Category.countDocuments(query),
       ]);
       return ApiResponse.success(categories, "Categories retrieved successfully", {
@@ -45,7 +45,7 @@ export async function GET(req: Request) {
         totalPage: Math.ceil(total / limit),
       });
     } else {
-      const categories = await Category.find(query).sort({ createdAt: -1 }).lean();
+      const categories = await Category.find(query).sort({ createdAt: -1 });
       return ApiResponse.success(categories);
     }
   } catch (error: unknown) {

@@ -14,7 +14,17 @@ const CategorySchema: Schema = new Schema(
     description: { type: String },
     image: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
+
+CategorySchema.set('toJSON', {
+  virtuals: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (doc, ret: any) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  }
+});
 
 export default mongoose.models.Category || mongoose.model<ICategory>('Category', CategorySchema);

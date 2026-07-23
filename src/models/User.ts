@@ -35,7 +35,17 @@ const UserSchema: Schema = new Schema(
     profileImage: { type: String },
     address: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
+
+UserSchema.set('toJSON', {
+  virtuals: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (doc, ret: any) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  }
+});
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 import useAuth from "@/hooks/useAuth";
 import { useLogout } from "@/hooks/useLogout";
@@ -30,10 +31,17 @@ export function Header({
   //   const router = useRouter();
   const isAuthenticated = useAuth();
   const user = useAppSelector((state) => state.auth.user);
-  const { data: userData } = useGetMeQuery(undefined, {
+  const { data: userData, refetch } = useGetMeQuery(undefined, {
     skip: !isAuthenticated,
   });
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refetch();
+    }
+  }, [pathname, isAuthenticated, refetch]);
   const profile = userData?.data as
     | {
         fullName?: string;

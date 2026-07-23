@@ -12,16 +12,39 @@
           "name": "Get Users (Paginated & Search)",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users?page=1&limit=10&search=john&isDeleted=false",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
-                { "key": "search", "value": "john" },
-                { "key": "isDeleted", "value": "false" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "john"
+                },
+                {
+                  "key": "isDeleted",
+                  "value": "false"
+                }
               ]
             }
           },
@@ -38,21 +61,33 @@
           ]
         },
         {
-          "name": "Invite User",
+          "name": "Create Admin / Staff",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Jane Smith\",\n    \"email\": \"jane@example.com\",\n    \"role\": \"STAFF\",\n    \"permissions\": [\"manage_products\"]\n}"
+              "raw": "{\n  \"name\": \"New Admin\",\n  \"email\": \"admin2@raantech.com\",\n  \"role\": \"ADMIN\",\n  \"permissions\": [\n    \"products:view\",\n    \"products:create\",\n    \"categories:view\",\n    \"categories:create\",\n    \"sales:view\",\n    \"customers:view\"\n  ]\n}"
             }
           },
           "response": []
@@ -62,14 +97,32 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", ":id"],
-              "variable": [{ "key": "id", "value": "647f1b2c..." }]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "647f1b2c..."
+                }
+              ]
             },
             "body": {
               "mode": "raw",
@@ -82,12 +135,29 @@
           "name": "Soft Delete User",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", ":id"],
-              "variable": [{ "key": "id", "value": "647f1b2c..." }]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "647f1b2c..."
+                }
+              ]
             }
           },
           "response": [
@@ -106,12 +176,30 @@
           "name": "Restore User",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/:id/restore",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", ":id", "restore"],
-              "variable": [{ "key": "id", "value": "647f1b2c..." }]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id",
+                "restore"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "647f1b2c..."
+                }
+              ]
             }
           },
           "response": [
@@ -125,6 +213,155 @@
               "body": "{\n    \"success\": true,\n    \"statusCode\": 200,\n    \"message\": \"User restored successfully\",\n    \"data\": {\n        \"id\": \"647f1b2c...\",\n        \"name\": \"Jane Smith\",\n        \"isDeleted\": false,\n        \"status\": \"ACTIVE\"\n    }\n}"
             }
           ]
+        },
+        {
+          "name": "Create Dedicated Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/create-admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "create-admin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Special Admin\",\n  \"email\": \"specialadmin@raantech.com\",\n  \"permissions\": [\n    \"products:view\",\n    \"products:create\"\n  ]\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"New Category\",\"description\":\"Test\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"raantechbd@gmail.com\",\"password\":\"raantech3451\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          }
         }
       ]
     }

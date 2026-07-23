@@ -1,18 +1,18 @@
 "use client";
 
+import { Pagination } from "@/components/dashboard/pagination";
 import CustomButton from "@/components/shared/CustomButton";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
-import { Pagination } from "@/components/dashboard/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useGetCategoriesQuery } from "@/redux/api/category/categoryApi";
+import { selectUser } from "@/redux/features/user/authSlice";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
 import { Edit2, Image as ImageIcon, Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/features/user/authSlice";
 import { useSearchParams } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import CategoryModal from "./CategoryModal";
 import DeleteCategoryModal from "./DeleteCategoryModal";
 
@@ -38,15 +38,20 @@ export default function CategoryClient() {
   );
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(
+    null,
+  );
 
   const currentUser = useSelector(selectUser);
   const userPermissions = currentUser?.permissions || [];
-  const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
 
-  const canCreate = isSuperAdmin || userPermissions.includes('categories:create');
-  const canUpdate = isSuperAdmin || userPermissions.includes('categories:update');
-  const canDelete = isSuperAdmin || userPermissions.includes('categories:delete');
+  const canCreate =
+    isSuperAdmin || userPermissions.includes("categories:create");
+  const canUpdate =
+    isSuperAdmin || userPermissions.includes("categories:update");
+  const canDelete =
+    isSuperAdmin || userPermissions.includes("categories:delete");
 
   useEffect(() => {
     if (previousSearch.current === debouncedSearch) return;
@@ -79,7 +84,7 @@ export default function CategoryClient() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className=" space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Categories</h1>
@@ -143,16 +148,17 @@ export default function CategoryClient() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {category.image ? (
-                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0">
+                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0">
                             <Image
                               src={category.image}
                               alt={category.name}
                               fill
+                              draggable={false}
                               className="object-cover"
                             />
                           </div>
                         ) : (
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 text-slate-400">
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
                             <ImageIcon className="w-5 h-5" />
                           </div>
                         )}
