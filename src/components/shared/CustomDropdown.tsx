@@ -169,7 +169,7 @@ export const CustomDropdown = ({
         type="button"
         onClick={toggleDropdown}
         className={cn(
-          "flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]",
+          "flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand",
           triggerClassName,
         )}
       >
@@ -238,7 +238,7 @@ export const CustomDropdown = ({
                 >
                   <span className="text-left">{option.label}</span>
                   {value === option.value && (
-                    <Check className="h-4 w-4 text-[#0089A7]" />
+                    <Check className="h-4 w-4 text-brand" />
                   )}
                 </button>
               ))

@@ -27,8 +27,10 @@ export async function POST(req: Request) {
     const mimeType = file.type || 'image/png';
     const dataURI = `data:${mimeType};base64,${base64Image}`;
 
+    const folder = (formData.get('folder') as string) || 'raantech_profiles';
+
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: 'raantech_profiles',
+      folder,
     });
 
     return NextResponse.json({ url: result.secure_url });
