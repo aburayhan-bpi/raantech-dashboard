@@ -24,6 +24,7 @@ interface CustomDropdownProps {
   isSearchable?: boolean;
   onSearchChange?: (searchValue: string) => void;
   isLoading?: boolean;
+  dropdownFooter?: React.ReactNode;
 }
 
 export const CustomDropdown = ({
@@ -39,6 +40,7 @@ export const CustomDropdown = ({
   isSearchable = false,
   onSearchChange,
   isLoading = false,
+  dropdownFooter,
 }: CustomDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
@@ -47,23 +49,10 @@ export const CustomDropdown = ({
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption = options.find((option) => option.value === value);
-  const [lastSelectedLabel, setLastSelectedLabel] = useState("");
-  const [prevValue, setPrevValue] = useState(value);
-  const [prevLabel, setPrevLabel] = useState("");
-
-  // Sync state during rendering instead of useEffect
-  if (value !== prevValue) {
-    setPrevValue(value);
-    if (!value) {
-      setLastSelectedLabel("");
-    }
-  }
-
-  if (selectedOption && selectedOption.label !== prevLabel) {
-    setPrevLabel(selectedOption.label);
-    setLastSelectedLabel(selectedOption.label);
-  }
+  const selectedOption = useMemo(
+    () => options.find((option) => option.value === value),
+    [options, value]
+  );
 
   const toggleDropdown = () => {
     setIsOpen((prev) => {
@@ -179,7 +168,7 @@ export const CustomDropdown = ({
             !value && "text-slate-500",
           )}
         >
-          {value && lastSelectedLabel ? lastSelectedLabel : placeholder}
+          {selectedOption ? selectedOption.label : placeholder}
         </span>
         <ChevronDown
           className={cn(
@@ -226,9 +215,9 @@ export const CustomDropdown = ({
                 No options found
               </div>
             ) : (
-              filteredOptions.map((option) => (
+              filteredOptions.map((option, index) => (
                 <button
-                  key={option.value}
+                  key={option.value || `option-${index}`}
                   type="button"
                   onClick={() => handleSelect(option.value)}
                   className={cn(
@@ -244,6 +233,11 @@ export const CustomDropdown = ({
               ))
             )}
           </div>
+          {dropdownFooter && (
+            <div className="border-t border-slate-100 p-2 bg-slate-50 sticky bottom-0">
+              {dropdownFooter}
+            </div>
+          )}
         </div>
       )}
     </div>

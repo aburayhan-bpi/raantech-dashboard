@@ -161,7 +161,7 @@
   --brand-5: color-mix(in srgb, var(--brand) 5%, transparent);
 
   /* Warning Colors */
-  --warning: #ffd451;
+  --warning: #F59E0B;
   --warning-80: color-mix(in srgb, var(--warning) 80%, transparent);
   --warning-50: color-mix(in srgb, var(--warning) 50%, transparent);
   --warning-20: color-mix(in srgb, var(--warning) 20%, transparent);
@@ -171,7 +171,7 @@
   --kpi-teal: #63cf73;
   --kpi-blue: #00B4D8;
   --kpi-purple: #e6475d;
-  --kpi-sky: #ffd451;
+  --kpi-sky: #F59E0B;
 
   /* Success Colors */
   --success: #63cf73;
@@ -198,7 +198,7 @@
   --chart-grid: rgba(0, 0, 0, 0.05);
   --chart-text: #0F172A;
   --chart-text-muted: #64748B;
-  --chart-primary: #ffd451;
+  --chart-primary: #F59E0B;
   --chart-primary-dark: #B45309;
   --chart-tooltip-bg: #FFFFFF;
   --chart-tooltip-text: #0F172A;
@@ -314,9 +314,9 @@
   border-top: 0.3px solid #b4b4b4;
   background: linear-gradient(
     90deg,
-    #ffd451 1.1%,
-    #fff7a4 74.38%,
-    #ffd73c 99.75%
+    #F59E0B 1.1%,
+    #FCD34D 74.38%,
+    #F59E0B 99.75%
   );
 }
 

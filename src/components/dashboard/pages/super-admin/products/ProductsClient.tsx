@@ -2,6 +2,7 @@
 
 import { Pagination } from "@/components/dashboard/pagination";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import ExcelImportModal from "@/components/shared/ExcelImportModal";
 import CustomButton from "@/components/shared/CustomButton";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ import {
   useUpdateProductMutation,
 } from "@/redux/api/product/productApi";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
-import { Plus, Search, Trash2, Edit2, ArchiveRestore } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, ArchiveRestore, Download, Upload } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -42,9 +43,17 @@ export default function ProductsClient() {
   const [productToRestore, setProductToRestore] = useState<IProduct | null>(
     null,
   );
+  
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   useEffect(() => {
     if (previousSearch.current === debouncedSearch) return;
+    
+    if (previousSearch.current === null && !debouncedSearch) {
+      previousSearch.current = debouncedSearch;
+      return;
+    }
+
     previousSearch.current = debouncedSearch;
     setParams({ search: debouncedSearch || null, page: "1" });
   }, [debouncedSearch, setParams]);
@@ -53,6 +62,7 @@ export default function ProductsClient() {
     data: productsData,
     isLoading,
     isFetching,
+    refetch,
   } = useGetProductsQuery(
     `${sp.toString()}${isDeletedView ? "&isDeleted=true" : ""}`,
   );
@@ -145,6 +155,26 @@ export default function ProductsClient() {
               isDeletedView && "bg-error/10 text-error border-error/20",
             )}
             btnText={isDeletedView ? "View Active" : "View Trash"}
+          />
+          <CustomButton
+            variant="outline"
+            onClick={() => window.open('/api/v1/products/export', '_blank')}
+            btnText={
+              <div className="flex items-center text-slate-700">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </div>
+            }
+          />
+          <CustomButton
+            variant="outline"
+            onClick={() => setIsImportModalOpen(true)}
+            btnText={
+              <div className="flex items-center text-slate-700">
+                <Upload className="w-4 h-4 mr-2" />
+                Import
+              </div>
+            }
           />
           <CustomButton
             onClick={handleAddNew}
@@ -413,6 +443,15 @@ export default function ProductsClient() {
         loading={isRestoring}
         onConfirm={confirmRestore}
         onClose={() => setIsRestoreModalOpen(false)}
+      />
+
+      <ExcelImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        title="Import Products"
+        templateUrl="/api/v1/products/export"
+        importUrl="/api/v1/products/import"
+        onSuccess={() => refetch()}
       />
     </div>
   );

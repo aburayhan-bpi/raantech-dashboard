@@ -64,8 +64,12 @@ export async function POST(req: Request) {
       }
     }
 
+    const productData = { ...validatedData.data };
+    if (productData.sku === "") productData.sku = undefined;
+    if (productData.barcode === "") productData.barcode = undefined;
+
     const newProduct = await Product.create({
-      ...validatedData.data,
+      ...productData,
       createdBy: auth.userId,
     });
 

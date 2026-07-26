@@ -34,8 +34,10 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
       // Create a mapping of route paths to required permissions
       const permissionMap: Record<string, string> = {
         "/sales": "sales:view",
+        "/purchases": "purchases:view",
         "/products": "products:view",
         "/categories": "categories:view",
+        "/suppliers": "suppliers:view",
         "/customers": "customers:view",
         "/expenses": "expenses:view",
       };
@@ -71,8 +73,10 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
 
       // Shared / General
       FaShoppingCart: <Icons.FaShoppingCart className="w-5 h-5" />,
+      FaReceipt: <Icons.FaReceipt className="w-5 h-5" />,
       FaBoxOpen: <Icons.FaBoxOpen className="w-5 h-5" />,
       FaTags: <Icons.FaTags className="w-5 h-5" />,
+      FaTruck: <Icons.FaTruck className="w-5 h-5" />,
       FaUsersCog: <Icons.FaUsersCog className="w-5 h-5" />,
     };
     return iconMap[iconName];

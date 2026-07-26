@@ -47,7 +47,7 @@ import {
  * Only icons that are actively used are maintained here to keep the bundle size small.
  */
 import { BsLockFill } from "react-icons/bs";
-import { FaBookmark, FaReceipt, FaTrashCan } from "react-icons/fa6";
+import { FaBookmark, FaReceipt, FaTrashCan, FaTruck } from "react-icons/fa6";
 import { FaShoppingCart, FaBoxOpen, FaTags, FaUsersCog } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import {
@@ -93,6 +93,7 @@ export const Icons = {
   FaBoxOpen,
   FaTags,
   FaUsersCog,
+  FaTruck,
   TbBellRingingFilled,
   HiClipboardDocumentList,
   PiCrownSimpleFill,

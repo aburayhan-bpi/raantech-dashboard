@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/mongoose';
 import Product from '@/models/Product';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import ActivityLog from '@/models/ActivityLog';
-import slugify from 'slugify';
+import { generateSlug } from '@/lib/slugify';
 import { PRODUCT_STATUSES, PRODUCT_UNITS } from '@/types/backend';
 
 const ProductUpdateSchema = z.object({
@@ -45,7 +46,9 @@ export async function GET(
     await dbConnect();
     const { slug } = await params;
 
-    const product = await Product.findOne({ slug })
+    const product = await Product.findOne({
+      $or: [{ slug }, { _id: mongoose.isValidObjectId(slug) ? slug : null }]
+    })
       .populate('category', 'name slug')
       .populate('createdBy', 'name email');
 
@@ -79,7 +82,9 @@ export async function PUT(
 
     await dbConnect();
 
-    const existingProduct = await Product.findOne({ slug });
+    const existingProduct = await Product.findOne({
+      $or: [{ slug }, { _id: mongoose.isValidObjectId(slug) ? slug : null }]
+    });
     if (!existingProduct) {
       return ApiResponse.error('Product not found', 404);
     }
@@ -104,9 +109,13 @@ export async function PUT(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = { ...validatedData.data };
     
+    if (updateData.sku === "") updateData.sku = undefined;
+    if (updateData.barcode === "") updateData.barcode = undefined;
+    
     // Regenerate slug if name is changed
     if (name && name !== existingProduct.name) {
-      const baseSlug = slugify(name, { lower: true, strict: true });
+      let baseSlug = generateSlug(name);
+      if (!baseSlug) baseSlug = Math.random().toString(36).substring(2, 10);
       let uniqueSlug = baseSlug;
       let counter = 1;
       
@@ -117,9 +126,26 @@ export async function PUT(
       updateData.slug = uniqueSlug;
     }
 
+    const unsetData: Record<string, 1> = {};
+    if (updateData.sku === "" || updateData.sku === undefined) {
+      const isSkuEmpty = updateData.sku === "";
+      delete updateData.sku;
+      if (isSkuEmpty) unsetData.sku = 1;
+    }
+    if (updateData.barcode === "" || updateData.barcode === undefined) {
+      const isBarcodeEmpty = updateData.barcode === "";
+      delete updateData.barcode;
+      if (isBarcodeEmpty) unsetData.barcode = 1;
+    }
+
+    const updatePayload: Record<string, unknown> = { $set: updateData };
+    if (Object.keys(unsetData).length > 0) {
+      updatePayload.$unset = unsetData;
+    }
+
     const updatedProduct = await Product.findOneAndUpdate(
-      { slug },
-      { $set: updateData },
+      { _id: existingProduct._id },
+      updatePayload,
       { new: true, runValidators: true }
     );
 
@@ -157,7 +183,9 @@ export async function DELETE(
     }
 
     await dbConnect();
-    const existingProduct = await Product.findOne({ slug });
+    const existingProduct = await Product.findOne({
+      $or: [{ slug }, { _id: mongoose.isValidObjectId(slug) ? slug : null }]
+    });
     
     if (!existingProduct) {
       return ApiResponse.error('Product not found', 404);

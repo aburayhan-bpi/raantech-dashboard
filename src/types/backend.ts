@@ -41,7 +41,7 @@ export const DEFAULT_PRODUCT_UNIT: ProductUnit = 'pcs';
 export const ACTIVITY_ACTIONS = ['CREATED', 'UPDATED', 'DELETED', 'LOGIN', 'LOGOUT'] as const;
 export type ActivityAction = (typeof ACTIVITY_ACTIONS)[number];
 
-export const ACTIVITY_ENTITIES = ['USER', 'PRODUCT', 'CATEGORY', 'CUSTOMER', 'SALE', 'SYSTEM'] as const;
+export const ACTIVITY_ENTITIES = ['USER', 'PRODUCT', 'CATEGORY', 'CUSTOMER', 'SALE', 'SYSTEM', 'SUPPLIER', 'PURCHASE'] as const;
 export type ActivityEntity = (typeof ACTIVITY_ENTITIES)[number];
 
 
@@ -50,3 +50,31 @@ export type ActivityEntity = (typeof ACTIVITY_ENTITIES)[number];
    ========================================================================== */
 
 // Currently Category has no specific enums, but space reserved here for future scaling
+
+
+/* ==========================================================================
+   SUPPLIER MODULE TYPES & ENUMS
+   ========================================================================== */
+
+export const SUPPLIER_STATUSES = ['ACTIVE', 'INACTIVE'] as const;
+export type SupplierStatus = (typeof SUPPLIER_STATUSES)[number];
+
+export const DEFAULT_SUPPLIER_STATUS: SupplierStatus = 'ACTIVE';
+
+
+/* ==========================================================================
+   PURCHASE MODULE TYPES & ENUMS
+   ========================================================================== */
+
+export const PURCHASE_PAYMENT_STATUSES = ['PAID', 'PARTIAL', 'DUE'] as const;
+export type PurchasePaymentStatus = (typeof PURCHASE_PAYMENT_STATUSES)[number];
+
+export const PURCHASE_PAYMENT_METHODS = ['CASH', 'BANK', 'MOBILE_BANKING', 'OTHER'] as const;
+export type PurchasePaymentMethod = (typeof PURCHASE_PAYMENT_METHODS)[number];
+
+export const PURCHASE_STATUSES = ['COMPLETED', 'CANCELLED'] as const;
+export type PurchaseStatus = (typeof PURCHASE_STATUSES)[number];
+
+export const DEFAULT_PURCHASE_PAYMENT_STATUS: PurchasePaymentStatus = 'DUE';
+export const DEFAULT_PURCHASE_PAYMENT_METHOD: PurchasePaymentMethod = 'CASH';
+export const DEFAULT_PURCHASE_STATUS: PurchaseStatus = 'COMPLETED';

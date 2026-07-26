@@ -14,7 +14,9 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@react-oauth/google": "^0.13.5",
+    "@react-pdf/renderer": "^4.5.1",
     "@reduxjs/toolkit": "^2.9.0",
+    "@yudiel/react-qr-scanner": "^2.6.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",
@@ -22,9 +24,10 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.40.0",
-    "html5-qrcode": "^2.3.8",
+    "html-to-image": "^1.11.13",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.575.0",
     "mongoose": "^9.7.4",
     "next": "16.1.6",
@@ -41,6 +44,7 @@
     "slugify": "^1.6.9",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {

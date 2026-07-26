@@ -12,11 +12,14 @@ import {
   useUpdateProductMutation,
   IProduct 
 } from "@/redux/api/product/productApi";
+import { useAppSelector } from "@/redux/hook";
+import { selectUser } from "@/redux/features/user/authSlice";
 import { useGetCategoriesQuery } from "@/redux/api/category/categoryApi";
 import ImageUploader, { ImageItem } from "@/components/shared/ImageUploader";
 import BarcodeScannerInput from "@/components/shared/BarcodeScannerInput";
 import ProfitCalculatorInput from "@/components/shared/ProfitCalculatorInput";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
+import CategoryModal from "@/components/dashboard/pages/super-admin/categories/CategoryModal";
 
 // Schema for frontend validation
 const productSchema = z.object({
@@ -60,12 +63,15 @@ export default function ProductModal({
 
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
-  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: categoriesData, refetch: refetchCategories, isFetching: isFetchingCategories } = useGetCategoriesQuery();
+  const user = useAppSelector(selectUser);
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   const categories = categoriesData?.data || [];
   
   const [imageItems, setImageItems] = useState<ImageItem[]>([]);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   
   const isLoading = isCreating || isUpdating || isUploadingImages;
 
@@ -123,12 +129,13 @@ export default function ProductModal({
           tags: product.tags || [],
         });
         
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setImageItems((product.images || []).map(url => ({
-          id: Math.random().toString(36).substring(2, 9),
-          type: "url",
-          url
-        })));
+        setTimeout(() => {
+          setImageItems((product.images || []).map(url => ({
+            id: Math.random().toString(36).substring(2, 9),
+            type: "url",
+            url
+          })));
+        }, 0);
       } else {
         reset({
           name: "",
@@ -148,7 +155,9 @@ export default function ProductModal({
           status: "ACTIVE",
           tags: [],
         });
-        setImageItems([]);
+        setTimeout(() => {
+          setImageItems([]);
+        }, 0);
       }
     }
   }, [isOpen, product, reset]);
@@ -188,7 +197,8 @@ export default function ProductModal({
       setIsUploadingImages(false);
 
       if (isEditing && product) {
-        await updateProduct({ slug: product.slug, data }).unwrap();
+        const identifier = product.slug || product.id;
+        await updateProduct({ slug: identifier, data }).unwrap();
         toast.success("Product updated successfully");
       } else {
         await createProduct(data).unwrap();
@@ -266,6 +276,32 @@ export default function ProductModal({
                         onChange={field.onChange}
                         placeholder="Select a category"
                         isSearchable
+                        dropdownFooter={
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                refetchCategories();
+                              }}
+                              disabled={isFetchingCategories}
+                              className="flex items-center justify-center p-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex-1"
+                            >
+                              <Loader2 className={`w-3.5 h-3.5 mr-1.5 ${isFetchingCategories ? "animate-spin" : ""}`} />
+                              Refresh
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsCategoryModalOpen(true);
+                              }}
+                              className="flex items-center justify-center p-2 text-xs font-medium text-brand bg-brand/10 hover:bg-brand/20 rounded-lg transition-colors flex-1"
+                            >
+                              + Add New
+                            </button>
+                          </div>
+                        }
                       />
                     )}
                   />
@@ -329,7 +365,8 @@ export default function ProductModal({
                     type="number"
                     {...register("stock", { valueAsNumber: true })}
                     placeholder="0"
-                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                    disabled={isEditing && !isSuperAdmin}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand/20 outline-none transition-all ${isEditing && !isSuperAdmin ? "bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed" : "bg-white border-border focus:border-brand"}`}
                   />
                   {errors.stock && <p className="text-xs text-error">{errors.stock.message}</p>}
                 </div>
@@ -370,7 +407,7 @@ export default function ProductModal({
                   />
                 </div>
                 
-                <div className="space-y-1.5 md:col-span-1">
+                <div className="space-y-1.5 md:grid-cols-1">
                   <label className="text-sm font-medium text-slate-700">
                     SKU (Stock Keeping Unit)
                   </label>
@@ -443,6 +480,11 @@ export default function ProductModal({
           />
         </div>
       </div>
+      <CategoryModal 
+        isOpen={isCategoryModalOpen} 
+        onClose={() => setIsCategoryModalOpen(false)} 
+        category={null} 
+      />
     </div>
   );
 }

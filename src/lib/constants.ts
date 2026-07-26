@@ -27,6 +27,22 @@ export const SIDEBAR_ITEMS = [
     group: "INVENTORY & SALES",
   },
   {
+    id: "dashboard-purchases",
+    label: "Purchases",
+    href: "/purchases",
+    icon: "FaReceipt",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+    group: "INVENTORY & SALES",
+  },
+  {
+    id: "dashboard-suppliers",
+    label: "Suppliers",
+    href: "/suppliers",
+    icon: "FaTruck",
+    roles: ["SUPER_ADMIN", "ADMIN"],
+    group: "INVENTORY & SALES",
+  },
+  {
     id: "dashboard-categories",
     label: "Categories",
     href: "/categories",

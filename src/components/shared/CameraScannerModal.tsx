@@ -1,14 +1,10 @@
 "use client";
 
-import {
-  CameraDevice,
-  Html5Qrcode,
-  Html5QrcodeSupportedFormats,
-} from "html5-qrcode";
-import { Camera, Play, Square, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Camera, Square, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import { CustomDropdown } from "./CustomDropdown";
+import { Scanner, IDetectedBarcode, useDevices } from "@yudiel/react-qr-scanner";
 
 interface CameraScannerModalProps {
   isOpen: boolean;
@@ -22,122 +18,56 @@ export default function CameraScannerModal({
   onScan,
 }: CameraScannerModalProps) {
   const [error, setError] = useState<string | null>(null);
-  const [cameras, setCameras] = useState<CameraDevice[]>([]);
-  const [selectedCameraId, setSelectedCameraId] = useState<string>("");
   const [isScanning, setIsScanning] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
+  const devices = useDevices();
+
+  // Set default camera if devices load and none is selected
+  useEffect(() => {
+    if (devices.length > 0 && !selectedDeviceId) {
+      const backCamera = devices.find((d) => d.label.toLowerCase().includes("back"));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedDeviceId(backCamera ? backCamera.deviceId : devices[0].deviceId);
+    }
+  }, [devices, selectedDeviceId]);
+
+  const handleScan = (detectedCodes: IDetectedBarcode[]) => {
+    if (detectedCodes.length > 0) {
+      const result = detectedCodes[0].rawValue;
+      stopScanner();
+      onScan(result);
+      onClose();
+    }
+  };
 
   const stopScanner = () => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    if (scannerRef.current && scannerRef.current.isScanning) {
-      scannerRef.current
-        .stop()
-        .then(() => {
-          setIsScanning(false);
-          scannerRef.current?.clear();
-        })
-        .catch(console.error);
+    setIsScanning(false);
+  };
+
+  const startScanner = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
     }
+    setIsScanning(true);
+    setError(null);
   };
 
   useEffect(() => {
     if (!isOpen) {
       stopScanner();
-      return;
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      startScanner();
     }
-
-    // Blur active element to hide keyboard on mobile
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
-    // Fetch cameras
-    Html5Qrcode.getCameras()
-      .then((devices) => {
-        if (devices && devices.length > 0) {
-          setCameras(devices);
-          // Try to select the back camera by default if it exists
-          const backCamera = devices.find((d) =>
-            d.label.toLowerCase().includes("back"),
-          );
-          setSelectedCameraId(backCamera ? backCamera.id : devices[0].id);
-        } else {
-          setError("No cameras found on your device.");
-        }
-      })
-      .catch(() => {
-        setError(
-          "Failed to get cameras. Please ensure camera permissions are granted.",
-        );
-      });
-
-    return () => {
-      stopScanner();
-    };
   }, [isOpen]);
-
-  const startScanner = async () => {
-    if (!selectedCameraId) return;
-
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
-    try {
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode("barcode-scanner-reader", {
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.CODE_128,
-            Html5QrcodeSupportedFormats.CODE_39,
-            Html5QrcodeSupportedFormats.EAN_13,
-            Html5QrcodeSupportedFormats.EAN_8,
-            Html5QrcodeSupportedFormats.UPC_A,
-            Html5QrcodeSupportedFormats.UPC_E,
-            Html5QrcodeSupportedFormats.QR_CODE,
-          ],
-          verbose: false,
-        });
-      }
-
-      await scannerRef.current.start(
-        selectedCameraId,
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 100 },
-          aspectRatio: 1.0,
-        },
-        (decodedText) => {
-          stopScanner();
-          onScan(decodedText);
-          onClose();
-        },
-        () => {
-          // Quietly ignore scan failures
-        },
-      );
-      setIsScanning(true);
-      setError(null);
-    } catch {
-      setError("Failed to start scanner.");
-    }
-  };
-
-  const handleCameraChange = (val: string) => {
-    setSelectedCameraId(val);
-    if (isScanning) {
-      stopScanner();
-      setTimeout(() => {
-        startScanner();
-      }, 500); // Give it a moment to stop before restarting
-    }
-  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border bg-slate-50">
@@ -157,29 +87,29 @@ export default function CameraScannerModal({
         </div>
 
         {/* Scanner Controls */}
-        <div className="p-4 border-b border-slate-100 flex gap-2 flex-col">
-          {cameras.length > 0 && (
+        <div className="p-4 border-b border-slate-100 flex gap-3 flex-col">
+          {devices.length > 0 && (
             <CustomDropdown
-              options={cameras.map((c) => ({
-                label: c.label || "Unknown Camera",
-                value: c.id,
+              options={devices.map((c, i) => ({
+                label: c.label || `Camera ${i + 1}`,
+                value: c.deviceId,
               }))}
-              value={selectedCameraId}
-              onChange={handleCameraChange}
+              value={selectedDeviceId}
+              onChange={(val) => setSelectedDeviceId(val)}
               placeholder="Select Camera"
             />
           )}
 
-          <div className="flex justify-center gap-3 mt-2">
+          <div className="flex justify-center gap-3">
             {!isScanning ? (
               <CustomButton
                 type="button"
                 onClick={startScanner}
-                disabled={!selectedCameraId || !!error}
+                disabled={devices.length === 0}
                 className="w-full"
                 btnText={
                   <div className="flex items-center justify-center">
-                    <Play className="w-4 h-4 mr-2" />
+                    <Camera className="w-4 h-4 mr-2" />
                     Start Camera
                   </div>
                 }
@@ -202,19 +132,36 @@ export default function CameraScannerModal({
         </div>
 
         {/* Scanner Body */}
-        <div className="p-6 bg-slate-900 min-h-62.5 flex flex-col items-center justify-center relative">
+        <div className="p-6 bg-slate-900 min-h-[350px] flex flex-col items-center justify-center relative">
           {error ? (
             <div className="text-center p-4 bg-error/10 border border-error/20 rounded-lg">
               <p className="text-error text-sm font-medium">{error}</p>
             </div>
-          ) : (
-            <div className="w-full">
-              <div
-                id="barcode-scanner-reader"
-                className="w-full overflow-hidden rounded-lg bg-black"
-              ></div>
+          ) : isScanning ? (
+            <div className="w-full overflow-hidden rounded-lg bg-black relative">
+              <Scanner
+                onScan={handleScan}
+                onError={(err) => setError(err.message || "Failed to start scanner")}
+                constraints={{ deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined }}
+                formats={[
+                  "qr_code",
+                  "code_128",
+                  "code_39",
+                  "ean_13",
+                  "ean_8",
+                  "upc_a",
+                  "upc_e"
+                ]}
+                sound={false}
+                components={{
+                  onOff: true,
+                  torch: true,
+                  zoom: true,
+                  finder: true,
+                }}
+              />
             </div>
-          )}
+          ) : null}
 
           {!error && isScanning && (
             <p className="mt-4 text-center text-xs text-slate-400">
@@ -224,7 +171,7 @@ export default function CameraScannerModal({
           )}
           {!error && !isScanning && (
             <p className="mt-4 text-center text-xs text-slate-400">
-              Select a camera and press Start to scan.
+              Press Start to begin scanning.
             </p>
           )}
         </div>

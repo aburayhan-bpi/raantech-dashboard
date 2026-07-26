@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import slugify from 'slugify';
+import { generateSlug } from '@/lib/slugify';
 import { 
   PRODUCT_STATUSES, 
   PRODUCT_UNITS, 
@@ -80,7 +80,10 @@ const ProductSchema = new Schema(
 
 ProductSchema.pre('save', async function () {
   if (this.isModified('name') || !this.slug) {
-    const baseSlug = slugify(this.name, { lower: true, strict: true });
+    let baseSlug = generateSlug(this.name);
+    if (!baseSlug) {
+      baseSlug = Math.random().toString(36).substring(2, 10);
+    }
     
     // Ensure slug uniqueness
     const ProductModel = mongoose.models.Product || mongoose.model('Product', ProductSchema);
