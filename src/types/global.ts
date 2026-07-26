@@ -23,6 +23,29 @@ export enum StatusEnum {
   IN_PROGRESS = "IN_PROGRESS",
 }
 
+export const enum SaleStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  SHIPPED = "SHIPPED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  REFUNDED = "REFUNDED",
+}
+
+export const enum PaymentStatus {
+  PAID = "PAID",
+  DUE = "DUE",
+  PARTIAL = "PARTIAL",
+}
+
+export const enum PaymentMethod {
+  COD = "COD",
+  CASH = "CASH",
+  BANK = "BANK",
+  MOBILE_BANKING = "MOBILE_BANKING",
+  OTHER = "OTHER",
+}
+
 export const enum IGender {
   MALE = "MALE",
   FEMALE = "FEMALE",

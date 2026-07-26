@@ -78,3 +78,21 @@ export type PurchaseStatus = (typeof PURCHASE_STATUSES)[number];
 export const DEFAULT_PURCHASE_PAYMENT_STATUS: PurchasePaymentStatus = 'DUE';
 export const DEFAULT_PURCHASE_PAYMENT_METHOD: PurchasePaymentMethod = 'CASH';
 export const DEFAULT_PURCHASE_STATUS: PurchaseStatus = 'COMPLETED';
+
+
+/* ==========================================================================
+   SALE MODULE TYPES & ENUMS
+   ========================================================================== */
+
+export const SALE_PAYMENT_STATUSES = ['PAID', 'PARTIAL', 'DUE'] as const;
+export type SalePaymentStatus = (typeof SALE_PAYMENT_STATUSES)[number];
+
+export const SALE_PAYMENT_METHODS = ['CASH', 'BANK', 'MOBILE_BANKING', 'COD', 'OTHER'] as const;
+export type SalePaymentMethod = (typeof SALE_PAYMENT_METHODS)[number];
+
+export const SALE_STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'REFUNDED'] as const;
+export type SaleStatus = (typeof SALE_STATUSES)[number];
+
+export const DEFAULT_SALE_PAYMENT_STATUS: SalePaymentStatus = 'DUE';
+export const DEFAULT_SALE_PAYMENT_METHOD: SalePaymentMethod = 'CASH';
+export const DEFAULT_SALE_STATUS: SaleStatus = 'COMPLETED';
