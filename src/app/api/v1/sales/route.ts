@@ -204,7 +204,7 @@ export async function POST(request: Request) {
       courierDetails,
       note,
       createdBy: session.userId,
-      status: "COMPLETED",
+      status: "PENDING",
     });
 
     // 5. Update Customer Total Purchases

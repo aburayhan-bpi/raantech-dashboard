@@ -27,12 +27,23 @@ export interface ISale {
   totalAmount: number;
   paidAmount: number;
   dueAmount: number;
+  refundedAmount?: number;
   paymentStatus: SalePaymentStatus;
   paymentMethod: SalePaymentMethod;
   saleDate: string;
   courierDetails?: string;
   note?: string;
   status: SaleStatus;
+  statusHistory?: {
+    _id: string;
+    status: SaleStatus;
+    note?: string;
+    updatedBy?: {
+      _id: string;
+      name: string;
+    };
+    date: string;
+  }[];
   createdBy: {
     _id: string;
     name: string;
@@ -48,6 +59,22 @@ export interface ISalePayment {
   amount: number;
   paymentMethod: SalePaymentMethod;
   paymentDate: string;
+  note?: string;
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ISaleRefund {
+  _id: string;
+  sale: string;
+  amount: number;
+  refundMethod: string;
+  refundDate: string;
   note?: string;
   createdBy: {
     _id: string;
@@ -140,6 +167,28 @@ export const salesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Sale", "SalePayment"],
     }),
+
+    getSaleRefunds: builder.query<{ success: boolean; history: ISaleRefund[] }, string>({
+      query: (saleId) => `/sales/${saleId}/refunds`,
+      providesTags: (result, error, saleId) => [{ type: "SaleRefund" as const, id: saleId }],
+    }),
+
+    addSaleRefund: builder.mutation<
+      { success: boolean; data: ISaleRefund; message: string },
+      { id: string; data: Partial<ISaleRefund> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/sales/${id}/refunds`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Sale" as const, id },
+        "Sale",
+        { type: "SaleRefund" as const, id },
+      ],
+    }),
+
     updateSale: builder.mutation<
       { success: boolean; message: string; data: ISale },
       { id: string; data: Partial<ISale> & { paymentAmount?: number; paymentMethod?: string } }
@@ -154,6 +203,22 @@ export const salesApi = baseApi.injectEndpoints({
         "Sale",
       ],
     }),
+
+    partialReturnSale: builder.mutation<
+      { success: boolean; message: string; data: ISale },
+      { id: string; returnItems: { productId: string; returnQuantity: number }[] }
+    >({
+      query: ({ id, returnItems }) => ({
+        url: `/sales/${id}/return`,
+        method: "POST",
+        body: { returnItems },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Sale" as const, id },
+        "Sale",
+        "Products",
+      ],
+    }),
   }),
   overrideExisting: true,
 });
@@ -164,5 +229,8 @@ export const {
   useCreateSaleMutation,
   useGetSalePaymentsQuery,
   useAddSalePaymentMutation,
+  useGetSaleRefundsQuery,
+  useAddSaleRefundMutation,
   useUpdateSaleMutation,
+  usePartialReturnSaleMutation,
 } = salesApi;

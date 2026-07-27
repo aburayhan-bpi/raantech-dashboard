@@ -27,15 +27,18 @@ export const enum SaleStatus {
   PENDING = "PENDING",
   PROCESSING = "PROCESSING",
   SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
   REFUNDED = "REFUNDED",
+  RETURNED = "RETURNED",
 }
 
 export const enum PaymentStatus {
   PAID = "PAID",
   DUE = "DUE",
   PARTIAL = "PARTIAL",
+  REFUNDED = "REFUNDED",
 }
 
 export const enum PaymentMethod {

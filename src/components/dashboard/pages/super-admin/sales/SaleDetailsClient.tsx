@@ -6,6 +6,9 @@ import {
   ISaleItem,
   useGetSaleByIdQuery,
   useUpdateSaleMutation,
+  usePartialReturnSaleMutation,
+  useAddSaleRefundMutation,
+  useGetSaleRefundsQuery,
 } from "@/redux/api/sale/salesApi";
 import { PaymentMethod, SaleStatus } from "@/types/global";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -35,13 +38,27 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
   const sale = data?.data;
 
-  // Form states for Edit
   const [isEditing, setIsEditing] = useState(false);
+  const [isPartialReturnOpen, setIsPartialReturnOpen] = useState(false);
+  const [returnQuantities, setReturnQuantities] = useState<Record<string, number>>({});
+  
+  const [partialReturnSale, { isLoading: isReturning }] = usePartialReturnSaleMutation();
 
   const pdfDocument = useMemo(() => {
     if (!sale) return null;
     return <SaleInvoicePDF sale={sale} />;
   }, [sale]);
+
+  // Refund State
+  const [isRefundOpen, setIsRefundOpen] = useState(false);
+  const [refundAmount, setRefundAmount] = useState<number | "">("");
+  const [refundMethod, setRefundMethod] = useState("CASH");
+  const [refundNote, setRefundNote] = useState("");
+
+  const { data: refundData } = useGetSaleRefundsQuery(saleId);
+  const refunds = refundData?.history || [];
+  const [addRefund, { isLoading: isAddingRefund }] = useAddSaleRefundMutation();
+
   const [status, setStatus] = useState("");
   const [courierDetails, setCourierDetails] = useState("");
   const [note, setNote] = useState("");
@@ -88,6 +105,51 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
     }
   };
 
+  const handlePartialReturn = async () => {
+    try {
+      const returnItems = Object.entries(returnQuantities)
+        .map(([productId, quantity]) => ({ productId, returnQuantity: quantity }))
+        .filter((item) => item.returnQuantity > 0);
+
+      if (returnItems.length === 0) {
+        toast.error("Please enter at least one quantity to return.");
+        return;
+      }
+
+      await partialReturnSale({ id: saleId, returnItems }).unwrap();
+      toast.success("Partial return processed successfully!");
+      setIsPartialReturnOpen(false);
+      setReturnQuantities({});
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to process partial return");
+    }
+  };
+
+  const handleRefund = async () => {
+    if (!refundAmount || Number(refundAmount) <= 0) {
+      toast.error("Please enter a valid refund amount");
+      return;
+    }
+    try {
+      await addRefund({
+        id: saleId,
+        data: {
+          amount: Number(refundAmount),
+          refundMethod,
+          note: refundNote,
+        },
+      }).unwrap();
+      toast.success("Refund processed successfully!");
+      setIsRefundOpen(false);
+      setRefundAmount("");
+      setRefundNote("");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to process refund");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-100">
@@ -118,13 +180,19 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
   const getStatusColor = (val: string) => {
     switch (val) {
       case "COMPLETED":
+        return "bg-teal-50 text-teal-700 border-teal-200";
+      case "DELIVERED":
         return "bg-emerald-50 text-emerald-700 border-emerald-200";
       case "PENDING":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-orange-50 text-orange-700 border-orange-200";
       case "PROCESSING":
         return "bg-blue-50 text-blue-700 border-blue-200";
+      case "SHIPPED":
+        return "bg-purple-50 text-purple-700 border-purple-200";
       case "CANCELLED":
-        return "bg-rose-50 text-rose-700 border-rose-200";
+        return "bg-red-50 text-red-700 border-red-200";
+      case "RETURNED":
+        return "bg-pink-50 text-pink-700 border-pink-200";
       default:
         return "bg-slate-50 text-slate-700 border-slate-200";
     }
@@ -164,13 +232,21 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
         </div>
 
         <div className="flex items-center gap-3">
-          {!isEditing && (
+          {!isEditing && !isPartialReturnOpen && sale.status !== "CANCELLED" && sale.status !== "RETURNED" && (
             <CustomButton
               onClick={() => setIsEditing(true)}
               icon={<Edit className="w-4 h-4 mr-1.5" />}
               btnText="Update Order"
               variant="outline"
               className="h-10 px-4 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
+            />
+          )}
+          {!isPartialReturnOpen && !isEditing && (sale.status === SaleStatus.COMPLETED || sale.status === SaleStatus.DELIVERED) && (
+            <CustomButton
+              onClick={() => setIsPartialReturnOpen(true)}
+              icon={<Receipt className="w-4 h-4 mr-1.5" />}
+              btnText="Partial Return"
+              className="h-10 px-4 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium shadow-sm transition-colors border-none"
             />
           )}
           {pdfDocument && (
@@ -360,7 +436,35 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                   ৳ {sale.dueAmount.toLocaleString()}
                 </span>
               </div>
+              {sale.refundedAmount && sale.refundedAmount > 0 ? (
+                <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-200 mt-2">
+                  <span className="font-medium text-slate-700">Total Refunded:</span>
+                  <span className="font-semibold text-purple-600">
+                    ৳ {sale.refundedAmount.toLocaleString()}
+                  </span>
+                </div>
+              ) : null}
+              {sale.paymentStatus === "REFUND_DUE" && (
+                <div className="flex justify-between items-center text-sm pt-2 border-t border-rose-200 mt-2 bg-rose-50/50 p-2 rounded-lg">
+                  <span className="font-semibold text-rose-700">Refund Due:</span>
+                  <span className="font-bold text-rose-600">
+                    ৳ {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}
+                  </span>
+                </div>
+              )}
             </div>
+            
+            {sale.paymentStatus === "REFUND_DUE" && (
+              <div className="pt-2">
+                <button
+                  onClick={() => setIsRefundOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  <Receipt className="w-4 h-4" />
+                  Issue Refund
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Edit / Update Form */}
@@ -394,7 +498,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                       // Only show cancelled if the order hasn't been completed yet
                       ...(sale.status !== SaleStatus.COMPLETED 
                         ? [{ label: "Cancelled", value: SaleStatus.CANCELLED }] 
-                        : []
+                        : [{ label: "Returned", value: SaleStatus.RETURNED }]
                       ),
                     ]}
                     placeholder="Select Status"
@@ -447,7 +551,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                               val === "" ? "" : Math.max(0, Number(val)),
                             );
                           }}
-                          placeholder={`Max: ${sale.dueAmount}`}
+                          placeholder={`Max: ${Number(sale.dueAmount.toFixed(2))}`}
                           max={sale.dueAmount}
                           className="w-full px-3 py-1.5 bg-white border border-emerald-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                         />
@@ -488,6 +592,235 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               />
             </div>
           )}
+
+          {/* Partial Return Form */}
+          {isPartialReturnOpen && (
+            <div className="bg-white rounded-xl border border-rose-200 shadow-lg shadow-rose-100/50 p-6 space-y-5 animate-in fade-in slide-in-from-top-4">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <Receipt className="w-4 h-4 text-rose-500" /> Issue Partial Return
+                </h3>
+                <button
+                  onClick={() => setIsPartialReturnOpen(false)}
+                  className="text-xs font-semibold text-slate-400 hover:text-rose-500"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-sm text-slate-600 mb-2">Select the quantity of items to return. The stock will be restored automatically.</p>
+                {sale.items.map((item: ISaleItem) => (
+                  <div key={String(item.product._id)} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-slate-800">{item.product.name}</span>
+                      <span className="text-xs text-slate-500">Ordered: {item.quantity} | Unit Price: ৳{item.unitPrice}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-slate-600">Return Qty:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max={item.quantity}
+                        value={returnQuantities[String(item.product._id)] || ""}
+                        onChange={(e) => {
+                          const val = e.target.value === "" ? 0 : Math.min(item.quantity, Math.max(0, Number(e.target.value)));
+                          setReturnQuantities(prev => ({ ...prev, [String(item.product._id)]: val }));
+                        }}
+                        className="w-20 px-2 py-1 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <CustomButton
+                onClick={handlePartialReturn}
+                disabled={isReturning}
+                loading={isReturning}
+                btnText="Process Return"
+                className="w-full mt-4 bg-rose-500 hover:bg-rose-600 border-none"
+              />
+            </div>
+          )}
+
+          {/* Refund Form UI */}
+          {isRefundOpen && (
+            <div className="bg-white rounded-xl border border-rose-200 shadow-sm p-6 space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <Receipt className="w-4 h-4 text-rose-500" /> Issue Refund
+                </h3>
+                <button
+                  onClick={() => setIsRefundOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 uppercase">Refund Amount</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={refundAmount}
+                    onChange={(e) => {
+                      const val = e.target.value ? Number(e.target.value) : "";
+                      setRefundAmount(val !== "" ? Math.max(0, val) : "");
+                    }}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                    placeholder="e.g. 500"
+                  />
+                  <p className="text-[10px] text-slate-400">Max allowed: {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 uppercase">Refund Method</label>
+                  <CustomDropdown
+                    value={refundMethod}
+                    onChange={setRefundMethod}
+                    options={[
+                      { label: "Cash", value: "CASH" },
+                      { label: "Bank", value: "BANK" },
+                      { label: "Mobile Banking", value: "MOBILE_BANKING" },
+                      { label: "Other", value: "OTHER" },
+                    ]}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600 uppercase">Note (Optional)</label>
+                <textarea
+                  value={refundNote}
+                  onChange={(e) => setRefundNote(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                  rows={2}
+                  placeholder="Reason for refund..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <CustomButton
+                  onClick={() => setIsRefundOpen(false)}
+                  btnText="Cancel"
+                  variant="outline"
+                  className="border-slate-200 text-slate-600"
+                />
+                <CustomButton
+                  onClick={handleRefund}
+                  loading={isAddingRefund}
+                  disabled={isAddingRefund}
+                  btnText="Submit Refund"
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Status History Timeline */}
+          <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6 space-y-4 mt-6">
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 border-b border-slate-100 pb-3">
+              <Calendar className="w-4 h-4 text-[#0089A7]" /> Status History
+            </h3>
+            {sale.statusHistory && sale.statusHistory.length > 0 ? (
+              <div className="relative pl-6 space-y-6 before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent pt-2">
+                {[...sale.statusHistory].reverse().map((history, idx) => (
+                  <div key={history._id || idx} className="relative group">
+                    {/* Icon */}
+                    <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-[#0089A7]/10 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
+                      <div className="w-2 h-2 rounded-full bg-[#0089A7] relative">
+                        <div className="absolute inset-0 rounded-full bg-[#0089A7] animate-ping opacity-75"></div>
+                      </div>
+                    </div>
+                    {/* Content */}
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm transition-all hover:shadow-md hover:border-slate-200">
+                      <div className="flex items-center justify-between mb-2.5">
+                        <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-md tracking-wide ${getStatusColor(history.status)}`}>
+                          {history.status}
+                        </span>
+                        <time className="font-mono text-xs font-medium text-slate-500 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {format(new Date(history.date), "dd MMM yyyy, hh:mm a")}
+                        </time>
+                      </div>
+                      <div className="text-sm text-slate-700 leading-relaxed mb-3">
+                        {history.note || <span className="italic text-slate-400">No note provided.</span>}
+                      </div>
+                      <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-200/60">
+                        <User className="w-3 h-3" />
+                        Updated by: <span className="text-slate-600 font-semibold">{history.updatedBy?.name || "Unknown"}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic text-center py-4">No status history found.</p>
+            )}
+          </div>
+
+          {/* Refund History Timeline */}
+          <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6 space-y-4 mt-6">
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 border-b border-slate-100 pb-3">
+              <Receipt className="w-4 h-4 text-purple-600" /> Refund History
+            </h3>
+            {refunds && refunds.length > 0 ? (
+              <div className="relative pl-6 space-y-6 before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent pt-2">
+                {[...refunds].reverse().map((refund, idx) => (
+                  <div key={refund._id || idx} className="relative group">
+                    {/* Icon */}
+                    <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-purple-100 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
+                      <div className="w-2 h-2 rounded-full bg-purple-600 relative">
+                        <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-75"></div>
+                      </div>
+                    </div>
+                    {/* Content */}
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm transition-all hover:shadow-md hover:border-slate-200">
+                      <div className="flex items-center justify-between mb-2.5">
+                        <span className="px-2.5 py-1 text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200 uppercase rounded-md tracking-wide">
+                          ৳ {refund.amount.toLocaleString()} - {refund.refundMethod}
+                        </span>
+                        <time className="font-mono text-xs font-medium text-slate-500 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {format(new Date(refund.refundDate || refund.createdAt), "dd MMM yyyy, hh:mm a")}
+                        </time>
+                      </div>
+                      <div className="text-sm text-slate-700 leading-relaxed mb-3">
+                        {refund.note || <span className="italic text-slate-400">No note provided.</span>}
+                      </div>
+                      <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-200/60">
+                        <User className="w-3 h-3" />
+                        Processed by: <span className="text-slate-600 font-semibold">{refund.createdBy?.name || "Unknown"}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic text-center py-4">No refund history yet.</p>
+            )}
+          </div>
+
+          {/* Operation Guide / Helper Note */}
+          <div className="bg-blue-50/60 rounded-xl border border-blue-100/80 shadow-sm p-5 space-y-3 mt-4">
+            <h3 className="text-sm font-bold text-blue-800 flex items-center gap-2 border-b border-blue-200/50 pb-3">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-serif italic text-xs font-bold">i</div>
+              Operation Guide
+            </h3>
+            <ul className="text-xs text-blue-800/80 space-y-2.5 list-disc pl-4 leading-relaxed font-medium">
+              <li>
+                <strong>Update Order:</strong> Can only be modified for active orders. Button is hidden if order is <span className="font-bold text-rose-500 bg-white px-1 py-0.5 rounded shadow-sm mx-1">CANCELLED</span> or <span className="font-bold text-pink-500 bg-white px-1 py-0.5 rounded shadow-sm mx-1">RETURNED</span>.
+              </li>
+              <li>
+                <strong>Partial Return:</strong> Allows returning specific items to stock and calculates refunds. Only available when order is <span className="font-bold text-emerald-500 bg-white px-1 py-0.5 rounded shadow-sm mx-1">DELIVERED</span> or <span className="font-bold text-teal-500 bg-white px-1 py-0.5 rounded shadow-sm mx-1">COMPLETED</span>.
+              </li>
+              <li>
+                <strong>Issue Refund:</strong> Appears below the Payment Summary <em>only</em> when Payment Status is <span className="font-bold text-rose-500 bg-white px-1 py-0.5 rounded shadow-sm mx-1">REFUND_DUE</span>.
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

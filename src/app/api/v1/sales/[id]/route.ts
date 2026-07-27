@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Sale from "@/models/Sale";
+import Product from "@/models/Product";
 import { verifyAuth } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { getOrderStatusEmailTemplate } from "@/lib/emailTemplates";
@@ -24,7 +25,8 @@ export async function GET(
     const sale = await Sale.findById(id)
       .populate("customer")
       .populate("items.product")
-      .populate("createdBy", "name email role");
+      .populate("createdBy", "name email role")
+      .populate("statusHistory.updatedBy", "name");
 
     if (!sale) {
       return NextResponse.json(
@@ -88,9 +90,47 @@ export async function PUT(
       if (oldStatus !== data.status && ["SHIPPED", "COMPLETED", "DELIVERED", "CANCELLED"].includes(data.status)) {
         shouldSendStatusEmail = true;
       }
+
+      // Phase 1 & 2: Stock Restoration on Cancel or Return
+      if (
+        (oldStatus !== "CANCELLED" && data.status === "CANCELLED") || 
+        (oldStatus !== "RETURNED" && data.status === "RETURNED")
+      ) {
+        for (const item of sale.items) {
+          await Product.findByIdAndUpdate(item.product, {
+            $inc: { stock: item.quantity }
+          });
+        }
+        // Phase 3: Real-World Refund Handling
+        // We do NOT instantly refund the paidAmount. Instead we set the paymentStatus to REFUND_DUE if they are owed money.
+        if (sale.paidAmount > 0 && (sale.refundedAmount || 0) < sale.paidAmount) {
+          sale.paymentStatus = "REFUND_DUE";
+        } else if (sale.paidAmount === 0) {
+          sale.paymentStatus = "CANCELLED";
+        }
+      }
     }
     if (data.courierDetails !== undefined) sale.courierDetails = data.courierDetails;
-    if (data.note !== undefined) sale.note = data.note;
+    
+    // Status History tracking
+    let isStatusOrNoteChanged = false;
+    if (data.status && data.status !== oldStatus) {
+      isStatusOrNoteChanged = true;
+    }
+    if (data.note !== undefined && data.note !== sale.note) {
+      sale.note = data.note;
+      isStatusOrNoteChanged = true;
+    }
+
+    if (isStatusOrNoteChanged) {
+      sale.statusHistory = sale.statusHistory || [];
+      sale.statusHistory.push({
+        status: sale.status,
+        note: data.note || sale.note,
+        updatedBy: session.userId,
+        date: new Date(),
+      });
+    }
 
     // Handle payments if provided
     if (data.paymentAmount && data.paymentMethod) {

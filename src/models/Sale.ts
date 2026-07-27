@@ -25,6 +25,7 @@ export interface ISale extends Document {
   
   paidAmount: number;
   dueAmount: number;
+  refundedAmount: number;
   
   paymentStatus: SalePaymentStatus;
   paymentMethod: SalePaymentMethod;
@@ -33,6 +34,12 @@ export interface ISale extends Document {
   courierDetails?: string;
   note?: string;
   status: SaleStatus;
+  statusHistory?: {
+    status: string;
+    note?: string;
+    updatedBy?: mongoose.Types.ObjectId;
+    date: Date;
+  }[];
   
   createdBy: mongoose.Types.ObjectId;
   
@@ -61,6 +68,7 @@ const saleSchema = new Schema<ISale>(
     
     paidAmount: { type: Number, default: 0, min: 0 },
     dueAmount: { type: Number, default: 0, min: 0 },
+    refundedAmount: { type: Number, default: 0, min: 0 },
     
     paymentStatus: {
       type: String,
@@ -81,6 +89,14 @@ const saleSchema = new Schema<ISale>(
       enum: SALE_STATUSES,
       default: DEFAULT_SALE_STATUS,
     },
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        note: { type: String, trim: true },
+        updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        date: { type: Date, default: Date.now },
+      },
+    ],
     
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
