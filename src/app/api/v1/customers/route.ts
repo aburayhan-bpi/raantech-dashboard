@@ -21,15 +21,32 @@ export async function GET(req: Request) {
     await dbConnect();
     const { searchParams } = new URL(req.url);
     const phone = searchParams.get('phone');
+    const search = searchParams.get('search');
+    const limit = parseInt(searchParams.get('limit') || '0', 10);
 
     if (phone) {
       // Search specific customer by phone
       const customer = await Customer.findOne({ phone });
-      return ApiResponse.success(customer);
+      return ApiResponse.success(customer ? [customer] : []);
     }
 
-    // Return all customers
-    const customers = await Customer.find({}).sort({ createdAt: -1 });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query: any = {};
+    if (search) {
+      query = {
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } },
+        ]
+      };
+    }
+
+    let queryBuilder = Customer.find(query).sort({ createdAt: -1 });
+    if (limit > 0) {
+      queryBuilder = queryBuilder.limit(limit);
+    }
+    
+    const customers = await queryBuilder;
     return ApiResponse.success(customers);
   } catch (error: unknown) {
     return ApiResponse.serverError(error);

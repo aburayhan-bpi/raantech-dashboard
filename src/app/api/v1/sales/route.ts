@@ -134,27 +134,50 @@ export async function POST(request: Request) {
 
     // 1. Process Customer (Find or Create)
     let customerId;
+    let existingCustomer = null;
+
     if (customerInfo._id) {
-      customerId = customerInfo._id;
+      existingCustomer = await Customer.findById(customerInfo._id);
     } else if (customerInfo.phone) {
-      // Find by phone
-      const existingCustomer = await Customer.findOne({ phone: customerInfo.phone });
-      if (existingCustomer) {
-        customerId = existingCustomer._id;
-        // Optionally update other details if provided
-      } else {
-        // Create new customer
-        const newCustomer = await Customer.create({
-          name: customerInfo.name,
-          phone: customerInfo.phone,
-          email: customerInfo.email || undefined,
-          address: customerInfo.address || undefined,
-        });
-        customerId = newCustomer._id;
-      }
+      existingCustomer = await Customer.findOne({ phone: customerInfo.phone });
     } else {
       return NextResponse.json(
-        { message: "Customer phone is required to create an order" },
+        { message: "Customer phone or ID is required to create an order" },
+        { status: 400 }
+      );
+    }
+
+    if (existingCustomer) {
+      customerId = existingCustomer._id;
+      // Update customer details if provided
+      let needsUpdate = false;
+      if (customerInfo.name && existingCustomer.name !== customerInfo.name) {
+        existingCustomer.name = customerInfo.name;
+        needsUpdate = true;
+      }
+      if (customerInfo.email && existingCustomer.email !== customerInfo.email) {
+        existingCustomer.email = customerInfo.email;
+        needsUpdate = true;
+      }
+      if (customerInfo.address && existingCustomer.address !== customerInfo.address) {
+        existingCustomer.address = customerInfo.address;
+        needsUpdate = true;
+      }
+      if (needsUpdate) {
+        await existingCustomer.save();
+      }
+    } else if (customerInfo.phone) {
+      // Create new customer
+      const newCustomer = await Customer.create({
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        email: customerInfo.email || undefined,
+        address: customerInfo.address || undefined,
+      });
+      customerId = newCustomer._id;
+    } else {
+      return NextResponse.json(
+        { message: "Customer phone is required to create a new customer" },
         { status: 400 }
       );
     }

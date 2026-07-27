@@ -3,6 +3,7 @@
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { IProduct, useGetProductsQuery } from "@/redux/api/product/productApi";
+import { ICustomer, useGetCustomersQuery } from "@/redux/api/customer/customerApi";
 import { useCreateSaleMutation } from "@/redux/api/sale/salesApi";
 import { SalePaymentMethod } from "@/types/backend";
 import { PaymentMethod } from "@/types/global";
@@ -16,7 +17,8 @@ import {
   ShoppingCart,
   Trash2,
   User,
-  Truck
+  Truck,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -54,6 +56,33 @@ export default function AddSaleClient() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
+  // Customer Search State
+  const [debouncedCustomerPhone, setDebouncedCustomerPhone] = useState("");
+  const [isCustomerSearchFocused, setIsCustomerSearchFocused] = useState(false);
+  const customerSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedCustomerPhone(customerPhone);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [customerPhone]);
+
+  const { data: customersData, isFetching: isSearchingCustomers } = useGetCustomersQuery(
+    `search=${debouncedCustomerPhone}&limit=5`,
+    { skip: !debouncedCustomerPhone || debouncedCustomerPhone.length < 3 }
+  );
+
+  const customerSearchResults = customersData?.data || [];
+
+  const selectCustomer = (customer: ICustomer) => {
+    setCustomerPhone(customer.phone);
+    setCustomerName(customer.name);
+    if (customer.email) setCustomerEmail(customer.email);
+    if (customer.address) setCustomerAddress(customer.address);
+    setIsCustomerSearchFocused(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -61,6 +90,12 @@ export default function AddSaleClient() {
         !searchContainerRef.current.contains(event.target as Node)
       ) {
         setIsSearchFocused(false);
+      }
+      if (
+        customerSearchContainerRef.current &&
+        !customerSearchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsCustomerSearchFocused(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -430,17 +465,51 @@ export default function AddSaleClient() {
               Customer Details
             </h2>
             <div className="space-y-4">
-              <div>
+              <div ref={customerSearchContainerRef} className="relative">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 01700000000"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="e.g. 01700000000"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 pr-10"
+                    value={customerPhone}
+                    onChange={(e) => {
+                      setCustomerPhone(e.target.value);
+                      setIsCustomerSearchFocused(true);
+                    }}
+                    onFocus={() => setIsCustomerSearchFocused(true)}
+                  />
+                  {isSearchingCustomers && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Customer Search Dropdown */}
+                {isCustomerSearchFocused && debouncedCustomerPhone.length >= 3 && customerSearchResults.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <ul className="max-h-60 overflow-y-auto">
+                      {customerSearchResults.map((customer) => (
+                        <li
+                          key={customer.id}
+                          className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0 transition-colors"
+                          onClick={() => selectCustomer(customer)}
+                        >
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-slate-800">{customer.name}</span>
+                            <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                              <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{customer.phone}</span>
+                              {customer.email && <span>{customer.email}</span>}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">

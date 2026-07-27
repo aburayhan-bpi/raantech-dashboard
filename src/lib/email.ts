@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.CONTACT_EMAIL_USER,
     pass: process.env.CONTACT_EMAIL_APP_PASSWORD,
@@ -17,15 +17,15 @@ interface EmailPayload {
 export const sendEmail = async ({ to, subject, html }: EmailPayload) => {
   try {
     const info = await transporter.sendMail({
-      from: `Raantech Dashboard <${process.env.CONTACT_EMAIL_USER}>`,
+      from: `Raantech <${process.env.CONTACT_EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-    console.log('Message sent: %s', info.messageId);
+    console.log("Message sent: %s", info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return false;
   }
 };
