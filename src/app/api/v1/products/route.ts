@@ -1,9 +1,13 @@
 import { z } from 'zod';
 import dbConnect from '@/lib/mongoose';
 import Product from '@/models/Product';
+import Category from '@/models/Category';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import ActivityLog from '@/models/ActivityLog';
+
+// Ensure Category schema is registered for populate
+void Category;
 
 import { PRODUCT_STATUSES, PRODUCT_UNITS } from '@/types/backend';
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
