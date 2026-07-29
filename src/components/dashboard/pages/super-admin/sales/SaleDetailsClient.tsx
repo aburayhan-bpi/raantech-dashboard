@@ -26,13 +26,25 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { SaleInvoicePDF } from "./SaleInvoicePDF";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/features/user/authSlice";
 
 export default function SaleDetailsClient({ saleId }: { saleId: string }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
+  
+  const currentUser = useSelector(selectUser);
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
+  const userPermissions = currentUser?.permissions || [];
+  const canUpdate = isSuperAdmin || userPermissions.includes("sales:update");
+  const canRefund = isSuperAdmin || userPermissions.includes("sales:refund");
+  const canReturn = isSuperAdmin || userPermissions.includes("sales:return");
+  
   const { data, isLoading } = useGetSaleByIdQuery(saleId);
   const [updateSale, { isLoading: isUpdating }] = useUpdateSaleMutation();
 
@@ -167,7 +179,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
         <p className="text-slate-500 mb-6">
           The order you are looking for does not exist.
         </p>
-        <Link href="/dashboard/super-admin/sales">
+        <Link href={`${basePath}/sales`}>
           <CustomButton
             icon={<ArrowLeft className="w-4 h-4 mr-1" />}
             btnText="Back to Sales"
@@ -204,7 +216,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push("/dashboard/super-admin/sales")}
+            onClick={() => router.push(`${basePath}/sales`)}
             className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 text-slate-600" />
@@ -232,7 +244,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
         </div>
 
         <div className="flex items-center gap-3">
-          {!isEditing && !isPartialReturnOpen && sale.status !== "CANCELLED" && sale.status !== "RETURNED" && (
+          {canUpdate && !isEditing && !isPartialReturnOpen && sale.status !== "CANCELLED" && sale.status !== "RETURNED" && (
             <CustomButton
               onClick={() => setIsEditing(true)}
               icon={<Edit className="w-4 h-4 mr-1.5" />}
@@ -241,7 +253,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               className="h-10 px-4 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
             />
           )}
-          {!isPartialReturnOpen && !isEditing && (sale.status === SaleStatus.COMPLETED || sale.status === SaleStatus.DELIVERED) && (
+          {canReturn && !isPartialReturnOpen && !isEditing && (sale.status === SaleStatus.COMPLETED || sale.status === SaleStatus.DELIVERED) && (
             <CustomButton
               onClick={() => setIsPartialReturnOpen(true)}
               icon={<Receipt className="w-4 h-4 mr-1.5" />}
@@ -431,9 +443,15 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium text-slate-700">Due Amount:</span>
                 <span
-                  className={`font-semibold ${sale.dueAmount > 0 ? "text-rose-500" : "text-emerald-500"}`}
+                  className={`font-semibold ${
+                    ["CANCELLED", "RETURNED"].includes(sale.status)
+                      ? "text-slate-500"
+                      : sale.dueAmount > 0 
+                        ? "text-rose-500" 
+                        : "text-emerald-500"
+                  }`}
                 >
-                  ৳ {sale.dueAmount.toLocaleString()}
+                  ৳ {["CANCELLED", "RETURNED"].includes(sale.status) ? 0 : sale.dueAmount.toLocaleString()}
                 </span>
               </div>
               {sale.refundedAmount && sale.refundedAmount > 0 ? (
@@ -454,7 +472,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               )}
             </div>
             
-            {sale.paymentStatus === "REFUND_DUE" && (
+            {canRefund && sale.paymentStatus === "REFUND_DUE" && (
               <div className="pt-2">
                 <button
                   onClick={() => setIsRefundOpen(true)}

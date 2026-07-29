@@ -7,7 +7,7 @@ import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { Pagination } from "@/components/dashboard/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
@@ -20,6 +20,8 @@ import { SaleStatus, PaymentStatus } from "@/types/global";
 export default function SalesClient() {
   const sp = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
   const setParams = useSetParamsForPagination();
 
   const [searchTerm, setSearchTerm] = useState(sp.get("search") || "");
@@ -88,7 +90,7 @@ export default function SalesClient() {
   };
 
   const handleView = (sale: ISale) => {
-    router.push(`/dashboard/super-admin/sales/${sale._id}`);
+    router.push(`${basePath}/sales/${sale._id}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -134,7 +136,7 @@ export default function SalesClient() {
           </p>
         </div>
         {canCreate && (
-          <Link href="/dashboard/super-admin/sales/add">
+          <Link href={`${basePath}/sales/add`}>
             <CustomButton
               icon={<ShoppingCart className="w-4 h-4 mr-1" />}
               btnText="Create Order (POS)"
@@ -315,7 +317,7 @@ export default function SalesClient() {
                           : "You haven't created any sales or POS orders yet. Create your first order to get started."}
                       </p>
                       {canCreate && !searchTerm && (
-                        <Link href="/dashboard/super-admin/sales/add">
+                        <Link href={`${basePath}/sales/add`}>
                           <CustomButton
                             icon={<Plus className="w-4 h-4 mr-1" />}
                             btnText="Create First Order"

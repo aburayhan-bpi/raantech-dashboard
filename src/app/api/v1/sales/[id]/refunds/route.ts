@@ -46,7 +46,7 @@ export async function POST(
 ) {
   try {
     await dbConnect();
-    const session = await verifyAuth("sales:update");
+    const session = await verifyAuth("sales:refund");
 
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

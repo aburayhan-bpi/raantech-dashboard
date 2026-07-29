@@ -6,7 +6,7 @@ import CustomButton from "@/components/shared/CustomButton";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { Pagination } from "@/components/dashboard/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
@@ -17,6 +17,8 @@ import ViewPurchaseModal from "./ViewPurchaseModal";
 import { Eye } from "lucide-react";
 
 export default function PurchasesClient() {
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
   const sp = useSearchParams();
   const setParams = useSetParamsForPagination();
 
@@ -99,7 +101,7 @@ export default function PurchasesClient() {
           </p>
         </div>
         {canCreate && (
-          <Link href="/dashboard/super-admin/purchases/add">
+          <Link href={`${basePath}/purchases/add`}>
             <CustomButton
               icon={<Plus className="w-4 h-4" />}
               btnText="Add Purchase"

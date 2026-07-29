@@ -1,9 +1,11 @@
-import { RequirePermission } from "@/components/shared/RequirePermission";
+import { Metadata } from "next";
+import SalesClient from "@/components/dashboard/pages/super-admin/sales/SalesClient";
 
-export default function salesPage() {
-  return (
-    <RequirePermission module="sales" action="view">
-      <div className="p-6"><h1 className="text-2xl font-bold capitalize">sales</h1></div>
-    </RequirePermission>
-  );
+export const metadata: Metadata = {
+  title: "Sales & Orders | Raantech",
+  description: "Manage sales, orders, and POS transactions.",
+};
+
+export default function SalesPage() {
+  return <SalesClient />;
 }

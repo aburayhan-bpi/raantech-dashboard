@@ -12,7 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await verifyAuth();
+    const session = await verifyAuth("purchases:view");
     if (!session) {
       return ApiResponse.unauthorized();
     }
@@ -39,7 +39,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await verifyAuth();
+  const session = await verifyAuth("purchases:create");
   if (!session) {
     return ApiResponse.unauthorized();
   }

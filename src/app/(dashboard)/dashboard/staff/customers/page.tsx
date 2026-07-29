@@ -1,9 +1,5 @@
-import { RequirePermission } from "@/components/shared/RequirePermission";
+import CustomersClient from "@/components/dashboard/pages/super-admin/customers/CustomersClient";
 
-export default function customersPage() {
-  return (
-    <RequirePermission module="customers" action="view">
-      <div className="p-6"><h1 className="text-2xl font-bold capitalize">customers</h1></div>
-    </RequirePermission>
-  );
+export default function CustomersPage() {
+  return <CustomersClient />;
 }

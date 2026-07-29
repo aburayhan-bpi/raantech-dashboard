@@ -1,9 +1,11 @@
-import { RequirePermission } from "@/components/shared/RequirePermission";
+import ProductsClient from "@/components/dashboard/pages/super-admin/products/ProductsClient";
+import { Metadata } from "next";
 
-export default function productsPage() {
-  return (
-    <RequirePermission module="products" action="view">
-      <div className="p-6"><h1 className="text-2xl font-bold capitalize">products</h1></div>
-    </RequirePermission>
-  );
+export const metadata: Metadata = {
+  title: "Products Management | Raantech",
+  description: "Manage your inventory, prices, and product details.",
+};
+
+export default function ProductsPage() {
+  return <ProductsClient />;
 }

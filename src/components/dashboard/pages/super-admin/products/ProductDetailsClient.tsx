@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import { useGetProductBySlugQuery } from "@/redux/api/product/productApi";
 import { ArrowLeft, Package, Edit2, Tag, Calendar, User, DollarSign, Activity, Image as ImageIcon } from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
@@ -14,6 +14,8 @@ export default function ProductDetailsClient() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
 
   const { data, isLoading, isError } = useGetProductBySlugQuery(slug);
   const product = data?.data;
@@ -36,7 +38,7 @@ export default function ProductDetailsClient() {
         <Package className="w-16 h-16 text-slate-300 mb-4" />
         <h2 className="text-xl font-semibold text-slate-700">Product Not Found</h2>
         <p className="text-slate-500 mt-2">The product you are looking for does not exist or has been deleted.</p>
-        <CustomButton className="mt-6" onClick={() => router.push('/dashboard/super-admin/products')} btnText="Back to Products" />
+        <CustomButton className="mt-6" onClick={() => router.push(`${basePath}/products`)} btnText="Back to Products" />
       </div>
     );
   }
@@ -50,7 +52,7 @@ export default function ProductDetailsClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => router.push('/dashboard/super-admin/products')}
+            onClick={() => router.push(`${basePath}/products`)}
             className="p-2 bg-white rounded-lg border border-border text-slate-500 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -72,7 +74,7 @@ export default function ProductDetailsClient() {
           </div>
         </div>
         
-        <CustomButton variant="outline" onClick={() => router.push('/dashboard/super-admin/products')} btnText={
+        <CustomButton variant="outline" onClick={() => router.push(`${basePath}/products`)} btnText={
           <div className="flex items-center">
             <Edit2 className="w-4 h-4 mr-2" />
             Edit Product

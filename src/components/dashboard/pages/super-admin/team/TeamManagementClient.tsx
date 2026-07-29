@@ -47,6 +47,8 @@ const AVAILABLE_PERMISSIONS = [
   { id: "categories", label: "Categories" },
   { id: "customers", label: "Customers" },
   { id: "expenses", label: "Expenses" },
+  { id: "purchases", label: "Purchases" },
+  { id: "suppliers", label: "Suppliers" },
 ];
 
 // --- Validation Schemas ---
@@ -566,11 +568,16 @@ export default function TeamManagementClient() {
                               }`}
                             >
                               <div className="grid grid-cols-2 gap-y-2 gap-x-2 pl-7 pt-0.5">
-                                {["view", "create", "update", "delete"].map((action) => {
+                                {(() => {
+                                  let actions = ["view", "create", "update", "delete"];
+                                  if (permission.id === "sales") {
+                                    actions = [...actions, "refund", "return"];
+                                  }
+                                  return actions.map((action) => {
                                   const actionId = `${permission.id}:${action}`;
                                   const isActionChecked = field.value?.includes(actionId);
                                   
-                                  const hasAnyOtherAction = ["create", "update", "delete"].some((act) => 
+                                  const hasAnyOtherAction = actions.filter(a => a !== "view").some((act) => 
                                     field.value?.includes(`${permission.id}:${act}`)
                                   );
                                   
@@ -604,7 +611,8 @@ export default function TeamManagementClient() {
                                       </span>
                                     </label>
                                   );
-                                })}
+                                  });
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -780,11 +788,16 @@ export default function TeamManagementClient() {
                               }`}
                             >
                               <div className="grid grid-cols-2 gap-y-2 gap-x-2 pl-7 pt-0.5">
-                                {["view", "create", "update", "delete"].map((action) => {
+                                {(() => {
+                                  let actions = ["view", "create", "update", "delete"];
+                                  if (permission.id === "sales") {
+                                    actions = [...actions, "refund", "return"];
+                                  }
+                                  return actions.map((action) => {
                                   const actionId = `${permission.id}:${action}`;
                                   const isActionChecked = field.value?.includes(actionId);
                                   
-                                  const hasAnyOtherAction = ["create", "update", "delete"].some((act) => 
+                                  const hasAnyOtherAction = actions.filter(a => a !== "view").some((act) => 
                                     field.value?.includes(`${permission.id}:${act}`)
                                   );
                                   
@@ -818,7 +831,8 @@ export default function TeamManagementClient() {
                                       </span>
                                     </label>
                                   );
-                                })}
+                                  });
+                                })()}
                               </div>
                             </div>
                           </div>

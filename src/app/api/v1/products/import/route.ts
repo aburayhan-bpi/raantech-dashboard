@@ -8,8 +8,8 @@ import { generateSlug } from '@/lib/slugify';
 
 export async function POST(req: Request) {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
+    const auth = await verifyAuth("products:create");
+    if (!auth) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 

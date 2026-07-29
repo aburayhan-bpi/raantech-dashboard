@@ -42,6 +42,13 @@ export function Header({
       refetch();
     }
   }, [pathname, isAuthenticated, refetch]);
+
+  useEffect(() => {
+    if (userData?.data) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dispatch(setUser(userData.data as any));
+    }
+  }, [userData, dispatch]);
   const profile = userData?.data as
     | {
         fullName?: string;

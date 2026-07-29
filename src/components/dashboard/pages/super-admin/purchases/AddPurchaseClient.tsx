@@ -21,7 +21,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import ProductModal from "@/components/dashboard/pages/super-admin/products/ProductModal";
@@ -35,6 +35,8 @@ interface CartItem {
 
 export default function AddPurchaseClient() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
 
   // Data Fetching
   const { data: suppliersData } = useGetSuppliersQuery("limit=100");
@@ -194,7 +196,7 @@ export default function AddPurchaseClient() {
 
       await createPurchase(payload).unwrap();
       toast.success("Purchase completed successfully!");
-      router.push("/dashboard/super-admin/purchases");
+      router.push(`${basePath}/purchases`);
     } catch (error: unknown) {
       const err = error as { data?: { error?: string } };
       toast.error(err?.data?.error || "Failed to create purchase");
@@ -207,7 +209,7 @@ export default function AddPurchaseClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href="/dashboard/super-admin/purchases"
+            href={`${basePath}/purchases`}
             className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />

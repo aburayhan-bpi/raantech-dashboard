@@ -32,7 +32,9 @@ import CustomerModal from "./CustomerModal";
 
 export default function CustomersClient() {
   const user = useSelector(selectUser);
-  const canCreate = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
+  const userPermissions = user?.permissions || [];
+  const canCreate = isSuperAdmin || userPermissions.includes("customers:create");
   const sp = useSearchParams();
   const setParams = useSetParamsForPagination();
 

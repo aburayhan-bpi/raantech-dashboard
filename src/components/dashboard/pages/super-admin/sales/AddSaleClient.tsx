@@ -21,7 +21,7 @@ import {
   Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import ProductModal from "@/components/dashboard/pages/super-admin/products/ProductModal";
@@ -35,6 +35,8 @@ interface CartItem {
 
 export default function AddSaleClient() {
   const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split('/').slice(0, 3).join('/');
 
   // Data Fetching
   const { data: productsData } = useGetProductsQuery("limit=1000"); // Load all active products
@@ -245,7 +247,7 @@ export default function AddSaleClient() {
 
       await createSale(payload).unwrap();
       toast.success("Order created successfully!");
-      router.push("/dashboard/super-admin/sales");
+      router.push(`${basePath}/sales`);
     } catch (error: unknown) {
       if (error && typeof error === "object" && "data" in error) {
         const err = error as { data?: { message?: string } };
@@ -262,7 +264,7 @@ export default function AddSaleClient() {
       <div className="flex justify-between items-center">
         <div>
           <Link
-            href="/dashboard/super-admin/sales"
+            href={`${basePath}/sales`}
             className="flex items-center text-sm text-slate-500 hover:text-slate-700 mb-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
@@ -273,7 +275,7 @@ export default function AddSaleClient() {
         <div className="flex gap-3">
           <CustomButton
             variant="outline"
-            onClick={() => router.push("/dashboard/super-admin/sales")}
+            onClick={() => router.push(`${basePath}/sales`)}
             btnText="Cancel"
           />
           <CustomButton

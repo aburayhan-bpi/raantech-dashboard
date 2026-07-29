@@ -6,8 +6,8 @@ import * as xlsx from 'xlsx';
 
 export async function POST(req: Request) {
   try {
-    const auth = await verifyAuth();
-    if (!auth || (auth.role !== 'SUPER_ADMIN' && auth.role !== 'ADMIN')) {
+    const auth = await verifyAuth("customers:create");
+    if (!auth) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 

@@ -21,10 +21,19 @@ import { toast } from "sonner";
 import ProductModal from "./ProductModal";
 import ProductsStats from "./ProductsStats";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/features/user/authSlice";
 
 export default function ProductsClient() {
   const sp = useSearchParams();
   const setParams = useSetParamsForPagination();
+
+  const currentUser = useSelector(selectUser);
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
+  const userPermissions = currentUser?.permissions || [];
+  const canCreate = isSuperAdmin || userPermissions.includes("products:create");
+  const canUpdate = isSuperAdmin || userPermissions.includes("products:update");
+  const canDelete = isSuperAdmin || userPermissions.includes("products:delete");
 
   const [searchTerm, setSearchTerm] = useState(sp.get("search") || "");
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -148,14 +157,16 @@ export default function ProductsClient() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <CustomButton
-            variant="outline"
-            onClick={() => setIsDeletedView(!isDeletedView)}
-            className={cn(
-              isDeletedView && "bg-error/10 text-error border-error/20",
-            )}
-            btnText={isDeletedView ? "View Active" : "View Trash"}
-          />
+          {canDelete && (
+            <CustomButton
+              variant="outline"
+              onClick={() => setIsDeletedView(!isDeletedView)}
+              className={cn(
+                isDeletedView && "bg-error/10 text-error border-error/20",
+              )}
+              btnText={isDeletedView ? "View Active" : "View Trash"}
+            />
+          )}
           <CustomButton
             variant="outline"
             onClick={() => window.open('/api/v1/products/export', '_blank')}
@@ -166,26 +177,30 @@ export default function ProductsClient() {
               </div>
             }
           />
-          <CustomButton
-            variant="outline"
-            onClick={() => setIsImportModalOpen(true)}
-            btnText={
-              <div className="flex items-center text-slate-700">
-                <Upload className="w-4 h-4 mr-2" />
-                Import
-              </div>
-            }
-          />
-          <CustomButton
-            onClick={handleAddNew}
-            variant="default"
-            btnText={
-              <div className="flex items-center">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </div>
-            }
-          />
+          {canCreate && (
+            <CustomButton
+              variant="outline"
+              onClick={() => setIsImportModalOpen(true)}
+              btnText={
+                <div className="flex items-center text-slate-700">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </div>
+              }
+            />
+          )}
+          {canCreate && (
+            <CustomButton
+              onClick={handleAddNew}
+              variant="default"
+              btnText={
+                <div className="flex items-center">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </div>
+              }
+            />
+          )}
         </div>
       </div>
 
@@ -357,37 +372,45 @@ export default function ProductsClient() {
                       <div className="flex items-center justify-end gap-2">
                         {!isDeletedView ? (
                           <>
-                            <button
-                              onClick={() => handleEdit(product)}
-                              className="p-2 text-slate-400 hover:text-brand hover:bg-brand/10 rounded-lg transition-colors"
-                              title="Edit"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(product)}
-                              className="p-2 text-slate-400 hover:text-error hover:bg-error/10 rounded-lg transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {canUpdate && (
+                              <button
+                                onClick={() => handleEdit(product)}
+                                className="p-2 text-slate-400 hover:text-brand hover:bg-brand/10 rounded-lg transition-colors"
+                                title="Edit"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={() => handleDeleteClick(product)}
+                                className="p-2 text-slate-400 hover:text-error hover:bg-error/10 rounded-lg transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </>
                         ) : (
                           <>
-                            <button
-                              onClick={() => handleRestoreClick(product)}
-                              className="p-2 text-slate-400 hover:text-success hover:bg-success/10 rounded-lg transition-colors"
-                              title="Restore"
-                            >
-                              <ArchiveRestore className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(product)}
-                              className="p-2 text-error hover:text-error hover:bg-error/10 rounded-lg transition-colors"
-                              title="Permanent Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {canUpdate && (
+                              <button
+                                onClick={() => handleRestoreClick(product)}
+                                className="p-2 text-slate-400 hover:text-success hover:bg-success/10 rounded-lg transition-colors"
+                                title="Restore"
+                              >
+                                <ArchiveRestore className="w-4 h-4" />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={() => handleDeleteClick(product)}
+                                className="p-2 text-error hover:text-error hover:bg-error/10 rounded-lg transition-colors"
+                                title="Permanent Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
