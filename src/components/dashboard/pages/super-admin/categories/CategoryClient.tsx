@@ -146,7 +146,7 @@ export default function CategoryClient() {
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         {category.image ? (
                           <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0">
                             <Image

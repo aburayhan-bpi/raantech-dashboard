@@ -160,7 +160,7 @@ export default function SalesClient() {
             />
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-[160px]">
               <CustomDropdown
                 value={statusFilter}

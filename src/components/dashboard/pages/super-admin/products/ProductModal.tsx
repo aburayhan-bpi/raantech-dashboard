@@ -458,7 +458,7 @@ export default function ProductModal({
             onClick={onClose}
             disabled={isLoading}
             className="px-6"
-            btnText="Cancel"
+            icon={<X className="w-4 h-4" />} btnText="Cancel"
           />
           <CustomButton
             type="submit"

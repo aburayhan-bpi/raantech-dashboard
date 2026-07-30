@@ -233,7 +233,7 @@ export default function ActivityLogClient() {
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm uppercase overflow-hidden relative border border-slate-200/60 shadow-sm group-hover:border-[#0089A7]/30 transition-colors">
                           {log.user?.profileImage && log.user.profileImage !== "/logo.png" ? (
                             <Image draggable={false} 

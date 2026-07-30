@@ -71,12 +71,20 @@ export default function ViewPurchaseModal({
       {/* Modal / Invoice Container */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 print:shadow-none print:max-h-none print:h-auto print:rounded-none">
         {/* Header - Hidden in Print */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 print:hidden">
-          <h2 className="text-xl font-bold text-slate-800">Purchase Invoice</h2>
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 gap-4 print:hidden">
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <h2 className="text-xl font-bold text-slate-800">Purchase Invoice</h2>
+            <button
+              onClick={onClose}
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors sm:hidden -mr-2"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsPaymentModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-100 transition-colors"
             >
               <DollarSign className="w-4 h-4" />
               Manage Payments
@@ -84,7 +92,7 @@ export default function ViewPurchaseModal({
             <button
               onClick={handleDownloadPdf}
               disabled={isDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDownloading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -95,7 +103,7 @@ export default function ViewPurchaseModal({
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors hidden sm:block"
             >
               <X className="w-5 h-5" />
             </button>

@@ -23,7 +23,7 @@ import {
   Phone,
   Receipt,
   Truck,
-  User,
+  User, X, Save,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -214,7 +214,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => router.push(`${basePath}/sales`)}
             className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
@@ -222,7 +222,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
             <ArrowLeft className="w-4 h-4 text-slate-600" />
           </button>
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-slate-800">
                 {sale.saleNo}
               </h1>
@@ -243,7 +243,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {canUpdate && !isEditing && !isPartialReturnOpen && sale.status !== "CANCELLED" && sale.status !== "RETURNED" && (
             <CustomButton
               onClick={() => setIsEditing(true)}
@@ -604,7 +604,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 onClick={handleUpdate}
                 disabled={isUpdating}
                 loading={isUpdating}
-                btnText="Save Changes"
+                icon={<Save className="w-4 h-4" />} btnText="Save Changes"
                 variant="default"
                 className="w-full mt-2"
               />
@@ -722,7 +722,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               <div className="flex justify-end gap-3 pt-2">
                 <CustomButton
                   onClick={() => setIsRefundOpen(false)}
-                  btnText="Cancel"
+                  icon={<X className="w-4 h-4" />} btnText="Cancel"
                   variant="outline"
                   className="border-slate-200 text-slate-600"
                 />

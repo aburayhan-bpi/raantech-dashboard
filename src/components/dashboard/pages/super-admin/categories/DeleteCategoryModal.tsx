@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle , X, Trash2} from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
 import { useDeleteCategoryMutation } from "@/redux/api/category/categoryApi";
 import { toast } from "sonner";
@@ -60,14 +60,14 @@ export default function DeleteCategoryModal({
               type="button"
               onClick={onClose}
               variant="outline"
-              btnText="Cancel"
+              icon={<X className="w-4 h-4" />} btnText="Cancel"
               className="flex-1"
             />
             <CustomButton
               type="button"
               onClick={handleDelete}
               variant="destructive"
-              btnText="Delete"
+              icon={<Trash2 className="w-4 h-4" />} btnText="Delete"
               loading={isLoading}
               className="flex-1"
             />

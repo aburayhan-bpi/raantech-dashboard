@@ -236,7 +236,7 @@ export default function SupplierModal({
               type="button"
               onClick={onClose}
               variant="outline"
-              btnText="Cancel"
+              icon={<X className="w-4 h-4" />} btnText="Cancel"
             />
             <CustomButton
               type="submit"

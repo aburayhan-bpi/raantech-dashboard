@@ -178,7 +178,7 @@ export default function CustomerModal({ isOpen, onClose, customer }: CustomerMod
               type="button"
               variant="outline"
               onClick={onClose}
-              btnText="Cancel"
+              icon={<X className="w-4 h-4" />} btnText="Cancel"
               disabled={isLoading}
             />
             <CustomButton

@@ -206,30 +206,33 @@ export default function AddPurchaseClient() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <Link
             href={`${basePath}/purchases`}
-            className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shrink-0"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Add Purchase</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Add Purchase</h1>
             <p className="text-sm text-slate-500 mt-1">
               Create a new purchase order
             </p>
           </div>
         </div>
-        <CustomButton
-          onClick={handleSubmit}
-          loading={isSubmitting}
-          disabled={isSubmitting || cart.length === 0}
-          icon={<Save className="w-4 h-4" />}
-          btnText="Save Purchase"
-          loadingText="Saving..."
-          variant="default"
-        />
+        <div className="w-full sm:w-auto">
+          <CustomButton
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            disabled={isSubmitting || cart.length === 0}
+            icon={<Save className="w-4 h-4" />}
+            btnText="Save Purchase"
+            loadingText="Saving..."
+            variant="default"
+            className="w-full sm:w-auto"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -325,7 +328,7 @@ export default function AddPurchaseClient() {
                   variant="outline"
                   onClick={() => setIsProductModalOpen(true)}
                   icon={<Plus className="w-5 h-5" />}
-                  className="px-3 bg-white hover:bg-slate-50"
+                  className="!h-[46px] !w-[46px] rounded-xl !p-0 bg-white hover:bg-slate-50 shrink-0 flex items-center justify-center"
                   title="Add New Product"
                   btnText=""
                 />

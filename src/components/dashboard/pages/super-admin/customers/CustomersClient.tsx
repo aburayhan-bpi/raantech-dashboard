@@ -112,7 +112,7 @@ export default function CustomersClient() {
           </p>
         </div>
         {canCreate && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <CustomButton
               variant="outline"
               onClick={() => window.open("/api/v1/customers/export", "_blank")}

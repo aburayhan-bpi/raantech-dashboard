@@ -18,7 +18,7 @@ import {
   Trash2,
   User,
   Truck,
-  Loader2
+  Loader2, X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -261,7 +261,7 @@ export default function AddSaleClient() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <Link
             href={`${basePath}/sales`}
@@ -270,22 +270,23 @@ export default function AddSaleClient() {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Orders
           </Link>
-          <h1 className="text-2xl font-bold text-slate-800">Create New Order</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Create New Order</h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 w-full sm:w-auto">
           <CustomButton
             variant="outline"
             onClick={() => router.push(`${basePath}/sales`)}
+            icon={<X className="w-4 h-4" />} 
             btnText="Cancel"
+            className="w-1/2 sm:w-auto"
           />
           <CustomButton
             onClick={handleSubmit}
             loading={isSubmitting}
-            className="flex items-center"
+            className="w-1/2 sm:w-auto"
+            icon={<Save className="w-4 h-4" />} 
             btnText="Save Order"
-          >
-            <Save className="w-4 h-4 mr-2" />
-          </CustomButton>
+          />
         </div>
       </div>
 

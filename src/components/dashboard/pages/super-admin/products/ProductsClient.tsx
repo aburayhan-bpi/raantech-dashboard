@@ -156,7 +156,7 @@ export default function ProductsClient() {
             Manage your inventory, prices, and product details.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {canDelete && (
             <CustomButton
               variant="outline"
@@ -164,7 +164,16 @@ export default function ProductsClient() {
               className={cn(
                 isDeletedView && "bg-error/10 text-error border-error/20",
               )}
-              btnText={isDeletedView ? "View Active" : "View Trash"}
+              btnText={
+                <div className="flex items-center gap-2">
+                  {isDeletedView ? (
+                    <ArchiveRestore className="w-4 h-4" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  {isDeletedView ? "View Active" : "View Trash"}
+                </div>
+              }
             />
           )}
           <CustomButton
@@ -250,7 +259,7 @@ export default function ProductsClient() {
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={`skel-${idx}`} className="animate-pulse">
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-200 shrink-0"></div>
                         <div className="space-y-2">
                           <div className="h-4 w-32 bg-slate-200 rounded"></div>
@@ -297,7 +306,7 @@ export default function ProductsClient() {
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border bg-slate-100 shrink-0">
                           {product.images?.[0] ? (
                             <Image

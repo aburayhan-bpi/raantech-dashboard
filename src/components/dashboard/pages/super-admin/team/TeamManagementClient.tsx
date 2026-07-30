@@ -240,7 +240,7 @@ export default function TeamManagementClient() {
             Manage your admins and staff members
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
 
           <button
             onClick={() => setIsInviteModalOpen(true)}
@@ -329,7 +329,7 @@ export default function TeamManagementClient() {
                     className="hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold text-sm uppercase overflow-hidden relative">
                           {user.profileImage && user.profileImage !== "/logo.png" ? (
                             <Image draggable={false} 

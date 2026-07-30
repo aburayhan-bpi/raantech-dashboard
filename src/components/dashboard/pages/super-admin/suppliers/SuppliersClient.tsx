@@ -83,7 +83,7 @@ export default function SuppliersClient() {
           </p>
         </div>
         {canCreate && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <CustomButton
               variant="outline"
               onClick={() => window.open('/api/v1/suppliers/export', '_blank')}
@@ -161,7 +161,7 @@ export default function SuppliersClient() {
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-[#0089A7]/10 border border-[#0089A7]/20 flex items-center justify-center shrink-0 text-[#0089A7]">
                           <Building2 className="w-5 h-5" />
                         </div>

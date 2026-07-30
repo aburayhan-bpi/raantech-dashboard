@@ -50,7 +50,7 @@ export default function ProductDetailsClient() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button 
             onClick={() => router.push(`${basePath}/products`)}
             className="p-2 bg-white rounded-lg border border-border text-slate-500 hover:text-slate-900 transition-colors"
