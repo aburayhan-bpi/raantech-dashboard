@@ -173,7 +173,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
   if (!sale) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+        <h3 className="text-lg font-medium text-slate-800 mb-2">
           Order Not Found
         </h3>
         <p className="text-slate-500 mb-6">
@@ -227,7 +227,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 {sale.saleNo}
               </h1>
               <span
-                className={`px-2.5 py-1 rounded-full text-xs font-semibold border uppercase tracking-wider ${getStatusColor(sale.status)}`}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium border uppercase tracking-wider ${getStatusColor(sale.status)}`}
               >
                 {sale.status}
               </span>
@@ -296,7 +296,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 <User className="w-3.5 h-3.5" /> Customer Info
               </h3>
               <div className="space-y-1 text-sm text-slate-600">
-                <p className="font-semibold text-slate-800 text-base">
+                <p className="font-medium text-slate-800 text-base">
                   {sale.customer.name}
                 </p>
                 <p className="flex items-center gap-1.5">
@@ -336,7 +336,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
           {/* Items Table */}
           <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+              <h3 className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
                 <Receipt className="w-4 h-4 text-slate-500" /> Ordered Items
               </h3>
             </div>
@@ -344,16 +344,16 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
-                    <th className="px-6 py-3 text-left font-semibold text-slate-500">
+                    <th className="px-6 py-3 text-left font-medium text-slate-500">
                       Product
                     </th>
-                    <th className="px-6 py-3 text-right font-semibold text-slate-500">
+                    <th className="px-6 py-3 text-right font-medium text-slate-500">
                       Price
                     </th>
-                    <th className="px-6 py-3 text-center font-semibold text-slate-500">
+                    <th className="px-6 py-3 text-center font-medium text-slate-500">
                       Qty
                     </th>
-                    <th className="px-6 py-3 text-right font-semibold text-slate-500">
+                    <th className="px-6 py-3 text-right font-medium text-slate-500">
                       Total
                     </th>
                   </tr>
@@ -375,7 +375,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                       <td className="px-6 py-4 text-center font-medium text-slate-700">
                         {item.quantity}
                       </td>
-                      <td className="px-6 py-4 text-right font-semibold text-slate-800">
+                      <td className="px-6 py-4 text-right font-medium text-slate-800">
                         ৳ {item.total.toLocaleString()}
                       </td>
                     </tr>
@@ -400,7 +400,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
         <div className="space-y-6">
           {/* Summary Box */}
           <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-slate-800 border-b border-slate-100 pb-3">
+            <h3 className="text-sm font-medium text-slate-800 border-b border-slate-100 pb-3">
               Payment Summary
             </h3>
 
@@ -436,14 +436,14 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
             <div className="bg-slate-50 p-4 rounded-xl space-y-2 mt-4 border border-slate-100">
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium text-slate-700">Paid Amount:</span>
-                <span className="font-semibold text-slate-800">
+                <span className="font-medium text-slate-800">
                   ৳ {sale.paidAmount.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium text-slate-700">Due Amount:</span>
                 <span
-                  className={`font-semibold ${
+                  className={`font-medium ${
                     ["CANCELLED", "RETURNED"].includes(sale.status)
                       ? "text-slate-500"
                       : sale.dueAmount > 0 
@@ -457,14 +457,14 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               {sale.refundedAmount && sale.refundedAmount > 0 ? (
                 <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-200 mt-2">
                   <span className="font-medium text-slate-700">Total Refunded:</span>
-                  <span className="font-semibold text-purple-600">
+                  <span className="font-medium text-purple-600">
                     ৳ {sale.refundedAmount.toLocaleString()}
                   </span>
                 </div>
               ) : null}
               {sale.paymentStatus === "REFUND_DUE" && (
                 <div className="flex justify-between items-center text-sm pt-2 border-t border-rose-200 mt-2 bg-rose-50/50 p-2 rounded-lg">
-                  <span className="font-semibold text-rose-700">Refund Due:</span>
+                  <span className="font-medium text-rose-700">Refund Due:</span>
                   <span className="font-bold text-rose-600">
                     ৳ {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}
                   </span>
@@ -494,7 +494,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 </h3>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="text-xs font-semibold text-slate-400 hover:text-rose-500"
+                  className="text-xs font-medium text-slate-400 hover:text-rose-500"
                 >
                   Cancel
                 </button>
@@ -502,7 +502,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600 uppercase">
+                  <label className="text-xs font-medium text-slate-600 uppercase">
                     Order Status
                   </label>
                   <CustomDropdown
@@ -525,7 +525,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600 uppercase">
+                  <label className="text-xs font-medium text-slate-600 uppercase">
                     Courier Details
                   </label>
                   <input
@@ -538,7 +538,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600 uppercase">
+                  <label className="text-xs font-medium text-slate-600 uppercase">
                     Note
                   </label>
                   <textarea
@@ -557,7 +557,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-semibold text-emerald-700 uppercase">
+                        <label className="text-[10px] font-medium text-emerald-700 uppercase">
                           Amount (৳)
                         </label>
                         <input
@@ -575,7 +575,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-semibold text-emerald-700 uppercase">
+                        <label className="text-[10px] font-medium text-emerald-700 uppercase">
                           Method
                         </label>
                         <CustomDropdown
@@ -620,7 +620,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 </h3>
                 <button
                   onClick={() => setIsPartialReturnOpen(false)}
-                  className="text-xs font-semibold text-slate-400 hover:text-rose-500"
+                  className="text-xs font-medium text-slate-400 hover:text-rose-500"
                 >
                   Cancel
                 </button>
@@ -679,7 +679,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-600 uppercase">Refund Amount</label>
+                  <label className="text-xs font-medium text-slate-600 uppercase">Refund Amount</label>
                   <input
                     type="number"
                     min="0"
@@ -694,7 +694,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                   <p className="text-[10px] text-slate-400">Max allowed: {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-600 uppercase">Refund Method</label>
+                  <label className="text-xs font-medium text-slate-600 uppercase">Refund Method</label>
                   <CustomDropdown
                     value={refundMethod}
                     onChange={setRefundMethod}
@@ -709,7 +709,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600 uppercase">Note (Optional)</label>
+                <label className="text-xs font-medium text-slate-600 uppercase">Note (Optional)</label>
                 <textarea
                   value={refundNote}
                   onChange={(e) => setRefundNote(e.target.value)}
@@ -768,7 +768,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                       </div>
                       <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-200/60">
                         <User className="w-3 h-3" />
-                        Updated by: <span className="text-slate-600 font-semibold">{history.updatedBy?.name || "Unknown"}</span>
+                        Updated by: <span className="text-slate-600 font-medium">{history.updatedBy?.name || "Unknown"}</span>
                       </div>
                     </div>
                   </div>
@@ -810,7 +810,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                       </div>
                       <div className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-200/60">
                         <User className="w-3 h-3" />
-                        Processed by: <span className="text-slate-600 font-semibold">{refund.createdBy?.name || "Unknown"}</span>
+                        Processed by: <span className="text-slate-600 font-medium">{refund.createdBy?.name || "Unknown"}</span>
                       </div>
                     </div>
                   </div>

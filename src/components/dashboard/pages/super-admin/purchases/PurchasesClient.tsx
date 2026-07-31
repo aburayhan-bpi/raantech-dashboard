@@ -11,6 +11,7 @@ import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { useGetPurchasesQuery, IPurchase } from "@/redux/api/purchase/purchaseApi";
+import { formatStatusText } from "@/utils/formatStatusText";
 import { format } from "date-fns";
 import Link from "next/link";
 import ViewPurchaseModal from "./ViewPurchaseModal";
@@ -70,24 +71,26 @@ export default function PurchasesClient() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-emerald-100/60 text-emerald-700";
       case "PENDING":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-amber-100/60 text-amber-700";
+      case "CANCELLED":
+        return "bg-rose-100/60 text-rose-700";
       default:
-        return "bg-slate-50 text-slate-700 border-slate-200";
+        return "bg-slate-100/80 text-slate-700";
     }
   };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
       case "PAID":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-emerald-100/60 text-emerald-700";
       case "PARTIAL":
-        return "bg-amber-50 text-amber-700 border-amber-200";
-      case "UNPAID":
-        return "bg-rose-50 text-rose-700 border-rose-200";
+        return "bg-amber-100/60 text-amber-700";
+      case "DUE":
+        return "bg-rose-100/60 text-rose-700";
       default:
-        return "bg-slate-50 text-slate-700 border-slate-200";
+        return "bg-slate-100/80 text-slate-700";
     }
   };
 
@@ -131,22 +134,22 @@ export default function PurchasesClient() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Purchase Info
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Supplier
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Payment
                 </th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -162,7 +165,7 @@ export default function PurchasesClient() {
                   >
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-semibold text-slate-700">{purchase.purchaseNo}</p>
+                        <p className="text-sm text-slate-700">{purchase.purchaseNo}</p>
                         <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                           <Calendar className="w-3 h-3" />
                           {purchase.purchaseDate ? format(new Date(purchase.purchaseDate), "dd MMM yyyy") : format(new Date(purchase.createdAt), "dd MMM yyyy")}
@@ -171,46 +174,48 @@ export default function PurchasesClient() {
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-slate-700">{purchase.supplier?.name || "N/A"}</p>
-                        {purchase.supplier?.company && (
+                        <p className="text-sm text-slate-700">{purchase.supplier?.name || "N/A"}</p>
+                        {purchase.supplier?.phone && (
                           <p className="text-xs text-slate-500 mt-0.5">{purchase.supplier.company}</p>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="space-y-1">
-                        <p className="text-sm font-semibold text-slate-700">
+                        <p className="text-sm text-slate-700">
                           ৳ {purchase.totalAmount.toLocaleString()}
                         </p>
                         {purchase.dueAmount > 0 && (
-                          <p className="text-xs font-medium text-rose-500">
+                          <p className="text-[11px] text-rose-500">
                             Due: ৳ {purchase.dueAmount.toLocaleString()}
                           </p>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="space-y-1.5">
+                      <div className="space-y-1.5 flex flex-col items-start">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${getPaymentStatusColor(
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getPaymentStatusColor(
                             purchase.paymentStatus
                           )}`}
                         >
-                          {purchase.paymentStatus}
+                          <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
+                          {formatStatusText(purchase.paymentStatus)}
                         </span>
-                        <p className="text-[11px] font-medium text-slate-500 uppercase">
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                           {purchase.paymentMethod}
-                        </p>
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getStatusColor(
                           purchase.status
                         )}`}
                       >
-                        {purchase.status === "COMPLETED" && <CheckCircle2 className="w-3.5 h-3.5" />}
-                        {purchase.status}
+                        <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
+                        {formatStatusText(purchase.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">

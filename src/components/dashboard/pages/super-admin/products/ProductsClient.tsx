@@ -109,7 +109,7 @@ export default function ProductsClient() {
     try {
       // If we are in "Trash" view, we do hard delete. Otherwise, soft delete.
       await deleteProduct({
-        slug: productToDelete.slug,
+        slug: productToDelete.slug || productToDelete.id,
         hard: isDeletedView,
       }).unwrap();
 
@@ -131,7 +131,7 @@ export default function ProductsClient() {
 
     try {
       await updateProduct({
-        slug: productToRestore.slug,
+        slug: productToRestore.slug || productToRestore.id,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: { isDeleted: false } as any,
       }).unwrap();
@@ -244,7 +244,7 @@ export default function ProductsClient() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-xs font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-xs font-medium">
               <tr>
                 <th className="px-6 py-4">Product</th>
                 <th className="px-6 py-4">Category</th>
@@ -322,7 +322,7 @@ export default function ProductsClient() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-700 truncate max-w-50">
+                          <p className="text-sm text-slate-700 truncate max-w-50">
                             {product.name}
                           </p>
                           <p className="text-xs text-slate-500">
@@ -336,7 +336,7 @@ export default function ProductsClient() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-slate-700">
+                        <span className="text-sm text-slate-700">
                           ৳{product.sellingPrice}
                         </span>
                         <span className="text-xs text-slate-500">

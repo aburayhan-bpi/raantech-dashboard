@@ -52,7 +52,7 @@ export default function DeleteSupplierModal({
               Delete Supplier
             </h3>
             <p className="text-sm text-slate-500 leading-relaxed">
-              Are you sure you want to delete <span className="font-semibold text-slate-700">&quot;{supplier.name}&quot;</span>? 
+              Are you sure you want to delete <span className="font-medium text-slate-700">&quot;{supplier.name}&quot;</span>? 
               This action cannot be undone.
             </p>
           </div>
@@ -61,14 +61,14 @@ export default function DeleteSupplierModal({
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
               disabled={isLoading}
-              className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               Delete

@@ -77,7 +77,7 @@ export default function CustomerModal({ isOpen, onClose, customer }: CustomerMod
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg font-medium text-slate-800">
             {customer ? "Edit Customer" : "Add New Customer"}
           </h2>
           <button

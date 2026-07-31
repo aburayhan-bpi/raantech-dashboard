@@ -604,7 +604,7 @@ export default function AddSaleClient() {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 text-sm">Subtotal:</span>
-                <span className="font-semibold text-slate-900">৳ {subTotal.toLocaleString()}</span>
+                <span className="font-medium text-slate-900">৳ {subTotal.toLocaleString()}</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -642,7 +642,7 @@ export default function AddSaleClient() {
             </div>
 
             <div className="space-y-4 pt-4 border-t border-slate-200">
-              <h3 className="font-semibold text-slate-800 flex items-center text-sm">
+              <h3 className="font-medium text-slate-800 flex items-center text-sm">
                 <CreditCard className="w-4 h-4 mr-2" />
                 Payment (Advance)
               </h3>

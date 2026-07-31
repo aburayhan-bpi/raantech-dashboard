@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Sale from "@/models/Sale";
 import Product from "@/models/Product";
+import Customer from "@/models/Customer";
 import { verifyAuth } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { getOrderStatusEmailTemplate } from "@/lib/emailTemplates";
+
+// Ensure Customer schema is registered for populate
+void Customer;
 
 export async function GET(
   request: Request,

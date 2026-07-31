@@ -22,7 +22,9 @@ export default function DeleteCategoryModal({
 
   const handleDelete = async () => {
     try {
-      await deleteCategory(category._id).unwrap();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const categoryId = category._id || (category as any).id;
+      await deleteCategory(categoryId).unwrap();
       toast.success("Category deleted successfully");
       onClose();
     } catch (error: unknown) {

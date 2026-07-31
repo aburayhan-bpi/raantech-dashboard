@@ -98,7 +98,9 @@ export default function CategoryModal({
       const payload = { name, description, image };
 
       if (isEditing) {
-        await updateCategory({ id: category._id, ...payload }).unwrap();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const categoryId = category._id || (category as any).id;
+        await updateCategory({ id: categoryId, ...payload }).unwrap();
         toast.success("Category updated successfully");
       } else {
         await createCategory(payload).unwrap();
@@ -136,7 +138,7 @@ export default function CategoryModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Image Upload */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700">
+            <label className="text-sm font-medium text-slate-700">
               Category Image
             </label>
             <div className="flex items-start gap-4">
@@ -192,7 +194,7 @@ export default function CategoryModal({
           <div className="space-y-2">
             <label
               htmlFor="name"
-              className="text-sm font-semibold text-slate-700"
+              className="text-sm font-medium text-slate-700"
             >
               Category Name <span className="text-red-500">*</span>
             </label>
@@ -209,7 +211,7 @@ export default function CategoryModal({
           <div className="space-y-2">
             <label
               htmlFor="description"
-              className="text-sm font-semibold text-slate-700"
+              className="text-sm font-medium text-slate-700"
             >
               Description
             </label>

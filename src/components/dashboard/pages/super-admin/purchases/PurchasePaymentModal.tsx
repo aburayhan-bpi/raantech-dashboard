@@ -189,7 +189,7 @@ export default function PurchasePaymentModal({
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white p-3 rounded-md border border-slate-200 shadow-sm">
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-1">
                 Total
               </p>
               <p className="text-sm font-bold text-slate-800">
@@ -197,7 +197,7 @@ export default function PurchasePaymentModal({
               </p>
             </div>
             <div className="bg-emerald-50 p-3 rounded-md border border-emerald-200 shadow-sm">
-              <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-emerald-600 uppercase tracking-wider mb-1">
                 Paid
               </p>
               <p className="text-sm font-bold text-emerald-700">
@@ -205,7 +205,7 @@ export default function PurchasePaymentModal({
               </p>
             </div>
             <div className="bg-rose-50 p-3 rounded-md border border-rose-200 shadow-sm">
-              <p className="text-[10px] font-semibold text-rose-600 uppercase tracking-wider mb-1">
+              <p className="text-[10px] font-medium text-rose-600 uppercase tracking-wider mb-1">
                 Due
               </p>
               <p className="text-sm font-bold text-rose-700">
@@ -218,7 +218,7 @@ export default function PurchasePaymentModal({
           {purchase.dueAmount > 0 && (
             <div className="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden">
               <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-800">
+                <h3 className="text-sm font-medium text-slate-800">
                   Add New Payment
                 </h3>
               </div>
@@ -302,7 +302,7 @@ export default function PurchasePaymentModal({
 
           {/* Payment History List */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3 border-b border-slate-200 pb-2">
+            <h3 className="text-sm font-medium text-slate-800 mb-3 border-b border-slate-200 pb-2">
               Payment History
             </h3>
 
@@ -327,7 +327,7 @@ export default function PurchasePaymentModal({
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-emerald-600">
+                        <span className="text-sm font-medium text-emerald-600">
                           ৳{payment.amount.toLocaleString()}
                         </span>
                         <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">

@@ -116,7 +116,7 @@ export default function SupplierModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-semibold text-slate-700">
+              <label htmlFor="name" className="text-sm font-medium text-slate-700">
                 Supplier Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -134,7 +134,7 @@ export default function SupplierModal({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-semibold text-slate-700">
+              <label htmlFor="phone" className="text-sm font-medium text-slate-700">
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -153,7 +153,7 @@ export default function SupplierModal({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="company" className="text-sm font-semibold text-slate-700">
+            <label htmlFor="company" className="text-sm font-medium text-slate-700">
               Company Name (Optional)
             </label>
             <div className="relative">
@@ -170,7 +170,7 @@ export default function SupplierModal({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-semibold text-slate-700">
+            <label htmlFor="email" className="text-sm font-medium text-slate-700">
               Email Address (Optional)
             </label>
             <div className="relative">
@@ -187,7 +187,7 @@ export default function SupplierModal({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="address" className="text-sm font-semibold text-slate-700">
+            <label htmlFor="address" className="text-sm font-medium text-slate-700">
               Address (Optional)
             </label>
             <div className="relative">
@@ -204,7 +204,7 @@ export default function SupplierModal({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700">Status</label>
+            <label className="text-sm font-medium text-slate-700">Status</label>
             <div className="flex bg-slate-100 p-1 rounded-xl w-max">
               <button
                 type="button"

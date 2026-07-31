@@ -222,7 +222,7 @@ export default function ProductModal({
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div>
-            <h2 className="text-xl font-semibold text-slate-800">
+            <h2 className="text-xl font-medium text-slate-800">
               {isEditing ? "Edit Product" : "Add New Product"}
             </h2>
             <p className="text-sm text-slate-500 mt-1">
@@ -243,7 +243,7 @@ export default function ProductModal({
             
             {/* Section: Basic Info */}
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -335,7 +335,7 @@ export default function ProductModal({
 
             {/* Section: Pricing & Profit */}
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
                 Pricing & Profit
               </h3>
               <ProfitCalculatorInput
@@ -353,7 +353,7 @@ export default function ProductModal({
 
             {/* Section: Inventory & Identifiers */}
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
                 Inventory & Identifiers
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -438,7 +438,7 @@ export default function ProductModal({
 
             {/* Section: Product Images */}
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
                 Product Images
               </h3>
               <ImageUploader

@@ -244,7 +244,7 @@ export default function TeamManagementClient() {
 
           <button
             onClick={() => setIsInviteModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-[#0089A7] hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md shadow-[#0089A7]/20"
+            className="inline-flex items-center gap-2 bg-[#0089A7] hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-[#0089A7]/20"
           >
             <Plus className="w-4 h-4" />
             Invite User
@@ -283,7 +283,7 @@ export default function TeamManagementClient() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200/80 text-xs uppercase text-slate-500 font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200/80 text-xs uppercase text-slate-500 font-medium">
               <tr>
                 <th className="px-6 py-4">User</th>
                 <th className="px-6 py-4">Role</th>
@@ -343,7 +343,7 @@ export default function TeamManagementClient() {
                           )}
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800">
+                          <div className="text-sm text-slate-800">
                             {user.name}
                           </div>
                           <div className="text-xs text-slate-500">
@@ -606,7 +606,7 @@ export default function TeamManagementClient() {
                                         }}
                                         className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
                                       />
-                                      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
+                                      <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
                                         {action}
                                       </span>
                                     </label>
@@ -826,7 +826,7 @@ export default function TeamManagementClient() {
                                         }}
                                         className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
                                       />
-                                      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
+                                      <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
                                         {action}
                                       </span>
                                     </label>
@@ -881,7 +881,7 @@ export default function TeamManagementClient() {
               </h3>
               <p className="text-sm text-slate-500">
                 Are you sure you want to delete{" "}
-                <span className="font-semibold text-slate-700">
+                <span className="font-medium text-slate-700">
                   {deleteModalData.name}
                 </span>
                 ? This action cannot be undone.
@@ -925,7 +925,7 @@ export default function TeamManagementClient() {
               </h3>
               <p className="text-sm text-slate-500">
                 Are you sure you want to restore{" "}
-                <span className="font-semibold text-slate-700">
+                <span className="font-medium text-slate-700">
                   {restoreModalData.name}
                 </span>
                 ? They will regain access to their account.

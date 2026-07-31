@@ -134,19 +134,19 @@ export default function SuppliersClient() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Supplier
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Contact Details
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Total Due
                 </th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -166,7 +166,7 @@ export default function SuppliersClient() {
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-slate-700">{supplier.name}</p>
+                          <p className="font-normal text-sm text-slate-800">{supplier.name}</p>
                           {supplier.company && (
                             <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                               {supplier.company}
@@ -195,14 +195,14 @@ export default function SuppliersClient() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-normal">
                       <span className={supplier.totalDue > 0 ? "text-red-500" : "text-emerald-500"}>
                         ৳ {supplier.totalDue.toLocaleString()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-normal border ${
                           supplier.status === "ACTIVE"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : "bg-rose-50 text-rose-700 border-rose-200"

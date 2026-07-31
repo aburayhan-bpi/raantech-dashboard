@@ -78,17 +78,17 @@ export default function ActivityLogClient() {
       case "CREATED":
       case "INVITED":
       case "RESTORED":
-        return "bg-emerald-100 text-emerald-700 border-emerald-200";
+        return "bg-emerald-100/60 text-emerald-700";
       case "UPDATED":
       case "PASSWORD_CHANGE":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-blue-100/60 text-blue-700";
       case "DELETED":
-        return "bg-rose-100 text-rose-700 border-rose-200";
+        return "bg-rose-100/60 text-rose-700";
       case "LOGIN":
       case "LOGOUT":
-        return "bg-purple-100 text-purple-700 border-purple-200";
+        return "bg-purple-100/60 text-purple-700";
       default:
-        return "bg-slate-100 text-slate-700 border-slate-200";
+        return "bg-slate-100/80 text-slate-700";
     }
   };
 
@@ -98,7 +98,7 @@ export default function ActivityLogClient() {
       <div className="flex items-center justify-center h-[50vh]">
         <div className="text-center space-y-4">
           <Activity className="w-12 h-12 text-slate-400 mx-auto" />
-          <h2 className="text-xl font-semibold text-slate-700">Access Denied</h2>
+          <h2 className="text-xl font-medium text-slate-700">Access Denied</h2>
           <p className="text-slate-500">Only Super Admins can view activity logs.</p>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default function ActivityLogClient() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] uppercase text-slate-500 font-semibold tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] uppercase text-slate-500 font-medium tracking-wider">
               <tr>
                 <th className="px-6 py-4">User</th>
                 <th className="px-6 py-4">Action</th>
@@ -247,7 +247,7 @@ export default function ActivityLogClient() {
                           )}
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800">
+                          <div className="text-sm text-slate-800">
                             {log.user?.name || "Unknown User"}
                           </div>
                           <div className="text-xs text-slate-500">
@@ -258,14 +258,15 @@ export default function ActivityLogClient() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={cn(
-                        "inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider border",
+                        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide",
                         getActionBadge(log.action)
                       )}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
                         {formatStatusText(log.action)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200/60">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100/80 px-3 py-1 rounded-full">
                         <Layers className="w-3.5 h-3.5 text-slate-400" />
                         {formatStatusText(log.entityType)}
                       </span>

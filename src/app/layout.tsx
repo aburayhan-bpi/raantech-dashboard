@@ -11,6 +11,10 @@ import "./globals.css";
 //   display: "swap",
 // });
 
+// const bricolageGrotesque = Bricolage_Grotesque({
+//   subsets: ["latin"],
+//   display: "swap",
+// });
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
@@ -31,9 +35,19 @@ export default function RootLayout({
       <body className={`${bricolageGrotesque.className} antialiased`}>
         <ReduxProvider>
           <TooltipProvider>
-            <svg width="0" height="0" className="absolute pointer-events-none -z-10">
+            <svg
+              width="0"
+              height="0"
+              className="absolute pointer-events-none -z-10"
+            >
               <defs>
-                <linearGradient id="golden-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient
+                  id="golden-gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
                   <stop offset="1.1%" stopColor="#ffd451" />
                   <stop offset="74.38%" stopColor="#fff7a4" />
                   <stop offset="99.75%" stopColor="#ffd73c" />

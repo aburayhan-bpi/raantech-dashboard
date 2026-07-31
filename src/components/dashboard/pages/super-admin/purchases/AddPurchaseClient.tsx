@@ -240,7 +240,7 @@ export default function AddPurchaseClient() {
         <div className="lg:col-span-2 space-y-6">
           {/* Supplier & Date Selection */}
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-slate-800 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-[#0089A7]" />
               Purchase Details
             </h2>
@@ -340,19 +340,19 @@ export default function AddPurchaseClient() {
               <table className="w-full">
                 <thead className="sticky top-0 bg-white border-b border-slate-100 shadow-sm">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">
                       Product
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase w-24">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase w-24">
                       Qty
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase w-32">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase w-32">
                       Unit Cost
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase w-32">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase w-32">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase w-16"></th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase w-16"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -414,7 +414,7 @@ export default function AddPurchaseClient() {
                             className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#0089A7]"
                           />
                         </td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-700">
+                        <td className="px-4 py-3 text-sm font-medium text-slate-700">
                           ৳ {item.total.toLocaleString()}
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -437,7 +437,7 @@ export default function AddPurchaseClient() {
         {/* Right Column (Summary & Payment) */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-slate-800 flex items-center gap-2">
               <Receipt className="w-5 h-5 text-[#0089A7]" />
               Order Summary
             </h2>
@@ -445,7 +445,7 @@ export default function AddPurchaseClient() {
             <div className="space-y-3 pb-4 border-b border-slate-100">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-500">Subtotal</span>
-                <span className="font-semibold text-slate-700">
+                <span className="font-medium text-slate-700">
                   ৳ {subTotal.toLocaleString()}
                 </span>
               </div>
@@ -489,7 +489,7 @@ export default function AddPurchaseClient() {
             </div>
 
             <div className="pt-4 border-t border-slate-100 space-y-4">
-              <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-slate-800 flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-slate-400" />
                 Payment Details
               </h3>
@@ -507,7 +507,7 @@ export default function AddPurchaseClient() {
                       const val = Number(e.target.value);
                       if (val >= 0) handlePaidAmountChange(val);
                     }}
-                    className="w-32 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm text-right focus:outline-none focus:border-emerald-500 font-semibold"
+                    className="w-32 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm text-right focus:outline-none focus:border-emerald-500 font-medium"
                     placeholder="0"
                   />
                 </div>

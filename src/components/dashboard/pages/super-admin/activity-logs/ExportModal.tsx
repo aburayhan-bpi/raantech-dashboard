@@ -87,7 +87,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-800">
             <Download className="w-5 h-5 text-[#0089A7]" />
-            <h2 className="text-lg font-semibold">Export Logs</h2>
+            <h2 className="text-lg font-medium">Export Logs</h2>
           </div>
           <button
             onClick={onClose}

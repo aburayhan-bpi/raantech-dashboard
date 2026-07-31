@@ -159,7 +159,7 @@ export default function CustomersClient() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-xs font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-xs font-medium">
               <tr>
                 <th className="px-6 py-4">Customer Info</th>
                 <th className="px-6 py-4">Contact</th>
@@ -178,7 +178,7 @@ export default function CustomersClient() {
                   >
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-slate-900">
+                        <div className="text-sm text-slate-700">
                           {customer.name}
                         </div>
                         {customer.address && (
@@ -206,7 +206,7 @@ export default function CustomersClient() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium text-slate-900 bg-slate-100 px-2 py-1 rounded-md">
+                      <span className="text-sm text-slate-700 bg-slate-100 px-2 py-1 rounded-md">
                         ৳{customer.totalPurchases.toFixed(2)}
                       </span>
                     </td>

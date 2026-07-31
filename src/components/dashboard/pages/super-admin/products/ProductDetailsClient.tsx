@@ -36,7 +36,7 @@ export default function ProductDetailsClient() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <Package className="w-16 h-16 text-slate-300 mb-4" />
-        <h2 className="text-xl font-semibold text-slate-700">Product Not Found</h2>
+        <h2 className="text-xl font-medium text-slate-700">Product Not Found</h2>
         <p className="text-slate-500 mt-2">The product you are looking for does not exist or has been deleted.</p>
         <CustomButton className="mt-6" onClick={() => router.push(`${basePath}/products`)} btnText="Back to Products" />
       </div>
@@ -115,7 +115,7 @@ export default function ProductDetailsClient() {
           
           {/* Audit Info */}
           <div className="bg-white rounded-xl border border-border p-5 shadow-sm space-y-4">
-            <h3 className="font-semibold text-slate-800 flex items-center">
+            <h3 className="font-medium text-slate-800 flex items-center">
               <Activity className="w-4 h-4 mr-2 text-brand" />
               System Info
             </h3>
@@ -146,7 +146,7 @@ export default function ProductDetailsClient() {
               <DollarSign className="w-32 h-32" />
             </div>
             
-            <h3 className="font-semibold text-slate-800 mb-6 relative z-10">Pricing & Profit Analysis</h3>
+            <h3 className="font-medium text-slate-800 mb-6 relative z-10">Pricing & Profit Analysis</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
               <div>
@@ -175,7 +175,7 @@ export default function ProductDetailsClient() {
           {/* Details & Inventory */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">
+              <h3 className="font-medium text-slate-800 mb-4 border-b border-slate-100 pb-2">
                 Inventory Status
               </h3>
               
@@ -206,7 +206,7 @@ export default function ProductDetailsClient() {
             </div>
             
             <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">
+              <h3 className="font-medium text-slate-800 mb-4 border-b border-slate-100 pb-2">
                 Additional Details
               </h3>
               
@@ -248,7 +248,7 @@ export default function ProductDetailsClient() {
           {/* Description */}
           {product.description && (
             <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-3">Product Description</h3>
+              <h3 className="font-medium text-slate-800 mb-3">Product Description</h3>
               <p className="text-slate-600 whitespace-pre-wrap leading-relaxed">
                 {product.description}
               </p>

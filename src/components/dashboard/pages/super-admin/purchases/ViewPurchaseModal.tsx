@@ -156,7 +156,7 @@ export default function ViewPurchaseModal({
             {/* Supplier Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+                <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
                   Supplier Details
                 </h3>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 print:border-none print:p-0 print:bg-transparent">
@@ -191,7 +191,7 @@ export default function ViewPurchaseModal({
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+                <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
                   Payment Details
                 </h3>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2 print:border-none print:p-0 print:bg-transparent">
@@ -273,7 +273,7 @@ export default function ViewPurchaseModal({
                         <td className="py-4 text-right text-sm text-slate-700">
                           ৳ {item.unitCost.toLocaleString()}
                         </td>
-                        <td className="py-4 text-right text-sm font-semibold text-slate-800">
+                        <td className="py-4 text-right text-sm font-medium text-slate-800">
                           ৳ {item.total.toLocaleString()}
                         </td>
                       </tr>
@@ -321,7 +321,7 @@ export default function ViewPurchaseModal({
                   </span>
                 </div>
                 <div className="flex justify-between text-sm bg-rose-50 p-2 rounded-lg border border-rose-100 mt-2 print:border-none print:p-0 print:bg-transparent">
-                  <span className="text-rose-600 font-semibold">
+                  <span className="text-rose-600 font-medium">
                     Due Amount:
                   </span>
                   <span className="font-bold text-rose-600">
@@ -335,7 +335,7 @@ export default function ViewPurchaseModal({
             <div className="pt-8 border-t border-slate-100 mt-8 space-y-4">
               {purchase.note && (
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-700">
+                  <h4 className="text-sm font-medium text-slate-700">
                     Note:
                   </h4>
                   <p className="text-sm text-slate-500 mt-1 whitespace-pre-wrap">
