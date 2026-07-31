@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WEBSITE_DETAILS } from "@/lib/constants";
 import ReduxProvider from "@/redux/ReduxProvider";
 import type { Metadata } from "next";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 // Bricolage Grotesque
 // const inter = Inter({
@@ -15,7 +15,7 @@ import "./globals.css";
 //   subsets: ["latin"],
 //   display: "swap",
 // });
-const bricolageGrotesque = Bricolage_Grotesque({
+const nunito = Nunito({
   subsets: ["latin"],
   display: "swap",
 });
@@ -32,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${bricolageGrotesque.className} antialiased`}>
+      <body className={`${nunito.className} antialiased`}>
         <ReduxProvider>
           <TooltipProvider>
             <svg
