@@ -339,9 +339,11 @@ export default function ProductsClient() {
                         <span className="text-sm text-slate-700">
                           ৳{product.sellingPrice}
                         </span>
-                        <span className="text-xs text-slate-500">
-                          Buy: ৳{product.buyingPrice}
-                        </span>
+                        {(isSuperAdmin || currentUser?.role === "ADMIN") && (
+                          <span className="text-xs text-slate-500">
+                            Buy: ৳{product.buyingPrice}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">

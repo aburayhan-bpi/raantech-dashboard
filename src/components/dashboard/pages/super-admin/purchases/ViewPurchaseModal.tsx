@@ -13,12 +13,16 @@ import {
   Package,
   Phone,
   Printer,
+  Undo2,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/features/user/authSlice";
 import { PurchaseInvoicePDF } from "./PurchaseInvoicePDF";
 import PurchasePaymentModal from "./PurchasePaymentModal";
+import PurchaseReturnHistoryModal from "./PurchaseReturnHistoryModal";
 
 interface ViewPurchaseModalProps {
   isOpen: boolean;
@@ -33,7 +37,13 @@ export default function ViewPurchaseModal({
 }: ViewPurchaseModalProps) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isReturnHistoryModalOpen, setIsReturnHistoryModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const currentUser = useSelector(selectUser);
+  const userPermissions = currentUser?.permissions || [];
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
+  const canUpdate = isSuperAdmin || userPermissions.includes("purchases:update");
 
   const handleDownloadPdf = async () => {
     if (!componentRef.current || !purchase) return;
@@ -83,12 +93,21 @@ export default function ViewPurchaseModal({
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setIsPaymentModalOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-100 transition-colors"
+              onClick={() => setIsReturnHistoryModalOpen(true)}
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-100 transition-colors"
             >
-              <DollarSign className="w-4 h-4" />
-              Manage Payments
+              <Undo2 className="w-4 h-4" />
+              Return History
             </button>
+            {canUpdate && (
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-100 transition-colors"
+              >
+                <DollarSign className="w-4 h-4" />
+                Manage Payments
+              </button>
+            )}
             <button
               onClick={handleDownloadPdf}
               disabled={isDownloading}
@@ -320,6 +339,14 @@ export default function ViewPurchaseModal({
                     ৳ {purchase.paidAmount.toLocaleString()}
                   </span>
                 </div>
+                {purchase.returnedAmount > 0 && (
+                  <div className="flex justify-between text-sm pt-2">
+                    <span className="text-slate-500">Returned Amount:</span>
+                    <span className="font-medium text-amber-600">
+                      ৳ {purchase.returnedAmount.toLocaleString()}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm bg-rose-50 p-2 rounded-lg border border-rose-100 mt-2 print:border-none print:p-0 print:bg-transparent">
                   <span className="text-rose-600 font-medium">
                     Due Amount:
@@ -367,6 +394,12 @@ export default function ViewPurchaseModal({
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         purchase={purchase}
+      />
+      {/* Return History Modal */}
+      <PurchaseReturnHistoryModal
+        isOpen={isReturnHistoryModalOpen}
+        onClose={() => setIsReturnHistoryModalOpen(false)}
+        purchaseId={purchase._id}
       />
     </div>
   );

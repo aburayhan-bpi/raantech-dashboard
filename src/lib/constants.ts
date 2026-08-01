@@ -31,7 +31,7 @@ export const SIDEBAR_ITEMS = [
     label: "Purchases",
     href: "/purchases",
     icon: "FaReceipt",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "STAFF"],
     group: "INVENTORY & SALES",
   },
   {
@@ -39,7 +39,7 @@ export const SIDEBAR_ITEMS = [
     label: "Suppliers",
     href: "/suppliers",
     icon: "FaTruck",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "STAFF"],
     group: "INVENTORY & SALES",
   },
   {
@@ -47,7 +47,7 @@ export const SIDEBAR_ITEMS = [
     label: "Categories",
     href: "/categories",
     icon: "FaTags",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "STAFF"],
     group: "INVENTORY & SALES",
   },
   {
@@ -71,7 +71,7 @@ export const SIDEBAR_ITEMS = [
     label: "Expenses",
     href: "/expenses",
     icon: "IoWallet",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPER_ADMIN", "ADMIN", "STAFF"],
     group: "FINANCE",
   },
   {

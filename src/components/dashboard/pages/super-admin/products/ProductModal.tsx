@@ -63,9 +63,13 @@ export default function ProductModal({
 
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
-  const { data: categoriesData, refetch: refetchCategories, isFetching: isFetchingCategories } = useGetCategoriesQuery();
   const user = useAppSelector(selectUser);
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
+  const hasCategoryViewPermission = isSuperAdmin || (user?.permissions || []).includes("categories:view");
+
+  const { data: categoriesData, refetch: refetchCategories, isFetching: isFetchingCategories } = useGetCategoriesQuery(undefined, {
+    skip: !hasCategoryViewPermission
+  });
 
   const categories = categoriesData?.data || [];
   

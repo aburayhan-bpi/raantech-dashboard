@@ -16,7 +16,10 @@ const UpdateUserSchema = z.object({
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+    if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 
@@ -37,7 +40,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+    if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 
@@ -84,7 +90,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+    if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 

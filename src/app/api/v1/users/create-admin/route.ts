@@ -17,7 +17,10 @@ const CreateAdminSchema = z.object({
 export async function POST(req: Request) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+    if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 

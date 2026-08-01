@@ -27,6 +27,7 @@ export interface IPurchase {
 
   paidAmount: number;
   dueAmount: number;
+  returnedAmount: number;
 
   paymentStatus: PurchasePaymentStatus;
   paymentMethod: PurchasePaymentMethod;
@@ -91,6 +92,41 @@ export interface IAddPaymentPayload {
   amount: number;
   paymentMethod: PurchasePaymentMethod;
   paymentDate?: string;
+  note?: string;
+}
+
+export interface IPurchaseReturnItem {
+  product: IProduct | string;
+  quantity: number;
+  unitCost: number;
+  total: number;
+}
+
+export interface IPurchaseReturn {
+  _id: string;
+  purchase: string;
+  supplier: string;
+  items: IPurchaseReturnItem[];
+  subTotal: number;
+  tax: number;
+  totalAmount: number;
+  returnDate: string;
+  note?: string;
+  createdBy: { _id: string; name: string };
+  createdAt: string;
+}
+
+export interface IReturnPurchasePayload {
+  items: {
+    product: string;
+    quantity: number;
+    unitCost: number;
+    total: number;
+  }[];
+  subTotal: number;
+  tax: number;
+  totalAmount: number;
+  returnDate?: string;
   note?: string;
 }
 
@@ -167,6 +203,37 @@ export const purchaseApi = baseApi.injectEndpoints({
         { type: "Purchases", id },
         { type: "Purchases", id: `payments-${id}` },
         "Purchases",
+        "Suppliers",
+      ],
+    }),
+
+    getPurchaseReturns: builder.query<IPurchaseReturn[], string>({
+      query: (id) => ({
+        url: `/purchases/${id}/returns`,
+        method: "GET",
+      }),
+      transformResponse: (response: { history: IPurchaseReturn[] }) =>
+        response.history,
+      providesTags: (_result, _error, id) => [
+        { type: "Purchases", id: `returns-${id}` },
+      ],
+    }),
+
+    returnPurchase: builder.mutation<
+      { success: boolean; data: IPurchaseReturn; message: string },
+      { id: string; data: IReturnPurchasePayload }
+    >({
+      query: ({ id, data }) => ({
+        url: `/purchases/${id}/returns`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Purchases", id },
+        { type: "Purchases", id: `returns-${id}` },
+        "Purchases",
+        "Products",
+        "Suppliers",
       ],
     }),
   }),
@@ -178,4 +245,6 @@ export const {
   useCreatePurchaseMutation,
   useGetPurchasePaymentsQuery,
   useAddPurchasePaymentMutation,
+  useGetPurchaseReturnsQuery,
+  useReturnPurchaseMutation,
 } = purchaseApi;

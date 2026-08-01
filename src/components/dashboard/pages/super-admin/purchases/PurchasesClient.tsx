@@ -12,7 +12,7 @@ import { selectUser } from "@/redux/features/user/authSlice";
 import { formatStatusText } from "@/utils/formatStatusText";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
-import { Calendar, Eye, Plus, Search } from "lucide-react";
+import { Calendar, Eye, Plus, Search, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -66,7 +66,7 @@ export default function PurchasesClient() {
 
   if (selectedPurchase && isViewModalOpen) {
     const updatedPurchase = purchases.find(
-      (p: IPurchase) => p._id === selectedPurchase._id,
+      (p: IPurchase) => p._id === selectedPurchase._id
     );
     if (
       updatedPurchase &&
@@ -241,13 +241,24 @@ export default function PurchasesClient() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <button
-                        onClick={() => handleView(purchase)}
-                        className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
-                        title="View Invoice"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        {(isSuperAdmin || userPermissions.includes("purchases:return")) && (
+                          <Link
+                            href={`${basePath}/purchases/${purchase._id}/return`}
+                            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Return Purchase"
+                          >
+                            <Undo2 className="w-4 h-4" />
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => handleView(purchase)}
+                          className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
+                          title="View Invoice"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

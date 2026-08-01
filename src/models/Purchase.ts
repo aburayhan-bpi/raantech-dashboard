@@ -24,6 +24,7 @@ export interface IPurchase extends Document {
   
   paidAmount: number;
   dueAmount: number;
+  returnedAmount: number;
   
   paymentStatus: PurchasePaymentStatus;
   paymentMethod: PurchasePaymentMethod;
@@ -58,6 +59,7 @@ const purchaseSchema = new Schema<IPurchase>(
     
     paidAmount: { type: Number, default: 0, min: 0 },
     dueAmount: { type: Number, default: 0, min: 0 },
+    returnedAmount: { type: Number, default: 0, min: 0 },
     
     paymentStatus: {
       type: String,

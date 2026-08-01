@@ -20,7 +20,10 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) {
+      return ApiResponse.unauthorized();
+    }
+    if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 
@@ -75,7 +78,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const auth = await verifyAuth();
-    if (!auth || auth.role !== 'SUPER_ADMIN') {
+    if (!auth) { return ApiResponse.unauthorized(); } if (auth.role !== 'SUPER_ADMIN') {
       return ApiResponse.error('Forbidden: Super Admin access required', 403);
     }
 

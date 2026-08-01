@@ -72,13 +72,16 @@ const baseQueryWithReauth: BaseQueryFn<
       );
 
       if (refreshResult.data) {
-        const newTokens = refreshResult.data as {
-          accessToken: string;
-          refreshToken?: string;
-        };
-        api.dispatch(setTokens(newTokens));
-        // Retry original
-        result = await rawBaseQuery(args, api, extraOptions);
+        const responseData = refreshResult.data as { data: { accessToken: string; refreshToken?: string } };
+        
+        if (responseData.data && responseData.data.accessToken) {
+          api.dispatch(setTokens(responseData.data));
+          // Retry original
+          result = await rawBaseQuery(args, api, extraOptions);
+        } else {
+          api.dispatch(logout());
+          if (typeof window !== "undefined") window.location.href = "/login";
+        }
       } else {
         api.dispatch(logout());
         if (typeof window !== "undefined") window.location.href = "/login";

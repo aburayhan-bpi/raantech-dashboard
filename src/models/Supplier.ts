@@ -47,7 +47,6 @@ const supplierSchema = new Schema<ISupplier>(
     totalDue: {
       type: Number,
       default: 0,
-      min: [0, "Total due cannot be negative"],
     },
   },
   {

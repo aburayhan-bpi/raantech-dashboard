@@ -39,7 +39,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await verifyAuth("purchases:create");
+  const session = await verifyAuth("purchases:update");
   if (!session) {
     return ApiResponse.unauthorized();
   }
@@ -96,6 +96,14 @@ export async function POST(
     }
 
     await purchase.save({ session: dbSession });
+
+    // Update Supplier due
+    const Supplier = mongoose.models.Supplier || mongoose.model("Supplier");
+    const supplier = await Supplier.findById(purchase.supplier).session(dbSession);
+    if (supplier) {
+      supplier.totalDue -= amount;
+      await supplier.save({ session: dbSession });
+    }
 
     await dbSession.commitTransaction();
     dbSession.endSession();

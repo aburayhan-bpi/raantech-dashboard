@@ -59,8 +59,8 @@ export async function GET() {
 
     const stats = {
       totalRevenue,
-      totalExpenses,
-      netProfit,
+      totalExpenses: auth.role === 'SUPER_ADMIN' ? totalExpenses : undefined,
+      netProfit: auth.role === 'SUPER_ADMIN' ? netProfit : undefined,
       totalSalesCount: sales.length,
       leaderboard: leaderboardRaw
     };

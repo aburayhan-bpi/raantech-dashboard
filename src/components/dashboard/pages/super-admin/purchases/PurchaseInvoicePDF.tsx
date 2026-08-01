@@ -319,6 +319,14 @@ export const PurchaseInvoicePDF = ({ purchase }: { purchase: IPurchase }) => (
             Tk {purchase.dueAmount.toLocaleString()}
           </Text>
         </View>
+        {purchase.returnedAmount > 0 && (
+          <View style={styles.paidDueRow}>
+            <Text style={styles.summaryLabel}>Returned Amount:</Text>
+            <Text style={{ fontSize: 10, fontWeight: "bold", color: "#f59e0b" }}>
+              Tk {purchase.returnedAmount.toLocaleString()}
+            </Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.footer}>

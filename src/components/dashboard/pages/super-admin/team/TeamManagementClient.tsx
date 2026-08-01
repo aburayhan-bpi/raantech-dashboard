@@ -572,6 +572,8 @@ export default function TeamManagementClient() {
                                   let actions = ["view", "create", "update", "delete"];
                                   if (permission.id === "sales") {
                                     actions = [...actions, "refund", "return"];
+                                  } else if (permission.id === "purchases") {
+                                    actions = [...actions, "return"];
                                   }
                                   return actions.map((action) => {
                                   const actionId = `${permission.id}:${action}`;
@@ -792,6 +794,8 @@ export default function TeamManagementClient() {
                                   let actions = ["view", "create", "update", "delete"];
                                   if (permission.id === "sales") {
                                     actions = [...actions, "refund", "return"];
+                                  } else if (permission.id === "purchases") {
+                                    actions = [...actions, "return"];
                                   }
                                   return actions.map((action) => {
                                   const actionId = `${permission.id}:${action}`;
