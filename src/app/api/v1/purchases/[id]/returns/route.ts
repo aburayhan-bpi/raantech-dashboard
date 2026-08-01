@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongoose";
-import PurchaseReturn from "@/models/PurchaseReturn";
-import Purchase from "@/models/Purchase";
-import Product from "@/models/Product";
-import Supplier from "@/models/Supplier";
-import ActivityLog from "@/models/ActivityLog";
-import type { IPurchaseReturn } from "@/models/PurchaseReturn";
 import { verifyAuth } from "@/lib/auth";
+import dbConnect from "@/lib/mongoose";
+import ActivityLog from "@/models/ActivityLog";
+import Product from "@/models/Product";
+import Purchase from "@/models/Purchase";
+import type { IPurchaseReturn } from "@/models/PurchaseReturn";
+import PurchaseReturn from "@/models/PurchaseReturn";
+import Supplier from "@/models/Supplier";
 import mongoose from "mongoose";
+import { NextResponse } from "next/server";
 
 // Get all returns for a specific purchase
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -37,8 +37,11 @@ export async function GET(
   } catch (error: unknown) {
     console.error("Fetch purchase returns error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Failed to fetch returns" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error ? error.message : "Failed to fetch returns",
+      },
+      { status: 500 },
     );
   }
 }
@@ -46,7 +49,7 @@ export async function GET(
 // Add a new return to a purchase
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   let dbSession = null;
   try {
@@ -64,12 +67,12 @@ export async function POST(
     if (!items || !items.length) {
       return NextResponse.json(
         { message: "At least one item is required to return" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await dbConnect();
-    
+
     // Start session for transaction
     dbSession = await mongoose.startSession();
     dbSession.startTransaction();
@@ -79,21 +82,25 @@ export async function POST(
       await dbSession.abortTransaction();
       return NextResponse.json(
         { message: "Purchase not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const supplier = await Supplier.findById(purchase.supplier).session(dbSession);
+    const supplier = await Supplier.findById(purchase.supplier).session(
+      dbSession,
+    );
     if (!supplier) {
       await dbSession.abortTransaction();
       return NextResponse.json(
         { message: "Supplier not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 0. Calculate already returned quantities
-    const pastReturns = (await PurchaseReturn.find({ purchase: id }).session(dbSession)) as IPurchaseReturn[];
+    const pastReturns = (await PurchaseReturn.find({ purchase: id }).session(
+      dbSession,
+    )) as IPurchaseReturn[];
     const returnedQtyMap: Record<string, number> = {};
     pastReturns.forEach((ret) => {
       ret.items.forEach((item) => {
@@ -104,24 +111,26 @@ export async function POST(
 
     // 1. Check and deduct stock
     for (const returnItem of items) {
-      const product = await Product.findById(returnItem.product).session(dbSession);
+      const product = await Product.findById(returnItem.product).session(
+        dbSession,
+      );
       if (!product) {
         await dbSession.abortTransaction();
         return NextResponse.json(
           { message: `Product ${returnItem.product} not found` },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       // Check if trying to return more than purchased
       const originalItem = purchase.items.find(
-        (item) => item.product.toString() === returnItem.product
+        (item) => item.product.toString() === returnItem.product,
       );
       if (!originalItem) {
         await dbSession.abortTransaction();
         return NextResponse.json(
           { message: `Product ${product.name} was not part of this purchase.` },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -131,16 +140,20 @@ export async function POST(
       if (returnItem.quantity > maxAllowed) {
         await dbSession.abortTransaction();
         return NextResponse.json(
-          { message: `Cannot return ${returnItem.quantity} of ${product.name}. You can only return up to ${maxAllowed}.` },
-          { status: 400 }
+          {
+            message: `Cannot return ${returnItem.quantity} of ${product.name}. You can only return up to ${maxAllowed}.`,
+          },
+          { status: 400 },
         );
       }
-      
+
       if (product.stock < returnItem.quantity) {
         await dbSession.abortTransaction();
         return NextResponse.json(
-          { message: `Cannot return ${returnItem.quantity} of ${product.name}. Current stock is only ${product.stock}.` },
-          { status: 400 }
+          {
+            message: `Cannot return ${returnItem.quantity} of ${product.name}. Current stock is only ${product.stock}.`,
+          },
+          { status: 400 },
         );
       }
 
@@ -155,7 +168,7 @@ export async function POST(
 
     // 3. Update Purchase amounts
     purchase.returnedAmount = (purchase.returnedAmount || 0) + totalAmount;
-    
+
     // Adjust due amount if there is still a due.
     if (purchase.dueAmount > 0) {
       if (purchase.dueAmount >= totalAmount) {
@@ -163,7 +176,7 @@ export async function POST(
       } else {
         purchase.dueAmount = 0;
       }
-      
+
       // Re-evaluate payment status
       if (purchase.dueAmount === 0 && purchase.paidAmount > 0) {
         purchase.paymentStatus = "PAID";
@@ -171,7 +184,7 @@ export async function POST(
         purchase.paymentStatus = "PARTIAL";
       } else if (purchase.dueAmount === 0 && purchase.paidAmount === 0) {
         // Edge case: fully returned without any payment
-        purchase.paymentStatus = "PAID"; 
+        purchase.paymentStatus = "PAID";
       }
     }
 
@@ -189,16 +202,21 @@ export async function POST(
       note,
       createdBy: authSession.userId,
     });
-    
+
     await purchaseReturn.save({ session: dbSession });
 
     // 5. Log activity
-    await ActivityLog.create([{
-      user: authSession.userId,
-      action: "RETURNED",
-      entityType: "PURCHASE",
-      details: `Returned items for Purchase ${purchase.purchaseNo}. Total: ${totalAmount}`,
-    }], { session: dbSession });
+    await ActivityLog.create(
+      [
+        {
+          user: authSession.userId,
+          action: "RETURNED",
+          entityType: "PURCHASE",
+          details: `Returned items for Purchase ${purchase.purchaseNo}. Total: ${totalAmount}`,
+        },
+      ],
+      { session: dbSession },
+    );
 
     await dbSession.commitTransaction();
     dbSession.endSession();
@@ -209,7 +227,7 @@ export async function POST(
         data: purchaseReturn,
         message: "Purchase return has been processed successfully.",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: unknown) {
     if (dbSession) {
@@ -218,8 +236,11 @@ export async function POST(
     }
     console.error("Process purchase return error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Failed to process return" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error ? error.message : "Failed to process return",
+      },
+      { status: 500 },
     );
   }
 }

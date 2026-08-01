@@ -66,7 +66,7 @@ export default function PurchasesClient() {
 
   if (selectedPurchase && isViewModalOpen) {
     const updatedPurchase = purchases.find(
-      (p: IPurchase) => p._id === selectedPurchase._id
+      (p: IPurchase) => p._id === selectedPurchase._id,
     );
     if (
       updatedPurchase &&
@@ -242,7 +242,8 @@ export default function PurchasesClient() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {(isSuperAdmin || userPermissions.includes("purchases:return")) && (
+                        {(isSuperAdmin ||
+                          userPermissions.includes("purchases:return")) && (
                           <Link
                             href={`${basePath}/purchases/${purchase._id}/return`}
                             className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"

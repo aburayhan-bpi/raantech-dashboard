@@ -1,6 +1,7 @@
 "use client";
 
 import { IPurchase } from "@/redux/api/purchase/purchaseApi";
+import { selectUser } from "@/redux/features/user/authSlice";
 import { formatStatusText } from "@/utils/formatStatusText";
 import { format } from "date-fns";
 import {
@@ -19,7 +20,6 @@ import {
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/features/user/authSlice";
 import { PurchaseInvoicePDF } from "./PurchaseInvoicePDF";
 import PurchasePaymentModal from "./PurchasePaymentModal";
 import PurchaseReturnHistoryModal from "./PurchaseReturnHistoryModal";
@@ -37,13 +37,15 @@ export default function ViewPurchaseModal({
 }: ViewPurchaseModalProps) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isReturnHistoryModalOpen, setIsReturnHistoryModalOpen] = useState(false);
+  const [isReturnHistoryModalOpen, setIsReturnHistoryModalOpen] =
+    useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const currentUser = useSelector(selectUser);
   const userPermissions = currentUser?.permissions || [];
   const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
-  const canUpdate = isSuperAdmin || userPermissions.includes("purchases:update");
+  const canUpdate =
+    isSuperAdmin || userPermissions.includes("purchases:update");
 
   const handleDownloadPdf = async () => {
     if (!componentRef.current || !purchase) return;
@@ -83,7 +85,9 @@ export default function ViewPurchaseModal({
         {/* Header - Hidden in Print */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 gap-4 print:hidden">
           <div className="flex items-center justify-between w-full sm:w-auto">
-            <h2 className="text-xl font-bold text-slate-800">Purchase Invoice</h2>
+            <h2 className="text-xl font-bold text-slate-800">
+              Purchase Invoice
+            </h2>
             <button
               onClick={onClose}
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors sm:hidden -mr-2"
@@ -348,9 +352,7 @@ export default function ViewPurchaseModal({
                   </div>
                 )}
                 <div className="flex justify-between text-sm bg-rose-50 p-2 rounded-lg border border-rose-100 mt-2 print:border-none print:p-0 print:bg-transparent">
-                  <span className="text-rose-600 font-medium">
-                    Due Amount:
-                  </span>
+                  <span className="text-rose-600 font-medium">Due Amount:</span>
                   <span className="font-bold text-rose-600">
                     ৳ {purchase.dueAmount.toLocaleString()}
                   </span>
@@ -362,9 +364,7 @@ export default function ViewPurchaseModal({
             <div className="pt-8 border-t border-slate-100 mt-8 space-y-4">
               {purchase.note && (
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700">
-                    Note:
-                  </h4>
+                  <h4 className="text-sm font-medium text-slate-700">Note:</h4>
                   <p className="text-sm text-slate-500 mt-1 whitespace-pre-wrap">
                     {purchase.note}
                   </p>

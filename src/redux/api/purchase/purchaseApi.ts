@@ -183,8 +183,9 @@ export const purchaseApi = baseApi.injectEndpoints({
         url: `/purchases/${id}/payments`,
         method: "GET",
       }),
-      transformResponse: (response: { data: { history: IPurchasePayment[] } }) =>
-        response.data.history,
+      transformResponse: (response: {
+        data: { history: IPurchasePayment[] };
+      }) => response.data.history,
       providesTags: (_result, _error, id) => [
         { type: "Purchases", id: `payments-${id}` },
       ],

@@ -1,15 +1,15 @@
-import { NextRequest } from "next/server";
+import { ApiResponse } from "@/lib/apiResponse";
 import { verifyAuth } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Purchase from "@/models/Purchase";
 import { PurchasePayment } from "@/models/PurchasePayment";
-import { ApiResponse } from "@/lib/apiResponse";
 import mongoose from "mongoose";
+import { NextRequest } from "next/server";
 
 // GET /api/v1/purchases/:id/payments
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifyAuth("purchases:view");
@@ -26,7 +26,7 @@ export async function GET(
 
     return ApiResponse.success(
       { history: payments },
-      "Purchase payment history retrieved successfully"
+      "Purchase payment history retrieved successfully",
     );
   } catch (error) {
     console.error("Error fetching purchase payments:", error);
@@ -37,7 +37,7 @@ export async function GET(
 // POST /api/v1/purchases/:id/payments
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await verifyAuth("purchases:update");
   if (!session) {
@@ -45,7 +45,7 @@ export async function POST(
   }
 
   await dbConnect();
-  
+
   const dbSession = await mongoose.startSession();
   dbSession.startTransaction();
 
@@ -58,7 +58,9 @@ export async function POST(
       return ApiResponse.error("Valid amount is required", 400);
     }
 
-    const purchase = await Purchase.findById(resolvedParams.id).session(dbSession);
+    const purchase = await Purchase.findById(resolvedParams.id).session(
+      dbSession,
+    );
     if (!purchase) {
       await dbSession.abortTransaction();
       return ApiResponse.error("Purchase not found", 404);
@@ -81,7 +83,7 @@ export async function POST(
           createdBy: session.userId,
         },
       ],
-      { session: dbSession }
+      { session: dbSession },
     );
 
     // Update purchase amounts
@@ -99,7 +101,9 @@ export async function POST(
 
     // Update Supplier due
     const Supplier = mongoose.models.Supplier || mongoose.model("Supplier");
-    const supplier = await Supplier.findById(purchase.supplier).session(dbSession);
+    const supplier = await Supplier.findById(purchase.supplier).session(
+      dbSession,
+    );
     if (supplier) {
       supplier.totalDue -= amount;
       await supplier.save({ session: dbSession });
@@ -112,7 +116,7 @@ export async function POST(
       payment[0],
       "Payment has been added successfully and the purchase balance has been updated.",
       null,
-      201
+      201,
     );
   } catch (error) {
     await dbSession.abortTransaction();

@@ -9,10 +9,10 @@ import {
   useGetPurchaseReturnsQuery,
   useReturnPurchaseMutation,
 } from "@/redux/api/purchase/purchaseApi";
-import { ArrowLeft, ArrowUpRight, Save, Trash2, Receipt } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Receipt, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface ReturnItem {
@@ -29,14 +29,16 @@ const EMPTY_PURCHASE_RETURNS: IPurchaseReturn[] = [];
 
 function buildReturnItems(
   purchase: IPurchase,
-  pastReturns: IPurchaseReturn[]
+  pastReturns: IPurchaseReturn[],
 ): ReturnItem[] {
   const returnedQtyMap: Record<string, number> = {};
 
   pastReturns.forEach((ret) => {
     ret.items.forEach((item) => {
-      const productId = typeof item.product === "string" ? item.product : item.product.id;
-      returnedQtyMap[productId] = (returnedQtyMap[productId] || 0) + item.quantity;
+      const productId =
+        typeof item.product === "string" ? item.product : item.product.id;
+      returnedQtyMap[productId] =
+        (returnedQtyMap[productId] || 0) + item.quantity;
     });
   });
 
@@ -66,13 +68,17 @@ export default function ReturnPurchaseClient() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { data: purchaseData, isLoading: isFetching } = useGetPurchaseByIdQuery(id, {
-    skip: !id,
-  });
+  const { data: purchaseData, isLoading: isFetching } = useGetPurchaseByIdQuery(
+    id,
+    {
+      skip: !id,
+    },
+  );
   const { data: returnsData } = useGetPurchaseReturnsQuery(id, {
     skip: !id,
   });
-  const [returnPurchase, { isLoading: isSubmitting }] = useReturnPurchaseMutation();
+  const [returnPurchase, { isLoading: isSubmitting }] =
+    useReturnPurchaseMutation();
 
   const purchase = purchaseData?.data;
   const pastReturns = returnsData ?? EMPTY_PURCHASE_RETURNS;
@@ -107,7 +113,7 @@ export default function ReturnPurchaseClient() {
           };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -117,7 +123,7 @@ export default function ReturnPurchaseClient() {
 
   const handleSubmit = async () => {
     const activeItems = returnItems.filter((i) => i.returnQty > 0);
-    
+
     if (activeItems.length === 0) {
       toast.error("Please specify return quantities for at least one item.");
       return;
@@ -141,8 +147,10 @@ export default function ReturnPurchaseClient() {
       toast.success("Purchase return processed successfully!");
       router.push(`${basePath}/purchases`);
     } catch (error: unknown) {
-      const err = error as { data?: { error?: string, message?: string } };
-      toast.error(err?.data?.message || err?.data?.error || "Failed to process return");
+      const err = error as { data?: { error?: string; message?: string } };
+      toast.error(
+        err?.data?.message || err?.data?.error || "Failed to process return",
+      );
     }
   };
 
@@ -177,7 +185,9 @@ export default function ReturnPurchaseClient() {
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Return Purchase</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
+              Return Purchase
+            </h1>
             <p className="text-sm text-slate-500 mt-1">
               Purchase No: {purchase.purchaseNo}
             </p>
@@ -203,9 +213,11 @@ export default function ReturnPurchaseClient() {
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
             <div className="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
               <ArrowUpRight className="w-5 h-5 text-[#0089A7]" />
-              <h2 className="text-base font-semibold text-slate-800">Select Items to Return</h2>
+              <h2 className="text-base font-semibold text-slate-800">
+                Select Items to Return
+              </h2>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-100 shadow-sm">
@@ -254,9 +266,16 @@ export default function ReturnPurchaseClient() {
                           max={item.maxQty}
                           value={item.returnQty === 0 ? "" : item.returnQty}
                           placeholder="0"
-                          onChange={(e) => updateReturnQty(item.productId, Number(e.target.value))}
+                          onChange={(e) =>
+                            updateReturnQty(
+                              item.productId,
+                              Number(e.target.value),
+                            )
+                          }
                           className={`w-full px-2 py-1.5 bg-white border ${
-                            item.returnQty > 0 ? "border-[#0089A7] ring-1 ring-[#0089A7]/20" : "border-slate-200"
+                            item.returnQty > 0
+                              ? "border-[#0089A7] ring-1 ring-[#0089A7]/20"
+                              : "border-slate-200"
                           } rounded-lg text-sm text-center focus:outline-none focus:border-[#0089A7]`}
                         />
                       </td>
@@ -337,7 +356,9 @@ export default function ReturnPurchaseClient() {
 
             <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
               <p className="text-xs text-amber-700 leading-relaxed font-medium">
-                Note: Submitting this return will immediately deduct the specified items from your inventory stock and decrease the supplier&apos;s due balance by the total refund amount.
+                Note: Submitting this return will immediately deduct the
+                specified items from your inventory stock and decrease the
+                supplier&apos;s due balance by the total refund amount.
               </p>
             </div>
           </div>
