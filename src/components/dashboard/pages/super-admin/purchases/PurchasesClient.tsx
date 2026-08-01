@@ -1,25 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Plus, Search, Calendar, CheckCircle2 } from "lucide-react";
+import { Pagination } from "@/components/dashboard/pagination";
 import CustomButton from "@/components/shared/CustomButton";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
-import { Pagination } from "@/components/dashboard/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchParams, usePathname } from "next/navigation";
-import useSetParamsForPagination from "@/utils/setParamsForPagination";
-import { useSelector } from "react-redux";
+import {
+  IPurchase,
+  useGetPurchasesQuery,
+} from "@/redux/api/purchase/purchaseApi";
 import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetPurchasesQuery, IPurchase } from "@/redux/api/purchase/purchaseApi";
 import { formatStatusText } from "@/utils/formatStatusText";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
+import { Calendar, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import ViewPurchaseModal from "./ViewPurchaseModal";
-import { Eye } from "lucide-react";
 
 export default function PurchasesClient() {
   const pathname = usePathname();
-  const basePath = pathname.split('/').slice(0, 3).join('/');
+  const basePath = pathname.split("/").slice(0, 3).join("/");
   const sp = useSearchParams();
   const setParams = useSetParamsForPagination();
 
@@ -28,13 +30,16 @@ export default function PurchasesClient() {
   const previousSearch = useRef<string>(debouncedSearch);
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedPurchase, setSelectedPurchase] = useState<IPurchase | null>(null);
+  const [selectedPurchase, setSelectedPurchase] = useState<IPurchase | null>(
+    null,
+  );
 
   const currentUser = useSelector(selectUser);
   const userPermissions = currentUser?.permissions || [];
   const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
 
-  const canCreate = isSuperAdmin || userPermissions.includes("purchases:create");
+  const canCreate =
+    isSuperAdmin || userPermissions.includes("purchases:create");
 
   useEffect(() => {
     if (previousSearch.current === debouncedSearch) return;
@@ -61,9 +66,12 @@ export default function PurchasesClient() {
 
   if (selectedPurchase && isViewModalOpen) {
     const updatedPurchase = purchases.find(
-      (p: IPurchase) => p._id === selectedPurchase._id
+      (p: IPurchase) => p._id === selectedPurchase._id,
     );
-    if (updatedPurchase && JSON.stringify(updatedPurchase) !== JSON.stringify(selectedPurchase)) {
+    if (
+      updatedPurchase &&
+      JSON.stringify(updatedPurchase) !== JSON.stringify(selectedPurchase)
+    ) {
       setSelectedPurchase(updatedPurchase);
     }
   }
@@ -165,18 +173,32 @@ export default function PurchasesClient() {
                   >
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm text-slate-700">{purchase.purchaseNo}</p>
+                        <p className="text-sm text-slate-700">
+                          {purchase.purchaseNo}
+                        </p>
                         <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                           <Calendar className="w-3 h-3" />
-                          {purchase.purchaseDate ? format(new Date(purchase.purchaseDate), "dd MMM yyyy") : format(new Date(purchase.createdAt), "dd MMM yyyy")}
+                          {purchase.purchaseDate
+                            ? format(
+                                new Date(purchase.purchaseDate),
+                                "dd MMM yyyy",
+                              )
+                            : format(
+                                new Date(purchase.createdAt),
+                                "dd MMM yyyy",
+                              )}
                         </p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm text-slate-700">{purchase.supplier?.name || "N/A"}</p>
+                        <p className="text-sm text-slate-700">
+                          {purchase.supplier?.name || "N/A"}
+                        </p>
                         {purchase.supplier?.phone && (
-                          <p className="text-xs text-slate-500 mt-0.5">{purchase.supplier.company}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {purchase.supplier.company}
+                          </p>
                         )}
                       </div>
                     </td>
@@ -196,7 +218,7 @@ export default function PurchasesClient() {
                       <div className="space-y-1.5 flex flex-col items-start">
                         <span
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getPaymentStatusColor(
-                            purchase.paymentStatus
+                            purchase.paymentStatus,
                           )}`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
@@ -211,7 +233,7 @@ export default function PurchasesClient() {
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getStatusColor(
-                          purchase.status
+                          purchase.status,
                         )}`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
@@ -231,7 +253,10 @@ export default function PurchasesClient() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     No purchases found.
                   </td>
                 </tr>
