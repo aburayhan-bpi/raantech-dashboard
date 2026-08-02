@@ -1,13 +1,10 @@
 "use client";
-
+import { IPurchase } from "@/types/global";
 import { Pagination } from "@/components/dashboard/pagination";
 import CustomButton from "@/components/shared/CustomButton";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { useDebounce } from "@/hooks/useDebounce";
-import {
-  IPurchase,
-  useGetPurchasesQuery,
-} from "@/redux/api/purchase/purchaseApi";
+import { useGetPurchasesQuery } from "@/redux/api/purchase/purchaseApi";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { formatStatusText } from "@/utils/formatStatusText";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
@@ -66,7 +63,7 @@ export default function PurchasesClient() {
 
   if (selectedPurchase && isViewModalOpen) {
     const updatedPurchase = purchases.find(
-      (p: IPurchase) => p._id === selectedPurchase._id,
+      (p: IPurchase) => p.id === selectedPurchase.id,
     );
     if (
       updatedPurchase &&
@@ -168,7 +165,7 @@ export default function PurchasesClient() {
               ) : purchases.length > 0 ? (
                 purchases.map((purchase: IPurchase, index: number) => (
                   <tr
-                    key={purchase._id || `purchase-${index}`}
+                    key={purchase.id || `purchase-${index}`}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
@@ -245,7 +242,7 @@ export default function PurchasesClient() {
                         {(isSuperAdmin ||
                           userPermissions.includes("purchases:return")) && (
                           <Link
-                            href={`${basePath}/purchases/${purchase._id}/return`}
+                            href={`${basePath}/purchases/${purchase.id}/return`}
                             className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Return Purchase"
                           >
@@ -278,11 +275,11 @@ export default function PurchasesClient() {
         </div>
 
         {/* Pagination */}
-        {meta && meta.totalPages > 1 && (
+        {meta && meta.totalPage > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
             <Pagination
               currentPage={meta.page}
-              totalPages={meta.totalPages}
+              totalPages={meta.totalPage}
               totalItems={meta.total}
               itemsPerPage={meta.limit}
               showSummary={true}

@@ -1,5 +1,4 @@
 "use client";
-
 import { useMemo } from "react";
 import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";

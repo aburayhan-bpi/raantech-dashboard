@@ -1,5 +1,5 @@
 "use client";
-
+import { TPermission } from "@/types/global";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -44,7 +44,7 @@ export function RequirePermission({
   const requiredPermission = `${module}:${action}`;
   const hasAccess =
     user.role === "SUPER_ADMIN" ||
-    (user.permissions && user.permissions.includes(requiredPermission)) ||
+    (user.permissions && user.permissions.includes(requiredPermission as unknown as TPermission)) ||
     false;
 
   // Render Access Denied UI if they lack specific feature permissions

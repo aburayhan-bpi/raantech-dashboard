@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/mongoose";
 import Sale from "@/models/Sale";
 import Customer from "@/models/Customer";
@@ -23,6 +24,7 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status");
     const paymentStatus = searchParams.get("paymentStatus");
+    const customerId = searchParams.get("customer");
 
     // Pipeline to join customer and allow searching by customer name/phone
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +59,10 @@ export async function GET(request: Request) {
 
     if (status) {
       pipeline.push({ $match: { status } });
+    }
+
+    if (customerId) {
+      pipeline.push({ $match: { customer: new mongoose.Types.ObjectId(customerId) } });
     }
 
     if (paymentStatus) {

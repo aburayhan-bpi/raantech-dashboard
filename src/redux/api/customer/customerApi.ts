@@ -1,28 +1,5 @@
 import { baseApi } from "../baseApi";
-
-export interface ICustomer {
-  id: string;
-  name: string;
-  phone: string;
-  email?: string;
-  address?: string;
-  alternatePhone?: string;
-  totalPurchases: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ICustomerResponse {
-  success: boolean;
-  message: string;
-  data: ICustomer[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+import { ICustomer, ICustomerResponse, ISingleCustomerResponse } from "@/types/global";
 
 export const customerApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -33,14 +10,14 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Customers"],
     }),
-    getCustomerById: build.query<{ data: ICustomer }, string>({
+    getCustomerById: build.query<ISingleCustomerResponse, string>({
       query: (id) => ({
         url: `/customers/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Customers", id }],
     }),
-    createCustomer: build.mutation<{ data: ICustomer }, Partial<ICustomer>>({
+    createCustomer: build.mutation<ISingleCustomerResponse, Partial<ICustomer>>({
       query: (data) => ({
         url: "/customers",
         method: "POST",
@@ -49,7 +26,7 @@ export const customerApi = baseApi.injectEndpoints({
       invalidatesTags: ["Customers"],
     }),
     updateCustomer: build.mutation<
-      { data: ICustomer },
+      ISingleCustomerResponse,
       { id: string; data: Partial<ICustomer> }
     >({
       query: ({ id, data }) => ({
@@ -62,7 +39,7 @@ export const customerApi = baseApi.injectEndpoints({
         "Customers",
       ],
     }),
-    deleteCustomer: build.mutation<{ data: ICustomer }, string>({
+    deleteCustomer: build.mutation<ISingleCustomerResponse, string>({
       query: (id) => ({
         url: `/customers/${id}`,
         method: "DELETE",

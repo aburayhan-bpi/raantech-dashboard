@@ -1,5 +1,4 @@
 "use client";
-
 import { clearEmail } from "@/redux/features/verifyAuth/verifyAuth";
 import { useAppDispatch } from "@/redux/hook";
 import { motion } from "framer-motion";

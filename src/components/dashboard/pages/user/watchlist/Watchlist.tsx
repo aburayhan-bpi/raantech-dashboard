@@ -1,5 +1,4 @@
 "use client";
-
 import { Pagination } from "@/components/dashboard/pagination";
 import AiConfidenceMeter from "@/components/shared/AiConfidenceMeter";
 import ConfirmModal from "@/components/shared/ConfirmModal";

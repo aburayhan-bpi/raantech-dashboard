@@ -1,16 +1,13 @@
 "use client";
-
+import { ICustomer } from "@/types/global";
 import { Pagination } from "@/components/dashboard/pagination";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import CustomButton from "@/components/shared/CustomButton";
 import ExcelImportModal from "@/components/shared/ExcelImportModal";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { useDebounce } from "@/hooks/useDebounce";
-import {
-  ICustomer,
-  useDeleteCustomerMutation,
-  useGetCustomersQuery,
-} from "@/redux/api/customer/customerApi";
+import { useDeleteCustomerMutation,
+  useGetCustomersQuery } from "@/redux/api/customer/customerApi";
 import { selectUser } from "@/redux/features/user/authSlice";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import {
@@ -258,11 +255,11 @@ export default function CustomersClient() {
           </table>
         </div>
 
-        {meta && meta.totalPages > 1 && (
+        {meta && meta.totalPage > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
             <Pagination
               currentPage={meta.page}
-              totalPages={meta.totalPages}
+              totalPages={meta.totalPage}
               totalItems={meta.total}
               itemsPerPage={meta.limit}
             />

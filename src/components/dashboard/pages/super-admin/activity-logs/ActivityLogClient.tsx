@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
@@ -229,7 +228,7 @@ export default function ActivityLogClient() {
               ) : (
                 logs.map((log: IActivityLog, index: number) => (
                   <tr
-                    key={log._id || index}
+                    key={log.id || index}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">

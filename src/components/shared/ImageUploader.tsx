@@ -1,5 +1,4 @@
 "use client";
-
 import { useRef, useState } from "react";
 import { X, ImagePlus, GripVertical, Star } from "lucide-react";
 import Image from "next/image";

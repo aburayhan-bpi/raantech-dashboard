@@ -79,8 +79,11 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         400
       );
     }
-
-    const deletedCategory = await Category.findByIdAndDelete(categoryId);
+    const deletedCategory = await Category.findOneAndUpdate(
+      { _id: categoryId },
+      { isDeleted: true },
+      { new: true }
+    );
     
     if (!deletedCategory) {
       return ApiResponse.error('Category not found', 404);

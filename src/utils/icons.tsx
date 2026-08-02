@@ -48,7 +48,7 @@ import {
  */
 import { BsLockFill } from "react-icons/bs";
 import { FaBookmark, FaReceipt, FaTrashCan, FaTruck } from "react-icons/fa6";
-import { FaShoppingCart, FaBoxOpen, FaTags, FaUsersCog } from "react-icons/fa";
+import { FaShoppingCart, FaBoxOpen, FaTags, FaUsersCog, FaTrash } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import {
   HiCheckBadge,
@@ -93,7 +93,9 @@ export const Icons = {
   FaBoxOpen,
   FaTags,
   FaUsersCog,
+  FaTrash,
   FaTruck,
+  HiUserGroup,
   TbBellRingingFilled,
   HiClipboardDocumentList,
   PiCrownSimpleFill,
@@ -101,7 +103,6 @@ export const Icons = {
   IoWallet,
   HiNewspaper,
   IoSettingsSharp,
-  HiUserGroup,
   MapPin,
   Pencil,
   Mail,

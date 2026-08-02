@@ -1,5 +1,5 @@
 "use client";
-
+import { ICategory } from "@/types/global";
 import { Pagination } from "@/components/dashboard/pagination";
 import CustomButton from "@/components/shared/CustomButton";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
@@ -16,13 +16,7 @@ import { useSelector } from "react-redux";
 import CategoryModal from "./CategoryModal";
 import DeleteCategoryModal from "./DeleteCategoryModal";
 
-export interface ICategory {
-  _id: string;
-  name: string;
-  description?: string;
-  image?: string;
-  createdAt: string;
-}
+
 
 export default function CategoryClient() {
   const sp = useSearchParams();
@@ -142,7 +136,7 @@ export default function CategoryClient() {
               ) : categories.length > 0 ? (
                 categories.map((category: ICategory, index: number) => (
                   <tr
-                    key={category._id || `category-${index}`}
+                    key={category.id || `category-${index}`}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">

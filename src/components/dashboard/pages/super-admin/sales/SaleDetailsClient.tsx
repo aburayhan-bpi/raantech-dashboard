@@ -1,16 +1,12 @@
 "use client";
-
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
-import {
-  ISaleItem,
-  useGetSaleByIdQuery,
+import { useGetSaleByIdQuery,
   useUpdateSaleMutation,
   usePartialReturnSaleMutation,
   useAddSaleRefundMutation,
-  useGetSaleRefundsQuery,
-} from "@/redux/api/sale/salesApi";
-import { PaymentMethod, SaleStatus } from "@/types/global";
+  useGetSaleRefundsQuery } from "@/redux/api/sale/salesApi";
+import { PaymentMethod, SaleStatus, ISaleItem } from "@/types/global";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import {
@@ -68,7 +64,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
   const [refundNote, setRefundNote] = useState("");
 
   const { data: refundData } = useGetSaleRefundsQuery(saleId);
-  const refunds = refundData?.history || [];
+  const refunds = refundData?.data?.history || [];
   const [addRefund, { isLoading: isAddingRefund }] = useAddSaleRefundMutation();
 
   const [status, setStatus] = useState("");
@@ -629,7 +625,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               <div className="space-y-4">
                 <p className="text-sm text-slate-600 mb-2">Select the quantity of items to return. The stock will be restored automatically.</p>
                 {sale.items.map((item: ISaleItem) => (
-                  <div key={String(item.product._id)} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                  <div key={String(item.product.id)} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-lg">
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-slate-800">{item.product.name}</span>
                       <span className="text-xs text-slate-500">Ordered: {item.quantity} | Unit Price: ৳{item.unitPrice}</span>
@@ -640,10 +636,10 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                         type="number"
                         min="0"
                         max={item.quantity}
-                        value={returnQuantities[String(item.product._id)] || ""}
+                        value={returnQuantities[String(item.product.id)] || ""}
                         onChange={(e) => {
                           const val = e.target.value === "" ? 0 : Math.min(item.quantity, Math.max(0, Number(e.target.value)));
-                          setReturnQuantities(prev => ({ ...prev, [String(item.product._id)]: val }));
+                          setReturnQuantities(prev => ({ ...prev, [String(item.product.id)]: val }));
                         }}
                         className="w-20 px-2 py-1 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500/20"
                       />
@@ -745,7 +741,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
             {sale.statusHistory && sale.statusHistory.length > 0 ? (
               <div className="relative pl-6 space-y-6 before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent pt-2">
                 {[...sale.statusHistory].reverse().map((history, idx) => (
-                  <div key={history._id || idx} className="relative group">
+                  <div key={history.id || idx} className="relative group">
                     {/* Icon */}
                     <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-[#0089A7]/10 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
                       <div className="w-2 h-2 rounded-full bg-[#0089A7] relative">
@@ -787,7 +783,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
             {refunds && refunds.length > 0 ? (
               <div className="relative pl-6 space-y-6 before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent pt-2">
                 {[...refunds].reverse().map((refund, idx) => (
-                  <div key={refund._id || idx} className="relative group">
+                  <div key={refund.id || idx} className="relative group">
                     {/* Icon */}
                     <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-purple-100 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
                       <div className="w-2 h-2 rounded-full bg-purple-600 relative">

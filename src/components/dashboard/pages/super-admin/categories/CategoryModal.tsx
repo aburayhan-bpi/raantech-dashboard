@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
-import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
 import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
 } from "@/redux/api/category/categoryApi";
-import { toast } from "sonner";
+import { ICategory } from "@/types/global";
+import { Image as ImageIcon, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { ICategory } from "./CategoryClient";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -99,7 +99,7 @@ export default function CategoryModal({
 
       if (isEditing) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const categoryId = category._id || (category as any).id;
+        const categoryId = category.id || (category as any).id;
         await updateCategory({ id: categoryId, ...payload }).unwrap();
         toast.success("Category updated successfully");
       } else {
@@ -142,13 +142,18 @@ export default function CategoryModal({
               Category Image
             </label>
             <div className="flex items-start gap-4">
-              <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0 group">
+              <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 group">
                 {image ? (
-                  <Image src={image} alt="Category" fill className="object-cover" />
+                  <Image
+                    src={image}
+                    alt="Category"
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
                   <ImageIcon className="w-6 h-6 text-slate-400" />
                 )}
-                
+
                 {/* Overlay for hover */}
                 {image && (
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -230,7 +235,8 @@ export default function CategoryModal({
               type="button"
               onClick={onClose}
               variant="outline"
-              icon={<X className="w-4 h-4" />} btnText="Cancel"
+              icon={<X className="w-4 h-4" />}
+              btnText="Cancel"
             />
             <CustomButton
               type="submit"

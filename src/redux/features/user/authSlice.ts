@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import { decodeJWT } from "@/utils/decodeJWT";
+import { TPermission } from "@/types/global";
 
 export interface AuthUser {
   id: string;
   email: string;
   role: "SUPER_ADMIN" | "ADMIN" | "STAFF";
   name: string;
-  permissions?: string[];
+  permissions?: TPermission[];
 }
 
 // Auth state interface

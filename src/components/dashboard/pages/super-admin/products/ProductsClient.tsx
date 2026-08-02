@@ -1,17 +1,14 @@
 "use client";
-
+import { IProduct } from "@/types/global";
 import { Pagination } from "@/components/dashboard/pagination";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import ExcelImportModal from "@/components/shared/ExcelImportModal";
 import CustomButton from "@/components/shared/CustomButton";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import {
-  IProduct,
-  useDeleteProductMutation,
+import { useDeleteProductMutation,
   useGetProductsQuery,
-  useUpdateProductMutation,
-} from "@/redux/api/product/productApi";
+  useUpdateProductMutation } from "@/redux/api/product/productApi";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { Plus, Search, Trash2, Edit2, ArchiveRestore, Download, Upload } from "lucide-react";
 import Image from "next/image";

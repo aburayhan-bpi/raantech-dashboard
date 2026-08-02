@@ -1,13 +1,12 @@
 "use client";
-
 import { Pagination } from "@/components/dashboard/pagination";
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { useDebounce } from "@/hooks/useDebounce";
-import { ISale, useGetSalesQuery } from "@/redux/api/sale/salesApi";
+import { useGetSalesQuery } from "@/redux/api/sale/salesApi";
 import { selectUser } from "@/redux/features/user/authSlice";
-import { PaymentStatus, SaleStatus } from "@/types/global";
+import { PaymentStatus, SaleStatus, ISale } from "@/types/global";
 import { formatStatusText } from "@/utils/formatStatusText";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
@@ -102,7 +101,7 @@ export default function SalesClient() {
   };
 
   const handleView = (sale: ISale) => {
-    router.push(`${basePath}/sales/${sale._id}`);
+    router.push(`${basePath}/sales/${sale.id}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -238,7 +237,7 @@ export default function SalesClient() {
               ) : sales.length > 0 ? (
                 sales.map((sale: ISale, index: number) => (
                   <tr
-                    key={sale._id || `sale-${index}`}
+                    key={sale.id || `sale-${index}`}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
@@ -357,11 +356,11 @@ export default function SalesClient() {
         </div>
 
         {/* Pagination */}
-        {meta && meta.totalPages > 1 && sales.length > 0 && (
+        {meta && meta.totalPage > 1 && sales.length > 0 && (
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
             <Pagination
               currentPage={meta.page}
-              totalPages={meta.totalPages}
+              totalPages={meta.totalPage}
               totalItems={meta.total}
               itemsPerPage={meta.limit}
               showSummary={true}

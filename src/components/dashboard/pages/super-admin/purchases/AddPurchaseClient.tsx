@@ -1,13 +1,10 @@
 "use client";
-
+import { IProduct, ISupplier } from "@/types/global";
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
-import { IProduct, useGetProductsQuery } from "@/redux/api/product/productApi";
+import { useGetProductsQuery } from "@/redux/api/product/productApi";
 import { useCreatePurchaseMutation } from "@/redux/api/purchase/purchaseApi";
-import {
-  ISupplier,
-  useGetSuppliersQuery,
-} from "@/redux/api/supplier/supplierApi";
+import { useGetSuppliersQuery } from "@/redux/api/supplier/supplierApi";
 import { PurchasePaymentMethod, PurchasePaymentStatus } from "@/types/backend";
 import {
   ArrowLeft,
@@ -252,7 +249,7 @@ export default function AddPurchaseClient() {
                 <CustomDropdown
                   options={suppliers.map((s: ISupplier) => ({
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    value: s._id || (s as any).id,
+                    value: s.id || (s as any).id,
                     label: `${s.name} ${s.company ? `(${s.company})` : ""}`,
                   }))}
                   value={supplier}

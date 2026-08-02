@@ -126,19 +126,46 @@ export interface ILogoutResponse {
 
 // Get Profile Types
 
+export type TPermission =
+  | "sales:view" | "sales:create" | "sales:update" | "sales:delete" | "sales:refund" | "sales:return"
+  | "purchases:view" | "purchases:create" | "purchases:update" | "purchases:delete" | "purchases:return"
+  | "products:view" | "products:create" | "products:update" | "products:delete" | "products:hard_delete"
+  | "categories:view" | "categories:create" | "categories:update" | "categories:delete"
+  | "suppliers:view" | "suppliers:create" | "suppliers:update" | "suppliers:delete"
+  | "customers:view" | "customers:create" | "customers:update" | "customers:delete"
+  | "expenses:view" | "expenses:create" | "expenses:update" | "expenses:delete";
+
 export interface IAdminProfile {
   id: string;
   email: string;
   name: string;
   profileImage: string;
   role: "SUPER_ADMIN" | "ADMIN" | "STAFF";
-  permissions?: string[];
+  permissions?: TPermission[];
   status: string;
   isVerified: string;
   address?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+export const STAFF_ALLOWED_PERMISSIONS: TPermission[] = [
+  "sales:view", "sales:create",
+  "products:view",
+  "customers:view", "customers:create",
+  "categories:view"
+];
+
+export const ADMIN_ALLOWED_PERMISSIONS: TPermission[] = [
+  ...STAFF_ALLOWED_PERMISSIONS,
+  "sales:update", "sales:refund", "sales:return",
+  "products:create", "products:update", "products:delete", "products:hard_delete",
+  "purchases:view", "purchases:create", "purchases:update", "purchases:return",
+  "categories:create", "categories:update", "categories:delete",
+  "suppliers:view", "suppliers:create", "suppliers:update", "suppliers:delete",
+  "customers:update", "customers:delete",
+  "expenses:view", "expenses:create", "expenses:update", "expenses:delete"
+];
 
 export type IGetProfileResponse = IBaseResponse<IAdminProfile>;
 
@@ -244,7 +271,7 @@ export type IVerifyOTPResponse = IBaseResponse<{ resetToken: string }>;
 
 // --- USER MANAGEMENT API TYPES ---
 export interface ITeamUser {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   role: "SUPER_ADMIN" | "ADMIN" | "STAFF";
@@ -280,9 +307,9 @@ export interface IUpdateUserPayload {
 
 // --- ACTIVITY LOG API TYPES ---
 export interface IActivityLog {
-  _id: string;
+  id: string;
   user: {
-    _id: string;
+    id: string;
     name: string;
     email: string;
     role: string;
@@ -299,7 +326,7 @@ export type IActivityLogResponse = IBaseResponse<IActivityLog[]>;
 
 // --- CATEGORY API TYPES ---
 export interface ICategory {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
   image?: string;
@@ -319,3 +346,308 @@ export interface IUpdateCategoryPayload extends Partial<ICreateCategoryPayload> 
 
 export type ICategoryResponse = IBaseResponse<ICategory>;
 export type ICategoriesResponse = IBaseResponse<ICategory[]>;
+
+// --- TRASH API TYPES ---
+export interface ITrashItem {
+  id: string;
+  name?: string;
+  phone?: string;
+  email?: string;
+  deletedAt?: string;
+  updatedAt?: string;
+}
+
+export type ITrashResponse = IBaseResponse<ITrashItem[]>;
+export type ITrashMutationResponse = IBaseResponse<null>;
+
+// --- CUSTOMER API TYPES ---
+export interface ICustomer {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  alternatePhone?: string;
+  totalPurchases: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ICustomerResponse = IBaseResponse<ICustomer[]>;
+export type ISingleCustomerResponse = IBaseResponse<ICustomer>;
+
+// --- PRODUCT API TYPES ---
+export interface IProduct {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  brand?: string;
+  buyingPrice: number;
+  sellingPrice: number;
+  discountPrice?: number;
+  tax: number;
+  stock: number;
+  alertQuantity: number;
+  unit: string;
+  sku?: string;
+  barcode?: string;
+  images: string[];
+  status: 'DRAFT' | 'ACTIVE' | 'OUT_OF_STOCK' | 'DISCONTINUED';
+  tags: string[];
+  isDeleted: boolean;
+  createdBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IProductStats {
+  totalProducts: number;
+  activeProducts: number;
+  outOfStock: number;
+  lowStock: number;
+  totalInventoryValue: number;
+  totalRetailValue: number;
+}
+
+export interface ICreateProductPayload {
+  name: string;
+  description?: string;
+  category: string;
+  brand?: string;
+  buyingPrice: number;
+  sellingPrice: number;
+  discountPrice?: number;
+  tax?: number;
+  stock: number;
+  alertQuantity?: number;
+  unit?: string;
+  sku?: string;
+  barcode?: string;
+  images?: string[];
+  status?: string;
+  tags?: string[];
+}
+
+export type IUpdateProductPayload = Partial<ICreateProductPayload>;
+
+export type IProductsResponse = IBaseResponse<IProduct[]>;
+export type IProductResponse = IBaseResponse<IProduct>;
+export type IProductStatsResponse = IBaseResponse<IProductStats>;
+
+// --- PURCHASE API TYPES ---
+import { PurchasePaymentMethod, PurchasePaymentStatus, PurchaseStatus } from "@/types/backend";
+export interface IPurchaseItem {
+  product: IProduct;
+  quantity: number;
+  unitCost: number;
+  total: number;
+}
+
+export interface IPurchase {
+  id: string;
+  purchaseNo: string;
+  supplier: ISupplier; // Using ISupplier now
+  items: IPurchaseItem[];
+  subTotal: number;
+  discount: number;
+  tax: number;
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  returnedAmount: number;
+  paymentStatus: PurchasePaymentStatus;
+  paymentMethod: PurchasePaymentMethod;
+  purchaseDate: string;
+  note?: string;
+  status: PurchaseStatus;
+  createdBy: { id: string; name: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreatePurchasePayload {
+  supplier: string;
+  items: { product: string; quantity: number; unitCost: number; total: number; }[];
+  subTotal: number;
+  discount: number;
+  tax: number;
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  paymentStatus: PurchasePaymentStatus;
+  paymentMethod: PurchasePaymentMethod;
+  purchaseDate?: string;
+  note?: string;
+}
+
+export interface IPurchasePayment {
+  id: string;
+  purchase: string;
+  amount: number;
+  paymentMethod: PurchasePaymentMethod;
+  paymentDate: string;
+  note?: string;
+  createdBy: { id: string; name: string };
+  createdAt: string;
+}
+
+export interface IAddPaymentPayload {
+  amount: number;
+  paymentMethod: PurchasePaymentMethod;
+  paymentDate?: string;
+  note?: string;
+}
+
+export interface IPurchaseReturnItem {
+  product: IProduct | string;
+  quantity: number;
+  unitCost: number;
+  total: number;
+}
+
+export interface IPurchaseReturn {
+  id: string;
+  purchase: string;
+  supplier: string;
+  items: IPurchaseReturnItem[];
+  subTotal: number;
+  tax: number;
+  totalAmount: number;
+  returnDate: string;
+  note?: string;
+  createdBy: { id: string; name: string };
+  createdAt: string;
+}
+
+export interface IReturnPurchasePayload {
+  items: { product: string; quantity: number; unitCost: number; total: number; }[];
+  subTotal: number;
+  tax: number;
+  totalAmount: number;
+  returnDate?: string;
+  note?: string;
+}
+
+export type PurchaseResponse = IBaseResponse<IPurchase[]>;
+export type SinglePurchaseResponse = IBaseResponse<IPurchase>;
+export type PurchasePaymentsResponse = IBaseResponse<IPurchasePayment[]>;
+export type PurchaseReturnsResponse = IBaseResponse<IPurchaseReturn[]>;
+
+// --- SALE API TYPES ---
+import { SalePaymentStatus, SalePaymentMethod } from "@/types/backend";
+export interface ISaleItem {
+  id?: string;
+  product: IProduct;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface ISale {
+  id: string;
+  saleNo: string;
+  customer: ICustomer;
+  items: ISaleItem[];
+  subTotal: number;
+  discount: number;
+  tax: number;
+  shippingCharge: number;
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  refundedAmount?: number;
+  paymentStatus: SalePaymentStatus;
+  paymentMethod: SalePaymentMethod;
+  saleDate: string;
+  courierDetails?: string;
+  note?: string;
+  status: SaleStatus;
+  statusHistory?: {
+    id: string;
+    status: SaleStatus;
+    note?: string;
+    updatedBy?: { id: string; name: string; };
+    date: string;
+  }[];
+  createdBy: { id: string; name: string; email: string; };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ISalePayment {
+  id: string;
+  sale: string;
+  amount: number;
+  paymentMethod: SalePaymentMethod;
+  paymentDate: string;
+  note?: string;
+  createdBy: { id: string; name: string; email: string; };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ISaleRefund {
+  id: string;
+  sale: string;
+  amount: number;
+  refundMethod: string;
+  refundDate: string;
+  note?: string;
+  createdBy: { id: string; name: string; email: string; };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreateSaleRequest {
+  customer: {
+    id?: string;
+    name: string;
+    phone: string;
+    email?: string;
+    address?: string;
+  };
+  items: { product: string; quantity: number; unitPrice: number; total: number; }[];
+  subTotal: number;
+  discount?: number;
+  tax?: number;
+  shippingCharge?: number;
+  totalAmount: number;
+  paidAmount?: number;
+  paymentMethod: SalePaymentMethod;
+  courierDetails?: string;
+  note?: string;
+}
+
+export type SalesResponse = IBaseResponse<ISale[]>;
+export type SingleSaleResponse = IBaseResponse<ISale>;
+export type SalePaymentsResponse = IBaseResponse<{ history: ISalePayment[] }>;
+export type SaleRefundsResponse = IBaseResponse<{ history: ISaleRefund[] }>;
+export type SingleSalePaymentResponse = IBaseResponse<ISalePayment>;
+export type SingleSaleRefundResponse = IBaseResponse<ISaleRefund>;
+
+// --- SUPPLIER API TYPES ---
+export interface ISupplier {
+  id: string;
+  name: string;
+  company?: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  status: "ACTIVE" | "INACTIVE";
+  totalDue: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SupplierResponse = IBaseResponse<ISupplier[]>;
+export type SingleSupplierResponse = IBaseResponse<ISupplier>;

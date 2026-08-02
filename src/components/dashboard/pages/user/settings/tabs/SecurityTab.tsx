@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PassViewToggleBtn from "@/components/shared/PassViewToggleBtn";
 import { cn } from "@/lib/utils";
 import { useChangePasswordMutation, useRequestPasswordOtpMutation } from "@/redux/api/users/userApi";

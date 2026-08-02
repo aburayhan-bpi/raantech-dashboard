@@ -1,5 +1,4 @@
 "use client";
-
 import { useGetPurchaseReturnsQuery } from "@/redux/api/purchase/purchaseApi";
 import { format } from "date-fns";
 import { Package, Undo2, X } from "lucide-react";
@@ -65,7 +64,7 @@ export default function PurchaseReturnHistoryModal({
             <div className="space-y-6">
               {returnHistory.map((ret, idx) => (
                 <div
-                  key={ret._id || idx}
+                  key={ret.id || idx}
                   className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
                 >
                   <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4">

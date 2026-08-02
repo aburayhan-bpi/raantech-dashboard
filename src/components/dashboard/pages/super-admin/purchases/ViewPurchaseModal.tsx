@@ -1,6 +1,5 @@
 "use client";
-
-import { IPurchase } from "@/redux/api/purchase/purchaseApi";
+import { IPurchase } from "@/types/global";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { formatStatusText } from "@/utils/formatStatusText";
 import { format } from "date-fns";
@@ -399,7 +398,7 @@ export default function ViewPurchaseModal({
       <PurchaseReturnHistoryModal
         isOpen={isReturnHistoryModalOpen}
         onClose={() => setIsReturnHistoryModalOpen(false)}
-        purchaseId={purchase._id}
+        purchaseId={purchase.id}
       />
     </div>
   );

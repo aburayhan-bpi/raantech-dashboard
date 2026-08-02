@@ -1,33 +1,5 @@
 import { baseApi } from "../baseApi";
-
-export interface ISupplier {
-  _id: string;
-  name: string;
-  company?: string;
-  phone: string;
-  email?: string;
-  address?: string;
-  status: "ACTIVE" | "INACTIVE";
-  totalDue: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface SupplierResponse {
-  data: ISupplier[];
-  message: string;
-  meta?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-export interface SingleSupplierResponse {
-  data: ISupplier;
-  message: string;
-}
+import { ISupplier, SupplierResponse, SingleSupplierResponse } from "@/types/global";
 
 export const supplierApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -74,7 +46,7 @@ export const supplierApi = baseApi.injectEndpoints({
       ],
     }),
 
-    deleteSupplier: builder.mutation<{ message: string }, string>({
+    deleteSupplier: builder.mutation<SingleSupplierResponse, string>({
       query: (id) => ({
         url: `/suppliers/${id}`,
         method: "DELETE",

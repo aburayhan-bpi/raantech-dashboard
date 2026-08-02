@@ -1,5 +1,4 @@
 "use client";
-
 import { motion } from "framer-motion";
 import { Circle, Diamond, Star, Target, Triangle } from "lucide-react";
 

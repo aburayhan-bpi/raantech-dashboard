@@ -1,6 +1,5 @@
-// components/ui/CustomDropdown.tsx
 "use client";
-
+// components/ui/CustomDropdown.tsx
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, Search } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";

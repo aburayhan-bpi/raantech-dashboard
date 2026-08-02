@@ -1,5 +1,5 @@
 "use client";
-
+import { ISupplier } from "@/types/global";
 import { useState, useEffect, useRef } from "react";
 import { Plus, Search, Edit2, Trash2, Building2, Phone, Mail, MapPin, Download, Upload } from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetSuppliersQuery, ISupplier } from "@/redux/api/supplier/supplierApi";
+import { useGetSuppliersQuery } from "@/redux/api/supplier/supplierApi";
 import SupplierModal from "./SupplierModal";
 import ExcelImportModal from "@/components/shared/ExcelImportModal";
 import DeleteSupplierModal from "./DeleteSupplierModal";
@@ -157,7 +157,7 @@ export default function SuppliersClient() {
               ) : suppliers.length > 0 ? (
                 suppliers.map((supplier: ISupplier, index: number) => (
                   <tr
-                    key={supplier._id || `supplier-${index}`}
+                    key={supplier.id || `supplier-${index}`}
                     className="hover:bg-slate-50/80 transition-colors group"
                   >
                     <td className="px-6 py-4">
@@ -247,11 +247,11 @@ export default function SuppliersClient() {
         </div>
 
         {/* Pagination */}
-        {meta && meta.totalPages > 1 && (
+        {meta && meta.totalPage > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
             <Pagination
               currentPage={meta.page}
-              totalPages={meta.totalPages}
+              totalPages={meta.totalPage}
               totalItems={meta.total}
               itemsPerPage={meta.limit}
               showSummary={true}

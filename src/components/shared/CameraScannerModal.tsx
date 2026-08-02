@@ -1,5 +1,4 @@
 "use client";
-
 import { Camera, Square, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";

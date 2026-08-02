@@ -1,14 +1,9 @@
 "use client";
-
+import { IPurchase, IPurchaseItem, IPurchaseReturn } from "@/types/global";
 import CustomButton from "@/components/shared/CustomButton";
-import {
-  IPurchase,
-  IPurchaseItem,
-  IPurchaseReturn,
-  useGetPurchaseByIdQuery,
+import { useGetPurchaseByIdQuery,
   useGetPurchaseReturnsQuery,
-  useReturnPurchaseMutation,
-} from "@/redux/api/purchase/purchaseApi";
+  useReturnPurchaseMutation } from "@/redux/api/purchase/purchaseApi";
 import { ArrowLeft, ArrowUpRight, Receipt, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";

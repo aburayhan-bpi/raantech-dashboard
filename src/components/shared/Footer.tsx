@@ -1,5 +1,4 @@
 "use client";
-
 import { WEBSITE_DETAILS } from "@/lib/constants";
 import { Mail, MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";

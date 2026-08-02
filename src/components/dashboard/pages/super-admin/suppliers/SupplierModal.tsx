@@ -1,14 +1,11 @@
 "use client";
-
+import { ISupplier } from "@/types/global";
 import { useState, useEffect } from "react";
 import { X, Building2, Phone, Mail, MapPin } from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
 import { toast } from "sonner";
-import {
-  useCreateSupplierMutation,
-  useUpdateSupplierMutation,
-  ISupplier,
-} from "@/redux/api/supplier/supplierApi";
+import { useCreateSupplierMutation,
+  useUpdateSupplierMutation, } from "@/redux/api/supplier/supplierApi";
 import { SupplierStatus } from "@/types/backend";
 
 interface SupplierModalProps {
@@ -77,7 +74,7 @@ export default function SupplierModal({
 
       if (isEditing) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const supplierId = supplier._id || (supplier as any).id;
+        const supplierId = supplier.id || (supplier as any).id;
         await updateSupplier({ id: supplierId, data: payload }).unwrap();
         toast.success("Supplier updated successfully");
       } else {

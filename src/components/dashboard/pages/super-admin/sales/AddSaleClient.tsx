@@ -1,12 +1,11 @@
 "use client";
-
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
-import { IProduct, useGetProductsQuery } from "@/redux/api/product/productApi";
-import { ICustomer, useGetCustomersQuery } from "@/redux/api/customer/customerApi";
+import { useGetProductsQuery } from "@/redux/api/product/productApi";
+import { useGetCustomersQuery } from "@/redux/api/customer/customerApi";
 import { useCreateSaleMutation } from "@/redux/api/sale/salesApi";
 import { SalePaymentMethod } from "@/types/backend";
-import { PaymentMethod } from "@/types/global";
+import { PaymentMethod, ICustomer, IProduct } from "@/types/global";
 import {
   ArrowLeft,
   CreditCard,

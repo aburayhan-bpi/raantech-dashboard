@@ -1,94 +1,11 @@
 import { baseApi } from "../baseApi";
-
-export interface IProduct {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  brand?: string;
-  buyingPrice: number;
-  sellingPrice: number;
-  discountPrice?: number;
-  tax: number;
-  stock: number;
-  alertQuantity: number;
-  unit: string;
-  sku?: string;
-  barcode?: string;
-  images: string[];
-  status: 'DRAFT' | 'ACTIVE' | 'OUT_OF_STOCK' | 'DISCONTINUED';
-  tags: string[];
-  isDeleted: boolean;
-  createdBy: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface IProductStats {
-  totalProducts: number;
-  activeProducts: number;
-  outOfStock: number;
-  lowStock: number;
-  totalInventoryValue: number;
-  totalRetailValue: number;
-}
-
-export interface IProductsResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPage: number;
-  };
-  data: IProduct[];
-}
-
-export interface IProductResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: IProduct;
-}
-
-export interface IProductStatsResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: IProductStats;
-}
-
-export interface ICreateProductPayload {
-  name: string;
-  description?: string;
-  category: string;
-  brand?: string;
-  buyingPrice: number;
-  sellingPrice: number;
-  discountPrice?: number;
-  tax?: number;
-  stock: number;
-  alertQuantity?: number;
-  unit?: string;
-  sku?: string;
-  barcode?: string;
-  images?: string[];
-  status?: string;
-  tags?: string[];
-}
-
-export type IUpdateProductPayload = Partial<ICreateProductPayload>;
+import {
+  ICreateProductPayload,
+  IUpdateProductPayload,
+  IProductsResponse,
+  IProductResponse,
+  IProductStatsResponse,
+} from "@/types/global";
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

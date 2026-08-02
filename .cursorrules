@@ -1,0 +1,23 @@
+# Raantech Dashboard - Global Rules
+
+## 1. Role-Based Access Control (RBAC) & Permissions
+Whenever a new permission is added, modified, or deleted in the system, it MUST be strictly synced across both the frontend and backend.
+- **Frontend Type (src/types/global.ts)**: Update the TPermission union type.
+- **Backend Enum (src/models/User.ts)**: Update the VALID_PERMISSIONS array.
+*Failure to sync these will break the UI or the Backend API.*
+
+## 2. UI/UX & Styling Aesthetics (Avoid AI Signatures)
+When designing or styling new components, you must make the design look like a senior human developer built it.
+- **Typography:** Do NOT overuse ont-bold. Rely on proper font weights (e.g., ont-medium, ont-semibold) and subtle contrast for hierarchy instead of heavy bold text.
+- **Border Radius:** Do NOT overuse rounded classes (e.g., ounded-2xl, ounded-full, etc.). Excessive rounding is a common signature of AI-generated designs. Stick to standard, mature rounding like ounded-md or ounded-lg where appropriate.
+
+## 3. Code Quality
+- Write clean, maintainable, and highly organized code.
+- Avoid repetitive CSS classes; use centralized utility components where possible.
+- Keep components modular and well-structured.
+
+## 4. Role-Based Security Constraints (Business Logic)
+Never trust frontend role permissions blindly. Always enforce Role-Based Maximum Scopes on the Backend API.
+- **STAFF:** Cashiers/Salesmen. Strict access. Allowed: sales:create, sales:view, products:view, customers:create, customers:view, categories:view. NO delete, NO refund, NO expenses, NO purchases, NO suppliers.
+- **ADMIN:** Managers. Broad access. Can update/refund/delete, but subject to restrictions.
+**Rule:** Always intersect requested permissions with the Role's Maximum Allowed Scopes in the backend before saving to the DB. In the frontend, disable/hide checkboxes for disallowed permissions based on the selected role to provide a good UX.

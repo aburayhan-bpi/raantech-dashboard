@@ -1,4 +1,5 @@
-import { ISale } from "@/redux/api/sale/salesApi";
+import { ISale } from "@/types/global";
+
 import { formatStatusText } from "@/utils/formatStatusText";
 import {
   Document,

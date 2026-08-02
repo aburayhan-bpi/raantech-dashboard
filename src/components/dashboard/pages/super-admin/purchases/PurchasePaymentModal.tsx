@@ -1,13 +1,9 @@
 "use client";
-
+import { IPurchase, IPurchasePayment } from "@/types/global";
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
-import {
-  IPurchase,
-  IPurchasePayment,
-  useAddPurchasePaymentMutation,
-  useGetPurchasePaymentsQuery,
-} from "@/redux/api/purchase/purchaseApi";
+import { useAddPurchasePaymentMutation,
+  useGetPurchasePaymentsQuery } from "@/redux/api/purchase/purchaseApi";
 import {
   PURCHASE_PAYMENT_METHODS,
   PurchasePaymentMethod,
@@ -39,7 +35,7 @@ export default function PurchasePaymentModal({
   const [isDownloading, setIsDownloading] = useState(false);
 
   const [addPayment, { isLoading: isAdding }] = useAddPurchasePaymentMutation();
-  const purchaseId = purchase?._id || (purchase as { id?: string })?.id || "";
+  const purchaseId = purchase?.id || (purchase as { id?: string })?.id || "";
 
   const { data: payments = [], isLoading: isFetching } =
     useGetPurchasePaymentsQuery(purchaseId, { skip: !isOpen || !purchaseId });
@@ -319,7 +315,7 @@ export default function PurchasePaymentModal({
                 {payments.map((payment, index) => (
                   <div
                     key={
-                      payment._id ||
+                      payment.id ||
                       (payment as IPurchasePayment & { id?: string }).id ||
                       index
                     }

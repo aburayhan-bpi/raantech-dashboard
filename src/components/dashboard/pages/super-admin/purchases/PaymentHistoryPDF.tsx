@@ -1,4 +1,5 @@
-import { IPurchase, IPurchasePayment } from "@/redux/api/purchase/purchaseApi";
+import { IPurchase, IPurchasePayment } from "@/types/global";
+
 import { formatStatusText } from "@/utils/formatStatusText";
 import {
   Document,
@@ -249,7 +250,7 @@ export default function PaymentHistoryPDF({
 
           {/* Table Body */}
           {payments.map((payment, index) => (
-            <View key={payment._id || index} style={styles.tableRow}>
+            <View key={payment.id || index} style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.col1]}>
                 {format(
                   new Date(payment.paymentDate || payment.createdAt),

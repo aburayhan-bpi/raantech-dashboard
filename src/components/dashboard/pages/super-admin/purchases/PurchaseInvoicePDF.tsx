@@ -1,4 +1,5 @@
-import { IPurchase } from "@/redux/api/purchase/purchaseApi";
+import { IPurchase } from "@/types/global";
+
 import { formatStatusText } from "@/utils/formatStatusText";
 import {
   Document,

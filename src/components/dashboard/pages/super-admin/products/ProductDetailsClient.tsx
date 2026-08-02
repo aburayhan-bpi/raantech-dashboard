@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { useGetProductBySlugQuery } from "@/redux/api/product/productApi";

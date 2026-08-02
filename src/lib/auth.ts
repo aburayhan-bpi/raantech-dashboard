@@ -2,10 +2,11 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
+import { TPermission } from '@/types/global';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
 
-export async function verifyAuth(requiredPermission?: string) {
+export async function verifyAuth(requiredPermission?: TPermission) {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
 

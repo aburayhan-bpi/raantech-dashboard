@@ -98,7 +98,7 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Users", "Tracking", "ActivityLogs", "Categories", "Products", "Suppliers", "Purchases", "Customers", "Sale", "SalePayment", "SaleRefund"],
+  tagTypes: ["User", "Users", "Tracking", "ActivityLogs", "Categories", "Products", "Suppliers", "Purchases", "Customers", "Sale", "SalePayment", "SaleRefund", "Trash"],
   keepUnusedDataFor: 120,
   refetchOnMountOrArgChange: 120,
   refetchOnReconnect: true,

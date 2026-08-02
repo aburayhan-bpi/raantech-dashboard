@@ -4,13 +4,16 @@ import User from '@/models/User';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import ActivityLog from '@/models/ActivityLog';
+import { STAFF_ALLOWED_PERMISSIONS, ADMIN_ALLOWED_PERMISSIONS, TPermission } from '@/types/global';
+
 
 const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
   email: z.string().email('Invalid email address').optional(),
-  role: z.enum(['ADMIN', 'STAFF']).optional(),
+  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'STAFF']).optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   permissions: z.array(z.string()).optional(),
+  profileImage: z.string().optional(),
 });
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -49,7 +52,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     const { id } = await params;
     
-    // Prevent updating oneself via this endpoint to avoid accidental role demotion
     if (auth.userId === id) {
       return ApiResponse.error('You cannot modify your own Super Admin role here', 400);
     }
@@ -62,6 +64,22 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     await dbConnect();
+
+    // Fetch existing user to determine role if not provided in update
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      return ApiResponse.error('User not found', 404);
+    }
+
+    const roleToValidate = validatedData.data.role || existingUser.role;
+
+    if (validatedData.data.permissions) {
+      if (roleToValidate === 'STAFF') {
+        validatedData.data.permissions = validatedData.data.permissions.filter(p => STAFF_ALLOWED_PERMISSIONS.includes(p as TPermission));
+      } else if (roleToValidate === 'ADMIN') {
+        validatedData.data.permissions = validatedData.data.permissions.filter(p => ADMIN_ALLOWED_PERMISSIONS.includes(p as TPermission));
+      }
+    }
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: id, isDeleted: false },

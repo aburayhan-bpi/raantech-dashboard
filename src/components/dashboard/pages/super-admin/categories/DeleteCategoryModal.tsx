@@ -3,7 +3,7 @@ import { AlertTriangle , X, Trash2} from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
 import { useDeleteCategoryMutation } from "@/redux/api/category/categoryApi";
 import { toast } from "sonner";
-import { ICategory } from "./CategoryClient";
+import { ICategory } from "@/types/global";
 
 interface DeleteCategoryModalProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export default function DeleteCategoryModal({
   const handleDelete = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const categoryId = category._id || (category as any).id;
+      const categoryId = category.id || (category as any).id;
       await deleteCategory(categoryId).unwrap();
       toast.success("Category deleted successfully");
       onClose();

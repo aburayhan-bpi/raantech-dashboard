@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import CustomButton from "@/components/shared/CustomButton";
@@ -7,11 +6,8 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { 
-  useCreateProductMutation, 
-  useUpdateProductMutation,
-  IProduct 
-} from "@/redux/api/product/productApi";
+import { useCreateProductMutation, useUpdateProductMutation } from "@/redux/api/product/productApi";
+import { IProduct } from "@/types/global";
 import { useAppSelector } from "@/redux/hook";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { useGetCategoriesQuery } from "@/redux/api/category/categoryApi";
@@ -134,7 +130,7 @@ export default function ProductModal({
         });
         
         setTimeout(() => {
-          setImageItems((product.images || []).map(url => ({
+          setImageItems((product.images || []).map((url: string) => ({
             id: Math.random().toString(36).substring(2, 9),
             type: "url",
             url
@@ -272,8 +268,8 @@ export default function ProductModal({
                     control={control}
                     render={({ field }) => (
                       <CustomDropdown
-                        options={categories.map((cat: { _id?: string, id?: string, name: string }) => ({
-                          value: cat._id || (cat as unknown as { id: string }).id || "",
+                        options={categories.map((cat: { id?: string, name: string }) => ({
+                          value: cat.id || (cat as unknown as { id: string }).id || "",
                           label: cat.name
                         }))}
                         value={field.value}

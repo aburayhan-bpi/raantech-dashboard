@@ -14,6 +14,16 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
+export const VALID_PERMISSIONS = [
+  "sales:view", "sales:create", "sales:update", "sales:delete", "sales:refund", "sales:return",
+  "purchases:view", "purchases:create", "purchases:update", "purchases:delete", "purchases:return",
+  "products:view", "products:create", "products:update", "products:delete",
+  "categories:view", "categories:create", "categories:update", "categories:delete",
+  "suppliers:view", "suppliers:create", "suppliers:update", "suppliers:delete",
+  "customers:view", "customers:create", "customers:update", "customers:delete",
+  "expenses:view", "expenses:create", "expenses:update", "expenses:delete"
+];
+
 const UserSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
@@ -31,7 +41,7 @@ const UserSchema: Schema = new Schema(
     },
     isDeleted: { type: Boolean, default: false, index: true },
     deletedAt: { type: Date, default: null },
-    permissions: [{ type: String }],
+    permissions: [{ type: String, enum: VALID_PERMISSIONS }],
     profileImage: { type: String },
     address: { type: String },
   },

@@ -9,6 +9,7 @@ export interface ISupplier extends Document {
   address?: string;
   status: SupplierStatus;
   totalDue: number;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +48,11 @@ const supplierSchema = new Schema<ISupplier>(
     totalDue: {
       type: Number,
       default: 0,
+      min: [0, "Total due cannot be negative"],
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

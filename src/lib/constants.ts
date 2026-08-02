@@ -83,6 +83,14 @@ export const SIDEBAR_ITEMS = [
     group: "SYSTEM",
   },
   {
+    id: "dashboard-trash",
+    label: "Recycle Bin",
+    href: "/trash",
+    icon: "FaTrash",
+    roles: ["SUPER_ADMIN"],
+    group: "SYSTEM",
+  },
+  {
     id: "dashboard-settings",
     label: "Settings",
     href: "/settings",

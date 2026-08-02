@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     // Check if it's a paginated request or just fetching all for dropdowns
     const isPaginated = searchParams.has('page') || searchParams.has('limit');
 
-    const query: Record<string, unknown> = {};
+    const query: Record<string, unknown> = { isDeleted: false };
     if (search) {
       query.name = { $regex: search, $options: 'i' };
     }

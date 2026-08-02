@@ -110,7 +110,11 @@ export async function DELETE(
     }
 
     await dbConnect();
-    const deletedSupplier = await Supplier.findByIdAndDelete(id);
+    const deletedSupplier = await Supplier.findOneAndUpdate(
+      { _id: id },
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!deletedSupplier) {
       return ApiResponse.error("Supplier not found", 404);

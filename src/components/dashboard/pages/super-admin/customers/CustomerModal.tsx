@@ -1,9 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-
+import { ICustomer } from "@/types/global";
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { X, User, Phone, Mail, MapPin } from "lucide-react";
-import { useCreateCustomerMutation, useUpdateCustomerMutation, ICustomer } from "@/redux/api/customer/customerApi";
+import { useCreateCustomerMutation, useUpdateCustomerMutation } from "@/redux/api/customer/customerApi";
 import CustomButton from "@/components/shared/CustomButton";
 import { toast } from "sonner";
 

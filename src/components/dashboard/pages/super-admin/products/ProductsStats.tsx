@@ -1,5 +1,4 @@
 "use client";
-
 import { useGetProductStatsQuery } from "@/redux/api/product/productApi";
 import StatsCard from "@/components/shared/StatsCard";
 
@@ -26,33 +25,33 @@ export default function ProductsStats() {
   const cards = [
     {
       title: "Total Products",
-      value: stats.totalProducts,
+      value: stats?.totalProducts,
       iconName: "FaBoxOpen" as const,
       color: "text-brand",
       bgColor: "bg-brand/10",
     },
     {
       title: "Active Products",
-      value: stats.activeProducts,
+      value: stats?.activeProducts,
       iconName: "CheckCircle" as const,
       color: "text-success",
       bgColor: "bg-success/10",
     },
     {
       title: "Low/Out of Stock",
-      value: stats.lowStock + stats.outOfStock,
+      value: (stats?.lowStock || 0) + (stats?.outOfStock || 0),
       iconName: "AlertCircle" as const,
       color: "text-warning",
       bgColor: "bg-warning/10",
-      subText: stats.outOfStock > 0 ? `${stats.outOfStock} completely out of stock` : undefined,
+      subText: (stats?.outOfStock || 0) > 0 ? `${stats?.outOfStock} completely out of stock` : undefined,
     },
     {
       title: "Total Value",
-      value: `৳${stats.totalInventoryValue.toLocaleString()}`,
+      value: `৳${stats?.totalInventoryValue.toLocaleString()}`,
       iconName: "RiExchangeDollarLine" as const,
       color: "text-kpi-purple",
       bgColor: "bg-kpi-purple/10",
-      subText: `Retail: ৳${stats.totalRetailValue.toLocaleString()}`,
+      subText: `Retail: ৳${stats?.totalRetailValue.toLocaleString()}`,
     },
   ];
 

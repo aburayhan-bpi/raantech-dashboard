@@ -1,8 +1,8 @@
 "use client";
-
+import { ISupplier } from "@/types/global";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useDeleteSupplierMutation, ISupplier } from "@/redux/api/supplier/supplierApi";
+import { useDeleteSupplierMutation } from "@/redux/api/supplier/supplierApi";
 
 interface DeleteSupplierModalProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export default function DeleteSupplierModal({
   const handleDelete = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const supplierId = supplier._id || (supplier as any).id;
+      const supplierId = supplier.id || (supplier as any).id;
       await deleteSupplier(supplierId).unwrap();
       toast.success("Supplier deleted successfully");
       onClose();

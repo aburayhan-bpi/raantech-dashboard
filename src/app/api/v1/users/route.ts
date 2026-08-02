@@ -7,6 +7,7 @@ import { verifyAuth } from '@/lib/auth';
 import { sendEmail } from '@/lib/email';
 import crypto from 'crypto';
 import ActivityLog from '@/models/ActivityLog';
+import { STAFF_ALLOWED_PERMISSIONS, ADMIN_ALLOWED_PERMISSIONS, TPermission } from '@/types/global';
 
 const CreateUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -90,7 +91,14 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
-    const { name, email, role, permissions } = validatedData.data;
+    const { name, email, role, permissions: requestedPermissions } = validatedData.data;
+
+    let permissions = requestedPermissions || [];
+    if (role === 'STAFF') {
+      permissions = permissions.filter(p => STAFF_ALLOWED_PERMISSIONS.includes(p as TPermission));
+    } else if (role === 'ADMIN') {
+      permissions = permissions.filter(p => ADMIN_ALLOWED_PERMISSIONS.includes(p as TPermission));
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

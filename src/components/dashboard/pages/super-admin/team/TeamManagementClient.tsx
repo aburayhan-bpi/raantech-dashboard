@@ -1,7 +1,6 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -150,7 +149,7 @@ export default function TeamManagementClient() {
 
   const openEditModal = async (user: ITeamUser) => {
     try {
-      const targetId = user._id || (user as any).id;
+      const targetId = user.id || (user as any).id;
       const response = await getUserById(targetId).unwrap();
       const freshUser = response.data;
       if (freshUser) {
@@ -171,7 +170,7 @@ export default function TeamManagementClient() {
   const onEdit = async (formData: EditFormData) => {
     if (!editModalData) return;
     try {
-      const targetId = editModalData._id || (editModalData as any).id;
+      const targetId = editModalData.id || (editModalData as any).id;
       const cleanedPermissions = formData.permissions?.filter(p => !p.startsWith('manage_')) || [];
       const payload = { ...formData, permissions: cleanedPermissions };
       await updateUser({ id: targetId, payload }).unwrap();
@@ -185,7 +184,7 @@ export default function TeamManagementClient() {
   const onDeleteConfirm = async () => {
     if (!deleteModalData) return;
     try {
-      const targetId = deleteModalData._id || (deleteModalData as any).id;
+      const targetId = deleteModalData.id || (deleteModalData as any).id;
       await deleteUser(targetId).unwrap();
       toast.success("User deleted successfully!");
       setDeleteModalData(null);
@@ -197,7 +196,7 @@ export default function TeamManagementClient() {
   const onRestoreConfirm = async () => {
     if (!restoreModalData) return;
     try {
-      const targetId = restoreModalData._id || (restoreModalData as any).id;
+      const targetId = restoreModalData.id || (restoreModalData as any).id;
       await restoreUser(targetId).unwrap();
       toast.success("User restored successfully!");
       setRestoreModalData(null);
@@ -325,7 +324,7 @@ export default function TeamManagementClient() {
               ) : (
                 users.map((user, index) => (
                   <tr
-                    key={user._id || (user as any).id || index}
+                    key={user.id || (user as any).id || index}
                     className="hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -384,7 +383,7 @@ export default function TeamManagementClient() {
                       </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      {(user._id || (user as any).id) !== currentUser?.id &&
+                      {(user.id || (user as any).id) !== currentUser?.id &&
                       user.role !== "SUPER_ADMIN" ? (
                         <div className="flex items-center justify-end gap-2">
                           {user.isDeleted ? (

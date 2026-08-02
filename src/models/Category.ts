@@ -4,6 +4,7 @@ export interface ICategory extends Document {
   name: string;
   description?: string;
   image?: string;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,6 +14,7 @@ const CategorySchema: Schema = new Schema(
     name: { type: String, required: true, unique: true },
     description: { type: String },
     image: { type: String },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, versionKey: false }
 );

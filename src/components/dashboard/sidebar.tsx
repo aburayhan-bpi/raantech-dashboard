@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import { TPermission } from "@/types/global";
 import type React from "react";
 
 import { SIDEBAR_ITEMS, WEBSITE_DETAILS } from "@/lib/constants";
@@ -26,11 +25,14 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
   // Get visible items based on user role and permissions
   const visibleItems = SIDEBAR_ITEMS.filter((item) => {
     // 1. Role-based check
-    const hasRole = item.roles.includes(user?.role as any);
+    const hasRole = item.roles.includes(user?.role as unknown as TPermission);
     if (!hasRole) return false;
 
     // 2. Permission-based check for STAFF and ADMIN
-    if ((user?.role === "STAFF" || user?.role === "ADMIN") && user.permissions) {
+    if (
+      (user?.role === "STAFF" || user?.role === "ADMIN") &&
+      user.permissions
+    ) {
       // Create a mapping of route paths to required permissions
       const permissionMap: Record<string, string> = {
         "/sales": "sales:view",
@@ -46,7 +48,9 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
 
       // If there's a required permission for this route, check if user has it
       if (requiredPermission) {
-        return user.permissions.includes(requiredPermission);
+        return user.permissions.includes(
+          requiredPermission as unknown as TPermission,
+        );
       }
     }
 
@@ -109,13 +113,13 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
               href="/dashboard/admin"
               className="flex flex-col items-center justify-center cursor-pointer"
             >
-              <Image draggable={false}
+              <Image
+                draggable={false}
                 src={WEBSITE_DETAILS.SITE_LOGO}
                 alt={WEBSITE_DETAILS.SITE_NAME}
                 width={isCollapsed ? 36 : 70}
                 height={isCollapsed ? 36 : 70}
                 priority
-                
                 className="object-contain transition-all duration-300"
               />
             </Link>
