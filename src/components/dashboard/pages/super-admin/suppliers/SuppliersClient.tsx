@@ -124,7 +124,7 @@ export default function SuppliersClient() {
               placeholder="Search by name, phone or company..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function SuppliersClient() {
                   >
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#0089A7]/10 border border-[#0089A7]/20 flex items-center justify-center shrink-0 text-[#0089A7]">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary">
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
@@ -216,7 +216,7 @@ export default function SuppliersClient() {
                         {canUpdate && (
                           <button
                             onClick={() => handleEdit(supplier)}
-                            className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />

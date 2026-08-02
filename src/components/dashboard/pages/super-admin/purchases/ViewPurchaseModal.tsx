@@ -332,7 +332,7 @@ export default function ViewPurchaseModal({
                 )}
                 <div className="flex justify-between text-lg font-bold border-t border-slate-200 pt-3">
                   <span className="text-slate-800">Total Amount:</span>
-                  <span className="text-[#0089A7]">
+                  <span className="text-primary">
                     ৳ {purchase.totalAmount.toLocaleString()}
                   </span>
                 </div>

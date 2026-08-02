@@ -177,7 +177,7 @@ export function ProfileSettings() {
   if (isProfileLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#0089A7]" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -199,7 +199,7 @@ export function ProfileSettings() {
             onClick={() => setActiveTab("profile")}
             className={`flex-1 py-4 text-sm font-medium transition-colors ${
               activeTab === "profile"
-                ? "text-[#0089A7] border-b-2 border-[#0089A7] bg-slate-50"
+                ? "text-primary border-b-2 border-primary bg-slate-50"
                 : "text-slate-500 hover:text-slate-700 hover:bg-slate-50/50"
             }`}
           >
@@ -209,7 +209,7 @@ export function ProfileSettings() {
             onClick={() => setActiveTab("security")}
             className={`flex-1 py-4 text-sm font-medium transition-colors ${
               activeTab === "security"
-                ? "text-[#0089A7] border-b-2 border-[#0089A7] bg-slate-50"
+                ? "text-primary border-b-2 border-primary bg-slate-50"
                 : "text-slate-500 hover:text-slate-700 hover:bg-slate-50/50"
             }`}
           >
@@ -222,7 +222,7 @@ export function ProfileSettings() {
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div className="flex items-center gap-6">
                 <div className="relative group">
-                  <div className="w-24 h-24 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] text-4xl font-bold uppercase shadow-inner border-2 border-[#0089A7]/20 overflow-hidden relative">
+                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-4xl font-bold uppercase shadow-inner border-2 border-primary/20 overflow-hidden relative">
                     {user.profileImage ? (
                       <Image draggable={false} 
                         src={user.profileImage} 
@@ -280,7 +280,7 @@ export function ProfileSettings() {
                     <input
                       type="text"
                       {...registerProfile("name")}
-                      className={`w-full h-11 px-4 bg-slate-50 border ${profileErrors.name ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${profileErrors.name ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-primary/20 focus:border-primary"} text-sm rounded-xl outline-none transition-all`}
                     />
                     {profileErrors.name && (
                       <p className="text-xs text-red-500 mt-1">{profileErrors.name.message}</p>
@@ -309,7 +309,7 @@ export function ProfileSettings() {
                     <input
                       type="text"
                       {...registerProfile("address")}
-                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7] text-sm rounded-xl outline-none transition-all"
+                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-primary/20 focus:border-primary text-sm rounded-xl outline-none transition-all"
                       placeholder="Enter your address"
                     />
                   </div>
@@ -318,7 +318,7 @@ export function ProfileSettings() {
                 <button
                   type="submit"
                   disabled={isUpdatingProfile}
-                  className="h-11 px-6 bg-[#0089A7] hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-all shadow-md shadow-[#0089A7]/20 flex items-center justify-center gap-2 disabled:opacity-70 w-full sm:w-auto"
+                  className="h-11 px-6 bg-primary hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 w-full sm:w-auto"
                 >
                   {isUpdatingProfile ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -335,7 +335,7 @@ export function ProfileSettings() {
             <div className="max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div>
                 <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                  <Key className="w-5 h-5 text-[#0089A7]" /> Change Password
+                  <Key className="w-5 h-5 text-primary" /> Change Password
                 </h3>
                 <p className="text-sm text-slate-500 mt-1">
                   Ensure your account is using a long, random password to stay
@@ -355,7 +355,7 @@ export function ProfileSettings() {
                     <input
                       type={showPassword.currentPassword ? "text" : "password"}
                       {...registerPassword("currentPassword")}
-                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.currentPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.currentPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-primary/20 focus:border-primary"} text-sm rounded-xl outline-none transition-all`}
                     />
                     <PassViewToggleBtn 
                       field="currentPassword" 
@@ -378,7 +378,7 @@ export function ProfileSettings() {
                     <input
                       type={showPassword.newPassword ? "text" : "password"}
                       {...registerPassword("newPassword")}
-                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.newPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.newPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-primary/20 focus:border-primary"} text-sm rounded-xl outline-none transition-all`}
                     />
                     <PassViewToggleBtn 
                       field="newPassword" 
@@ -401,7 +401,7 @@ export function ProfileSettings() {
                     <input
                       type={showPassword.confirmPassword ? "text" : "password"}
                       {...registerPassword("confirmPassword")}
-                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"} text-sm rounded-xl outline-none transition-all`}
+                      className={`w-full h-11 px-4 bg-slate-50 border ${passwordErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-slate-200 focus:ring-primary/20 focus:border-primary"} text-sm rounded-xl outline-none transition-all`}
                     />
                     <PassViewToggleBtn 
                       field="confirmPassword" 
@@ -427,7 +427,7 @@ export function ProfileSettings() {
                         {...registerPassword("otp")}
                         placeholder="6-digit OTP"
                         maxLength={6}
-                        className={`w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-[#0089A7]/20 focus:border-[#0089A7] text-sm rounded-xl outline-none transition-all`}
+                        className={`w-full h-11 px-4 bg-slate-50 border border-slate-200 focus:ring-primary/20 focus:border-primary text-sm rounded-xl outline-none transition-all`}
                       />
                     </div>
                   </div>
@@ -437,7 +437,7 @@ export function ProfileSettings() {
                   <button
                     type="submit"
                     disabled={isChangingPassword || isRequestingOtp}
-                    className="h-11 px-6 bg-[#0089A7] hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-all shadow-md shadow-[#0089A7]/20 flex items-center justify-center gap-2 disabled:opacity-70 w-full sm:w-auto"
+                    className="h-11 px-6 bg-primary hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 w-full sm:w-auto"
                   >
                     {(isChangingPassword || isRequestingOtp) ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

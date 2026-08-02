@@ -74,7 +74,7 @@ export default function ResetPasswordForm() {
         </p>
         <Link
           href="/forgot-password"
-          className="inline-flex items-center justify-center w-full h-12 bg-white border border-[#0089A7] text-[#0089A7] hover:bg-slate-50 font-semibold text-sm rounded-xl transition-colors"
+          className="inline-flex items-center justify-center w-full h-12 bg-white border border-primary text-primary hover:bg-slate-50 font-semibold text-sm rounded-xl transition-colors"
         >
           Request New Link
         </Link>
@@ -102,7 +102,7 @@ export default function ResetPasswordForm() {
               id="password"
               type={showPassword.password ? "text" : "password"}
               placeholder="••••••••"
-              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all outline-none ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
               {...register("password")}
             />
             <PassViewToggleBtn 
@@ -126,7 +126,7 @@ export default function ResetPasswordForm() {
               id="confirmPassword"
               type={showPassword.confirmPassword ? "text" : "password"}
               placeholder="••••••••"
-              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all outline-none ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
               {...register("confirmPassword")}
             />
             <PassViewToggleBtn 
@@ -143,7 +143,7 @@ export default function ResetPasswordForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-12 mt-4 bg-[#0089A7] hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+          className="w-full h-12 mt-4 bg-primary hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
         >
           {isLoading ? (
             <>

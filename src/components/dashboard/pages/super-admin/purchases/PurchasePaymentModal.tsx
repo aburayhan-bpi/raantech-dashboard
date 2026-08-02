@@ -161,7 +161,7 @@ export default function PurchasePaymentModal({
             <button
               onClick={handleDownloadReceipt}
               disabled={isDownloading || payments.length === 0}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0089A7] bg-[#0089A7]/10 hover:bg-[#0089A7]/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Download Receipt"
             >
               {isDownloading ? (
@@ -235,7 +235,7 @@ export default function PurchasePaymentModal({
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter amount..."
                         required
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />
                     </div>
                   </div>
@@ -250,7 +250,7 @@ export default function PurchasePaymentModal({
                         value={paymentDate}
                         onChange={(e) => setPaymentDate(e.target.value)}
                         required
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />
                     </div>
                   </div>
@@ -278,7 +278,7 @@ export default function PurchasePaymentModal({
                         onChange={(e) => setNote(e.target.value)}
                         rows={2}
                         placeholder="Add a note..."
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] resize-none"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                       />
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export default function PurchasePaymentModal({
 
             {isFetching ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-[#0089A7]" />
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
               </div>
             ) : payments.length === 0 ? (
               <div className="text-center py-6 bg-white rounded-md border border-dashed border-slate-300">

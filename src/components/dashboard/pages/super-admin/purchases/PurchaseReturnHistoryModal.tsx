@@ -34,7 +34,7 @@ export default function PurchaseReturnHistoryModal({
       <div className="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2">
-            <Undo2 className="w-5 h-5 text-[#0089A7]" />
+            <Undo2 className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-bold text-slate-800">Return History</h2>
           </div>
           <button
@@ -48,7 +48,7 @@ export default function PurchaseReturnHistoryModal({
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading ? (
             <div className="flex items-center justify-center h-40">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0089A7]"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           ) : !returnHistory || returnHistory.length === 0 ? (
             <div className="text-center py-12">

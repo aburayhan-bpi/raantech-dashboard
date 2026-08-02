@@ -243,7 +243,7 @@ export default function TeamManagementClient() {
 
           <button
             onClick={() => setIsInviteModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-[#0089A7] hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-[#0089A7]/20"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-[#007B96] text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-primary/20"
           >
             <Plus className="w-4 h-4" />
             Invite User
@@ -260,7 +260,7 @@ export default function TeamManagementClient() {
             placeholder="Search by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
         
@@ -299,7 +299,7 @@ export default function TeamManagementClient() {
                     colSpan={isDeletedFilter ? 6 : 5}
                     className="px-6 py-12 text-center text-slate-500"
                   >
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[#0089A7]" />
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-primary" />
                     Loading users...
                   </td>
                 </tr>
@@ -329,7 +329,7 @@ export default function TeamManagementClient() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-wrap items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold text-sm uppercase overflow-hidden relative">
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm uppercase overflow-hidden relative">
                           {user.profileImage && user.profileImage !== "/logo.png" ? (
                             <Image draggable={false} 
                               src={user.profileImage} 
@@ -399,7 +399,7 @@ export default function TeamManagementClient() {
                               <button
                                 onClick={() => openEditModal(user)}
                                 disabled={isFetchingUser}
-                                className="p-1.5 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50"
                                 title="Edit User"
                               >
                                 {isFetchingUser ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
@@ -466,7 +466,7 @@ export default function TeamManagementClient() {
                 <input
                   {...registerInvite("name")}
                   className={cn(
-                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all",
+                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all",
                     inviteErrors.name && "border-red-500",
                   )}
                   placeholder="John Doe"
@@ -485,7 +485,7 @@ export default function TeamManagementClient() {
                   {...registerInvite("email")}
                   type="email"
                   className={cn(
-                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all",
+                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all",
                     inviteErrors.email && "border-red-500",
                   )}
                   placeholder="john@example.com"
@@ -553,7 +553,7 @@ export default function TeamManagementClient() {
                                   }
                                   field.onChange(next);
                                 }}
-                                className="w-4 h-4 rounded-[4px] border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7]"
+                                className="w-4 h-4 rounded-[4px] border-slate-300 text-primary data-[state=checked]:bg-primary"
                               />
                               <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
                                 {permission.label}
@@ -605,7 +605,7 @@ export default function TeamManagementClient() {
                                           }
                                           field.onChange(next);
                                         }}
-                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
+                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-primary data-[state=checked]:bg-primary transition-colors"
                                       />
                                       <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
                                         {action}
@@ -635,7 +635,7 @@ export default function TeamManagementClient() {
                 <button
                   type="submit"
                   disabled={isInviting}
-                  className="flex-1 h-10 bg-[#0089A7] hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+                  className="flex-1 h-10 bg-primary hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
                 >
                   {isInviting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -670,7 +670,7 @@ export default function TeamManagementClient() {
                 <input
                   {...registerEdit("name")}
                   className={cn(
-                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all",
+                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all",
                     editErrors.name && "border-red-500",
                   )}
                 />
@@ -688,7 +688,7 @@ export default function TeamManagementClient() {
                   {...registerEdit("email")}
                   type="email"
                   className={cn(
-                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] outline-none transition-all",
+                    "w-full h-10 px-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all",
                     editErrors.email && "border-red-500",
                   )}
                 />
@@ -775,7 +775,7 @@ export default function TeamManagementClient() {
                                   }
                                   field.onChange(next);
                                 }}
-                                className="w-4 h-4 rounded-[4px] border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7]"
+                                className="w-4 h-4 rounded-[4px] border-slate-300 text-primary data-[state=checked]:bg-primary"
                               />
                               <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
                                 {permission.label}
@@ -827,7 +827,7 @@ export default function TeamManagementClient() {
                                           }
                                           field.onChange(next);
                                         }}
-                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-[#0089A7] data-[state=checked]:bg-[#0089A7] transition-colors"
+                                        className="w-[14px] h-[14px] rounded-full border-slate-300 text-primary data-[state=checked]:bg-primary transition-colors"
                                       />
                                       <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider group-hover:text-slate-800 transition-colors">
                                         {action}
@@ -857,7 +857,7 @@ export default function TeamManagementClient() {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="flex-1 h-10 bg-[#0089A7] hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+                  className="flex-1 h-10 bg-primary hover:bg-[#007B96] text-white font-medium text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
                 >
                   {isUpdating ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

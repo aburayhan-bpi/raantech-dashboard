@@ -58,7 +58,7 @@ export default function AssetHeader({ symbol }: { symbol: string }) {
             onClick={toggleWatchlist}
             className={`w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium cursor-pointer transform-gpu overflow-hidden ${
               isWatchlisted
-                ? "bg-gradient-to-r from-[#ffd451] via-[#fff7a4] to-[#ffd73c] text-black border-none hover:opacity-90"
+                ? "bg-primary text-white hover:opacity-90"
                 : "border border-border bg-card hover:bg-muted/20 text-foreground"
             }`}
           >

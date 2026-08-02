@@ -12,7 +12,7 @@ export default function ActivityLogsPage() {
     <div className="p-6">
       <Suspense fallback={
         <div className="flex items-center justify-center h-[50vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#0089A7]" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       }>
         <ActivityLogClient />

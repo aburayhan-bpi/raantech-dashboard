@@ -53,7 +53,7 @@ export default function ForgotPasswordForm() {
         </p>
         <Link
           href="/login"
-          className="inline-flex items-center justify-center w-full h-12 bg-white border border-[#0089A7] text-[#0089A7] hover:bg-slate-50 font-semibold text-sm rounded-xl transition-colors"
+          className="inline-flex items-center justify-center w-full h-12 bg-white border border-primary text-primary hover:bg-slate-50 font-semibold text-sm rounded-xl transition-colors"
         >
           Return to Login
         </Link>
@@ -81,7 +81,7 @@ export default function ForgotPasswordForm() {
               id="email"
               type="email"
               placeholder="name@example.com"
-              className={`w-full pl-10 pr-4 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all outline-none ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+              className={`w-full pl-10 pr-4 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
               {...register("email")}
             />
           </div>
@@ -93,7 +93,7 @@ export default function ForgotPasswordForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-12 mt-4 bg-[#0089A7] hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+          className="w-full h-12 mt-4 bg-primary hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
         >
           {isLoading ? (
             <>
@@ -109,7 +109,7 @@ export default function ForgotPasswordForm() {
       <div className="mt-8 text-center">
         <p className="text-sm text-slate-500">
           Remember your password?{" "}
-          <Link href="/login" className="font-medium text-[#0089A7] hover:text-[#006A82]">
+          <Link href="/login" className="font-medium text-primary hover:text-[#006A82]">
             Back to login
           </Link>
         </p>

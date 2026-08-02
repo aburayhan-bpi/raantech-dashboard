@@ -140,6 +140,14 @@
   --dashboard-surface: #FFFFFF;
   --error-accent: rgba(230, 71, 93, 0.1);
 
+  /* Shadcn UI Missing Colors */
+  --destructive: #e6475d;
+  --destructive-foreground: #FFFFFF;
+  --accent: #F1F5F9;
+  --accent-foreground: #0F172A;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+
   /* Borders & Inputs */
   --border: #E2E8F0;
   --input: #FFFFFF;

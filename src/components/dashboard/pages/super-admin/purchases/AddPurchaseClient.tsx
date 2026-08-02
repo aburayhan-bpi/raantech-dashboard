@@ -238,7 +238,7 @@ export default function AddPurchaseClient() {
           {/* Supplier & Date Selection */}
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 space-y-4">
             <h2 className="text-lg font-medium text-slate-800 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-[#0089A7]" />
+              <Building2 className="w-5 h-5 text-primary" />
               Purchase Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,7 +266,7 @@ export default function AddPurchaseClient() {
                   type="date"
                   value={purchaseDate}
                   onChange={(e) => setPurchaseDate(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function AddPurchaseClient() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setIsSearchFocused(true)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
 
                   {/* Search Results Dropdown */}
@@ -307,7 +307,7 @@ export default function AddPurchaseClient() {
                                   SKU: {p.sku || "N/A"} • Stock: {p.stock}
                                 </p>
                               </div>
-                              <Plus className="w-4 h-4 text-slate-400 group-hover:text-[#0089A7] transition-colors" />
+                              <Plus className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
                             </button>
                           </li>
                         ))}
@@ -390,7 +390,7 @@ export default function AddPurchaseClient() {
                                   val,
                                 );
                             }}
-                            className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-center focus:outline-none focus:border-[#0089A7]"
+                            className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-center focus:outline-none focus:border-primary"
                           />
                         </td>
                         <td className="px-4 py-3">
@@ -408,7 +408,7 @@ export default function AddPurchaseClient() {
                                   val,
                                 );
                             }}
-                            className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#0089A7]"
+                            className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary"
                           />
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-slate-700">
@@ -435,7 +435,7 @@ export default function AddPurchaseClient() {
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6 space-y-6">
             <h2 className="text-lg font-medium text-slate-800 flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-[#0089A7]" />
+              <Receipt className="w-5 h-5 text-primary" />
               Order Summary
             </h2>
 
@@ -456,7 +456,7 @@ export default function AddPurchaseClient() {
                     const val = Number(e.target.value);
                     if (val >= 0) setDiscount(val);
                   }}
-                  className="w-24 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:border-[#0089A7]"
+                  className="w-24 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:border-primary"
                   placeholder="0"
                 />
               </div>
@@ -470,7 +470,7 @@ export default function AddPurchaseClient() {
                     const val = Number(e.target.value);
                     if (val >= 0) setTax(val);
                   }}
-                  className="w-24 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:border-[#0089A7]"
+                  className="w-24 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:border-primary"
                   placeholder="0"
                 />
               </div>
@@ -480,7 +480,7 @@ export default function AddPurchaseClient() {
               <span className="text-base font-bold text-slate-800">
                 Total Amount
               </span>
-              <span className="text-xl font-bold text-[#0089A7]">
+              <span className="text-xl font-bold text-primary">
                 ৳ {totalAmount.toLocaleString()}
               </span>
             </div>
@@ -563,7 +563,7 @@ export default function AddPurchaseClient() {
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Additional details..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#0089A7] resize-none"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary resize-none"
                 />
               </div>
             </div>

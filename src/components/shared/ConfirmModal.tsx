@@ -100,7 +100,7 @@ const ConfirmModal = ({
             className={`w-full sm:w-auto hover:cursor-pointer border-none transition-all ${
               tone === "danger"
                 ? "bg-[#ff4757] text-white hover:bg-[#ff4757]/90"
-                : "bg-linear-to-r from-[#ffd451] via-[#fff7a4] to-[#ffd73c] text-black hover:opacity-90"
+                : "bg-primary text-white hover:bg-primary/90"
             }`}
             onClick={onConfirm}
             disabled={loading}

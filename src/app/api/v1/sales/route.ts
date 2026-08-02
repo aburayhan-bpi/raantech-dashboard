@@ -1,14 +1,17 @@
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
-import dbConnect from "@/lib/mongoose";
-import Sale from "@/models/Sale";
-import Customer from "@/models/Customer";
-import Product from "@/models/Product";
-import SalePayment from "@/models/SalePayment";
 import { verifyAuth } from "@/lib/auth";
-import { getPaginationParams, formatPaginatedResponse } from "@/utils/backendPagination";
 import { sendEmail } from "@/lib/email";
 import { getOrderCreatedEmailTemplate } from "@/lib/emailTemplates";
+import dbConnect from "@/lib/mongoose";
+import Customer from "@/models/Customer";
+import Product from "@/models/Product";
+import Sale from "@/models/Sale";
+import SalePayment from "@/models/SalePayment";
+import {
+  formatPaginatedResponse,
+  getPaginationParams,
+} from "@/utils/backendPagination";
+import mongoose from "mongoose";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
@@ -62,7 +65,9 @@ export async function GET(request: Request) {
     }
 
     if (customerId) {
-      pipeline.push({ $match: { customer: new mongoose.Types.ObjectId(customerId) } });
+      pipeline.push({
+        $match: { customer: new mongoose.Types.ObjectId(customerId) },
+      });
     }
 
     if (paymentStatus) {
@@ -85,24 +90,41 @@ export async function GET(request: Request) {
     const sales = await Sale.aggregate(pipeline);
 
     // Populate createdBy
-    await Sale.populate(sales, { path: "createdBy", select: "name email role" });
-    await Sale.populate(sales, { path: "items.product", select: "name sku image" });
+    await Sale.populate(sales, {
+      path: "createdBy",
+      select: "name email role",
+    });
+    await Sale.populate(sales, {
+      path: "items.product",
+      select: "name sku image",
+    });
 
     // Format output to match Mongoose populate structure
-    const formattedSales = sales.map((sale) => ({
-      ...sale,
-      customer: sale.customerData,
-      customerData: undefined,
-    }));
+    const formattedSales = sales.map((sale) => {
+      const { _id, customerData, ...rest } = sale;
+      if (customerData) {
+        customerData.id = customerData._id;
+        delete customerData._id;
+        delete customerData.__v;
+      }
+      return {
+        ...rest,
+        id: _id.toString(),
+        customer: customerData,
+      };
+    });
 
     return NextResponse.json(
-      formatPaginatedResponse(formattedSales, total, page, limit)
+      formatPaginatedResponse(formattedSales, total, page, limit),
     );
   } catch (error: unknown) {
     console.error("Fetch sales error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Failed to fetch sales" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error ? error.message : "Failed to fetch sales",
+      },
+      { status: 500 },
     );
   }
 }
@@ -117,24 +139,24 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
-    const { 
-      customer: customerInfo, 
-      items, 
-      subTotal, 
-      discount, 
-      tax, 
+    const {
+      customer: customerInfo,
+      items,
+      subTotal,
+      discount,
+      tax,
       shippingCharge,
-      totalAmount, 
-      paidAmount, 
+      totalAmount,
+      paidAmount,
       paymentMethod,
       courierDetails,
-      note 
+      note,
     } = data;
 
     if (!customerInfo || !items || !items.length) {
       return NextResponse.json(
         { message: "Customer and items are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -149,7 +171,7 @@ export async function POST(request: Request) {
     } else {
       return NextResponse.json(
         { message: "Customer phone or ID is required to create an order" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -165,7 +187,10 @@ export async function POST(request: Request) {
         existingCustomer.email = customerInfo.email;
         needsUpdate = true;
       }
-      if (customerInfo.address && existingCustomer.address !== customerInfo.address) {
+      if (
+        customerInfo.address &&
+        existingCustomer.address !== customerInfo.address
+      ) {
         existingCustomer.address = customerInfo.address;
         needsUpdate = true;
       }
@@ -184,7 +209,7 @@ export async function POST(request: Request) {
     } else {
       return NextResponse.json(
         { message: "Customer phone is required to create a new customer" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -195,16 +220,16 @@ export async function POST(request: Request) {
       if (!product) {
         throw new Error(`Product not found: ${item.product}`);
       }
-      
+
       // Stock logic: In an e-commerce setup, stock decreases on sale.
       // Make sure product has enough stock (or allow negative if drop-shipping, but usually check)
       if ((product.stock || 0) < item.quantity) {
         throw new Error(`Insufficient stock for product: ${product.name}`);
       }
-      
+
       // Decrease stock
       await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: -item.quantity }
+        $inc: { stock: -item.quantity },
       });
     }
 
@@ -238,7 +263,7 @@ export async function POST(request: Request) {
 
     // 5. Update Customer Total Purchases
     await Customer.findByIdAndUpdate(customerId, {
-      $inc: { totalPurchases: 1 }
+      $inc: { totalPurchases: 1 },
     });
 
     // 6. Create Initial Payment Record if paid amount > 0
@@ -266,7 +291,9 @@ export async function POST(request: Request) {
         to: populatedSale.customer.email,
         subject: `Order Confirmation #${populatedSale.saleNo} - Raantech`,
         html: emailHtml,
-      }).catch((err) => console.error("Failed to send order creation email:", err));
+      }).catch((err) =>
+        console.error("Failed to send order creation email:", err),
+      );
     }
 
     return NextResponse.json(
@@ -275,13 +302,16 @@ export async function POST(request: Request) {
         data: populatedSale,
         message: "Order created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: unknown) {
     console.error("Create sale error:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Failed to create order" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error ? error.message : "Failed to create order",
+      },
+      { status: 500 },
     );
   }
 }

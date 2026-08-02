@@ -82,6 +82,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
       FaTags: <Icons.FaTags className="w-5 h-5" />,
       FaTruck: <Icons.FaTruck className="w-5 h-5" />,
       FaUsersCog: <Icons.FaUsersCog className="w-5 h-5" />,
+      FaTrash: <Icons.FaTrash className="w-5 h-5" />,
     };
     return iconMap[iconName];
   };
@@ -168,7 +169,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
                                 "group flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-200 ease-out cursor-pointer relative overflow-hidden border-0",
                                 "text-[13px]",
                                 isActive
-                                  ? "bg-[#0089A7] text-white font-medium shadow-md shadow-[#0089A7]/20"
+                                  ? "bg-primary text-white font-medium shadow-md shadow-primary/20"
                                   : "text-slate-500 font-medium hover:bg-slate-100/80 hover:text-slate-800",
                                 isCollapsed && "lg:justify-center lg:px-0",
                               )}

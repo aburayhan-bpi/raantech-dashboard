@@ -13,6 +13,7 @@ import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import {
   Download,
   Edit2,
+  Eye,
   Mail,
   MapPin,
   Phone,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import CustomerModal from "./CustomerModal";
@@ -208,8 +210,15 @@ export default function CustomersClient() {
                       </span>
                     </td>
                     {canCreate && (
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex items-center justify-end gap-2 transition-opacity">
+                          <Link
+                            href={`/dashboard/${user?.role === "SUPER_ADMIN" ? "super-admin" : user?.role?.toLowerCase()}/customers/${customer.id}`}
+                            className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
                           <button
                             onClick={() => handleEdit(customer)}
                             className="p-2 text-slate-400 hover:text-brand hover:bg-brand/10 rounded-lg transition-colors"

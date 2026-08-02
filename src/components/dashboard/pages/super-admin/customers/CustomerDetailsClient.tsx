@@ -1,28 +1,43 @@
 "use client";
+import { SaleInvoicePDF } from "@/components/dashboard/pages/super-admin/sales/SaleInvoicePDF";
 import { useGetCustomerByIdQuery } from "@/redux/api/customer/customerApi";
-import { ISale } from "@/types/global";
 import { useGetSalesQuery } from "@/redux/api/sale/salesApi";
+import { selectUser } from "@/redux/features/user/authSlice";
+import { ISale } from "@/types/global";
+import { formatStatusText } from "@/utils/formatStatusText";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { format } from "date-fns";
-import { ArrowLeft, Download, FileText, Phone, Mail, MapPin, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  Search,
+} from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
-import dynamic from "next/dynamic";
-import { SaleInvoicePDF } from "@/components/dashboard/pages/super-admin/sales/SaleInvoicePDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { formatStatusText } from "@/utils/formatStatusText";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
-// Dynamically import PDFViewer to avoid SSR hydration issues
 const PDFViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function CustomerDetailsClient({ id }: { id: string }) {
   const router = useRouter();
+  const user = useSelector(selectUser);
+  const rolePrefix =
+    user?.role === "SUPER_ADMIN" ? "super-admin" : user?.role?.toLowerCase();
 
-  const { data: customerData, isLoading: isLoadingCustomer } = useGetCustomerByIdQuery(id);
-  const { data: salesData, isLoading: isLoadingSales } = useGetSalesQuery({ customer: id });
+  const { data: customerData, isLoading: isLoadingCustomer } =
+    useGetCustomerByIdQuery(id);
+  const { data: salesData, isLoading: isLoadingSales } = useGetSalesQuery({
+    customer: id,
+  });
 
   const customer = customerData?.data;
   const salesList = useMemo(() => salesData?.data || [], [salesData]);
@@ -30,32 +45,46 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [previewSale, setPreviewSale] = useState<ISale | null>(null);
 
-  // Compute metrics
   const totalSpent = useMemo(() => {
-    return salesList.reduce((total: number, sale: ISale) => total + sale.totalAmount, 0);
+    return salesList.reduce(
+      (total: number, sale: ISale) => total + sale.totalAmount,
+      0,
+    );
   }, [salesList]);
 
   const totalDue = useMemo(() => {
-    return salesList.reduce((total: number, sale: ISale) => total + (sale.totalAmount - sale.paidAmount), 0);
+    return salesList.reduce(
+      (total: number, sale: ISale) =>
+        total + (sale.totalAmount - sale.paidAmount),
+      0,
+    );
   }, [salesList]);
 
   const filteredSales = salesList.filter((sale: ISale) =>
-    sale.saleNo?.toLowerCase().includes(searchQuery.toLowerCase())
+    sale.saleNo?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (isLoadingCustomer || isLoadingSales) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="flex items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!customer) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
-        <p className="text-xl font-semibold mb-4">Customer not found</p>
-        <button onClick={() => router.back()} className="px-4 py-2 bg-primary-600 text-white rounded-lg">Go Back</button>
+      <div className="flex flex-col items-center justify-center min-h-100 text-slate-500 bg-white border border-slate-200 rounded-lg shadow-sm">
+        <Search className="w-8 h-8 text-slate-300 mb-3" />
+        <p className="text-lg font-medium text-slate-800 mb-4">
+          Customer not found
+        </p>
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Go Back
+        </button>
       </div>
     );
   }
@@ -65,79 +94,90 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 text-slate-600" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-bold text-slate-800">Customer Details</h1>
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Customer Details
+          </h1>
+          <p className="text-sm text-slate-500">
+            ID: {customer.customerNo || customer.id.slice(-6).toUpperCase()}
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Card */}
-        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm p-6 border border-slate-100">
-          <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <span className="text-2xl font-bold text-primary-700">
-                {customer.name.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-slate-800">{customer.name}</h2>
-            <span className="text-sm px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium mt-2">
-              ACTIVE
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 text-slate-600">
-              <Phone className="w-5 h-5 text-slate-400 mt-0.5" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Contact Info */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5 md:col-span-1">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">
+            {customer.name}
+          </h2>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <Phone className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-slate-800">Phone</p>
-                <p className="text-sm">{customer.phone}</p>
+                <p className="text-sm font-medium text-slate-700">
+                  {customer.phone}
+                </p>
                 {customer.alternatePhone && (
-                  <p className="text-sm mt-1 text-slate-500">{customer.alternatePhone}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {customer.alternatePhone}
+                  </p>
                 )}
               </div>
             </div>
             {customer.email && (
-              <div className="flex items-start gap-3 text-slate-600">
-                <Mail className="w-5 h-5 text-slate-400 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-slate-800">Email</p>
-                  <p className="text-sm break-all">{customer.email}</p>
-                </div>
+              <div className="flex items-start gap-3">
+                <Mail className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                <p className="text-sm font-medium text-slate-700 break-all">
+                  {customer.email}
+                </p>
               </div>
             )}
             {customer.address && (
-              <div className="flex items-start gap-3 text-slate-600">
-                <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-slate-800">Address</p>
-                  <p className="text-sm">{customer.address}</p>
-                </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                <p className="text-sm font-medium text-slate-700">
+                  {customer.address}
+                </p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Metrics Card */}
-        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex flex-col justify-center">
-            <h3 className="text-slate-500 font-medium mb-1">Total Spent</h3>
-            <p className="text-3xl font-bold text-primary-600">৳ {totalSpent.toFixed(2)}</p>
-            <p className="text-sm text-slate-400 mt-2">Across {salesList.length} purchases</p>
+        {/* Metrics */}
+        <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5 flex flex-col justify-center">
+            <p className="text-sm font-medium text-slate-500 mb-1">
+              Total Spent
+            </p>
+            <p className="text-2xl font-bold text-slate-900">
+              ৳ {totalSpent.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              Across {salesList.length} purchases
+            </p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex flex-col justify-center">
-            <h3 className="text-slate-500 font-medium mb-1">Total Due</h3>
-            <p className="text-3xl font-bold text-rose-600">৳ {totalDue.toFixed(2)}</p>
-            <p className="text-sm text-slate-400 mt-2">Unpaid balance</p>
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5 flex flex-col justify-center">
+            <p className="text-sm font-medium text-slate-500 mb-1">
+              Outstanding Balance
+            </p>
+            <p className="text-2xl font-bold text-red-600">
+              ৳ {totalDue.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Unpaid amount</p>
           </div>
         </div>
       </div>
 
       {/* Purchase History */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-lg font-bold text-slate-800">Purchase History</h2>
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-lg font-semibold text-slate-800">
+            Purchase History
+          </h2>
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input
@@ -145,75 +185,80 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
               placeholder="Search by invoice no..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-slate-600 font-medium">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
               <tr>
-                <th className="px-5 py-4">Invoice No</th>
-                <th className="px-5 py-4">Date</th>
-                <th className="px-5 py-4">Total</th>
-                <th className="px-5 py-4">Due</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4 text-center">Action</th>
+                <th className="px-4 py-3 font-medium">Invoice No</th>
+                <th className="px-4 py-3 font-medium">Date</th>
+                <th className="px-4 py-3 font-medium text-right">Total</th>
+                <th className="px-4 py-3 font-medium text-right">Due</th>
+                <th className="px-4 py-3 font-medium text-center">Status</th>
+                <th className="px-4 py-3 font-medium text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {filteredSales.map((sale: ISale) => {
                 const dueAmount = sale.totalAmount - sale.paidAmount;
                 const isPaid = dueAmount <= 0;
 
                 return (
-                  <tr key={sale.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-5 py-4 font-medium text-slate-800">
-                      <Link href={`/dashboard/super-admin/sales/${sale.id}`} className="text-primary-600 hover:underline">
+                  <tr
+                    key={sale.id}
+                    className="hover:bg-slate-50 transition-colors"
+                  >
+                    <td className="px-4 py-3 font-medium text-slate-900">
+                      <Link
+                        href={`/dashboard/${rolePrefix}/sales/${sale.id}`}
+                        className="text-primary hover:underline"
+                      >
                         {sale.saleNo}
                       </Link>
                     </td>
-                    <td className="px-5 py-4 text-slate-600">
+                    <td className="px-4 py-3 text-slate-500">
                       {format(new Date(sale.createdAt), "dd MMM yyyy")}
                     </td>
-                    <td className="px-5 py-4 text-slate-800 font-medium">
+                    <td className="px-4 py-3 text-slate-900 font-medium text-right">
                       ৳ {sale.totalAmount.toFixed(2)}
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`font-medium ${isPaid ? "text-emerald-600" : "text-rose-600"}`}>
+                    <td className="px-4 py-3 text-right">
+                      <span
+                        className={`font-medium ${isPaid ? "text-green-600" : "text-red-600"}`}
+                      >
                         ৳ {dueAmount.toFixed(2)}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3 text-center">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                           sale.status === "COMPLETED"
-                            ? "bg-emerald-100 text-emerald-700"
+                            ? "bg-green-100 text-green-800"
                             : sale.status === "PENDING"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-rose-100 text-rose-700"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
                         }`}
                       >
                         {formatStatusText(sale.status)}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        {/* Preview Button */}
                         <button
                           onClick={() => setPreviewSale(sale)}
-                          className="p-1.5 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-primary hover:bg-primary/10 rounded transition-colors"
                           title="Preview Invoice"
                         >
                           <FileText className="w-4 h-4" />
                         </button>
-
-                        {/* Download Button */}
                         <PDFDownloadLink
                           document={<SaleInvoicePDF sale={sale} />}
                           fileName={`Invoice-${sale.saleNo}.pdf`}
-                          className="p-1.5 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-primary hover:bg-primary/10 rounded transition-colors"
                           title="Download PDF"
                         >
                           <Download className="w-4 h-4" />
@@ -225,7 +270,10 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
               })}
               {filteredSales.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-8 text-center text-slate-500"
+                  >
                     No purchase history found.
                   </td>
                 </tr>
@@ -235,17 +283,16 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* PDF Preview Modal */}
       {previewSale && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-slate-100">
-              <h3 className="font-bold text-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200">
+              <h3 className="font-semibold text-slate-900">
                 Invoice Preview - {previewSale.saleNo}
               </h3>
               <button
                 onClick={() => setPreviewSale(null)}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 rotate-180" />
               </button>

@@ -124,7 +124,7 @@ export default function SupplierModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   required
                 />
               </div>
@@ -142,7 +142,7 @@ export default function SupplierModal({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="01XXXXXXXXX"
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   required
                 />
               </div>
@@ -161,7 +161,7 @@ export default function SupplierModal({
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Company Ltd."
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function SupplierModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="supplier@example.com"
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function SupplierModal({
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Full address..."
                 rows={2}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all resize-none"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
               />
             </div>
           </div>

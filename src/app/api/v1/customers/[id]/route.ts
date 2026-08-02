@@ -4,6 +4,28 @@ import { verifyAuth } from '@/lib/auth';
 import { ApiResponse } from '@/lib/apiResponse';
 import ActivityLog from '@/models/ActivityLog';
 
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await verifyAuth('customers:view');
+    if (!auth) return ApiResponse.unauthorized();
+
+    await dbConnect();
+    const resolvedParams = await params;
+
+    const customer = await Customer.findById(resolvedParams.id);
+    if (!customer) {
+      return ApiResponse.error('Customer not found', 404);
+    }
+
+    return ApiResponse.success(customer, 'Customer details fetched successfully');
+  } catch (error) {
+    return ApiResponse.serverError(error);
+  }
+}
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

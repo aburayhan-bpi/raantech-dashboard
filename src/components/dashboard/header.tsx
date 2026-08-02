@@ -196,7 +196,7 @@ export function Header({
             aria-expanded={showDropdown}
             aria-haspopup="true"
           >
-            <div className="w-9 h-9 rounded-full bg-[#0089A7]/10 flex items-center justify-center text-[#0089A7] font-bold shadow-inner border border-[#0089A7]/20 overflow-hidden relative">
+            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shadow-inner border border-primary/20 overflow-hidden relative">
               {profileImage && profileImage !== "/logo.png" ? (
                 <Image draggable={false}
                   src={profileImage}

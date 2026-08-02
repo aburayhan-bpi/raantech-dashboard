@@ -57,8 +57,8 @@ export default function ResetSuccessForm() {
                   y2="100"
                   gradientUnits="userSpaceOnUse"
                 >
-                  <stop stopColor="#FFD451" />
-                  <stop offset="1" stopColor="#FFD73C" />
+                  <stop stopColor="#0089A7" />
+                  <stop offset="1" stopColor="#0089A7" />
                 </linearGradient>
               </defs>
             </svg>

@@ -368,6 +368,7 @@ export interface ICustomer {
   email?: string;
   address?: string;
   alternatePhone?: string;
+  customerNo?: string;
   totalPurchases: number;
   createdAt: string;
   updatedAt: string;

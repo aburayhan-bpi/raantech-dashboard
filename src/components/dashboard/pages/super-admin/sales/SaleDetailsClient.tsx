@@ -161,7 +161,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-100">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0089A7]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -423,7 +423,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               )}
               <div className="pt-3 mt-3 border-t border-slate-100 flex justify-between items-center">
                 <span className="font-bold text-slate-800">Total Amount</span>
-                <span className="text-lg font-bold text-[#0089A7]">
+                <span className="text-lg font-bold text-primary">
                   ৳ {sale.totalAmount.toLocaleString()}
                 </span>
               </div>
@@ -483,10 +483,10 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
           {/* Edit / Update Form */}
           {isEditing && (
-            <div className="bg-white rounded-xl border border-[#0089A7]/20 shadow-lg shadow-[#0089A7]/5 p-6 space-y-5 animate-in fade-in slide-in-from-top-4">
+            <div className="bg-white rounded-xl border border-primary/20 shadow-lg shadow-primary/5 p-6 space-y-5 animate-in fade-in slide-in-from-top-4">
               <div className="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                  <Edit className="w-4 h-4 text-[#0089A7]" /> Update Order
+                  <Edit className="w-4 h-4 text-primary" /> Update Order
                 </h3>
                 <button
                   onClick={() => setIsEditing(false)}
@@ -529,7 +529,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     value={courierDetails}
                     onChange={(e) => setCourierDetails(e.target.value)}
                     placeholder="e.g., Pathao - 123456"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
 
@@ -542,7 +542,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Internal note for staff..."
                     rows={2}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] resize-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                   ></textarea>
                 </div>
 
@@ -684,7 +684,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                       const val = e.target.value ? Number(e.target.value) : "";
                       setRefundAmount(val !== "" ? Math.max(0, val) : "");
                     }}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     placeholder="e.g. 500"
                   />
                   <p className="text-[10px] text-slate-400">Max allowed: {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
@@ -709,7 +709,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 <textarea
                   value={refundNote}
                   onChange={(e) => setRefundNote(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   rows={2}
                   placeholder="Reason for refund..."
                 />
@@ -736,16 +736,16 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
           {/* Status History Timeline */}
           <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6 space-y-4 mt-6">
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 border-b border-slate-100 pb-3">
-              <Calendar className="w-4 h-4 text-[#0089A7]" /> Status History
+              <Calendar className="w-4 h-4 text-primary" /> Status History
             </h3>
             {sale.statusHistory && sale.statusHistory.length > 0 ? (
               <div className="relative pl-6 space-y-6 before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-200 before:via-slate-200 before:to-transparent pt-2">
                 {[...sale.statusHistory].reverse().map((history, idx) => (
                   <div key={history.id || idx} className="relative group">
                     {/* Icon */}
-                    <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-[#0089A7]/10 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
-                      <div className="w-2 h-2 rounded-full bg-[#0089A7] relative">
-                        <div className="absolute inset-0 rounded-full bg-[#0089A7] animate-ping opacity-75"></div>
+                    <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-primary/10 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
+                      <div className="w-2 h-2 rounded-full bg-primary relative">
+                        <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
                       </div>
                     </div>
                     {/* Content */}

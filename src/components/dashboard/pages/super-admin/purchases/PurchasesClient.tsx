@@ -129,7 +129,7 @@ export default function PurchasesClient() {
               placeholder="Search by Purchase No..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function PurchasesClient() {
                         )}
                         <button
                           onClick={() => handleView(purchase)}
-                          className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           title="View Invoice"
                         >
                           <Eye className="w-4 h-4" />

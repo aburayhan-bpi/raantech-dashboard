@@ -166,7 +166,7 @@ export default function SalesClient() {
               placeholder="Search by Order ID, Phone..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
@@ -307,7 +307,7 @@ export default function SalesClient() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleView(sale)}
-                          className="p-2 text-slate-400 hover:text-[#0089A7] hover:bg-[#0089A7]/10 rounded-lg transition-colors group"
+                          className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors group"
                           title="View Invoice"
                         >
                           <Eye className="w-4 h-4 group-hover:scale-110 transition-transform" />

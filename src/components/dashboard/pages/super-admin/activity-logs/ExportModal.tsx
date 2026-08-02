@@ -86,7 +86,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-800">
-            <Download className="w-5 h-5 text-[#0089A7]" />
+            <Download className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-medium">Export Logs</h2>
           </div>
           <button
@@ -120,7 +120,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
               <div className="space-y-1.5">
@@ -129,7 +129,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7]"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
                 onClick={() => setFormatType("csv")}
                 className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
                   formatType === "csv"
-                    ? "border-[#0089A7] bg-[#0089A7]/5 text-[#0089A7]"
+                    ? "border-primary bg-primary/5 text-primary"
                     : "border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
               >
@@ -154,7 +154,7 @@ export default function ExportModal({ isOpen, onClose, currentFilters }: ExportM
                 onClick={() => setFormatType("pdf")}
                 className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
                   formatType === "pdf"
-                    ? "border-[#0089A7] bg-[#0089A7]/5 text-[#0089A7]"
+                    ? "border-primary bg-primary/5 text-primary"
                     : "border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
               >

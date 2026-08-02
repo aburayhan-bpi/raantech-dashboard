@@ -209,7 +209,7 @@ export default function CategoryModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Electronics"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
@@ -226,7 +226,7 @@ export default function CategoryModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of the category..."
               rows={3}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all resize-none"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
             />
           </div>
 

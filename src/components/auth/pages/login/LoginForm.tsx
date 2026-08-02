@@ -89,7 +89,7 @@ export default function LoginForm() {
               id="email"
               type="email"
               placeholder="name@example.com"
-              className={`w-full pl-10 pr-4 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all outline-none ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+              className={`w-full pl-10 pr-4 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
               {...register("email")}
             />
           </div>
@@ -101,7 +101,7 @@ export default function LoginForm() {
         <div className="space-y-1.5 group">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="text-sm font-medium text-slate-700">Password</label>
-            <Link href="/forgot-password" className="text-sm text-[#0089A7] hover:text-[#006A82] transition-colors">
+            <Link href="/forgot-password" className="text-sm text-primary hover:text-[#006A82] transition-colors">
               Forgot password?
             </Link>
           </div>
@@ -113,7 +113,7 @@ export default function LoginForm() {
               id="password"
               type={showPassword.password ? "text" : "password"}
               placeholder="••••••••"
-              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-[#0089A7]/20 focus:border-[#0089A7] transition-all outline-none ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+              className={`w-full pl-10 pr-10 h-12 bg-white border border-slate-200 text-slate-800 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
               {...register("password")}
             />
             <PassViewToggleBtn 
@@ -130,7 +130,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 mt-4 bg-[#0089A7] hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+          className="w-full h-12 mt-4 bg-primary hover:bg-[#007B96] text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
         >
           {loading ? (
             <>
