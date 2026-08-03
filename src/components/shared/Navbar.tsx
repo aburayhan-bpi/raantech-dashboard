@@ -161,7 +161,7 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {NAV_LINKS.map((link) => {
+            {NAV_LINKS.map((link: { name: string, href: string }) => {
               const isActive = getIsActive(link.href);
 
               return (
@@ -288,7 +288,7 @@ const Navbar = () => {
 
           {/* Mobile Nav Links */}
           <div className="flex-1 px-6 py-10 flex flex-col gap-6 overflow-y-auto">
-            {NAV_LINKS.map((item, index) => {
+            {NAV_LINKS.map((item: { name: string, href: string }, index: number) => {
               const isActive = getIsActive(item.href);
 
               return (

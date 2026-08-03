@@ -23,13 +23,13 @@ export const getOrderCreatedEmailTemplate = (sale: any) => {
     </head>
     <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9fafb; margin: 0; padding: 40px 20px; color: #1f2937;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
-        <div style="background-color: #0089A7; padding: 30px 40px; text-align: center;">
+        <div style="background-color: #00B4D8; padding: 30px 40px; text-align: center;">
           <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Order Confirmation</h1>
         </div>
         <div style="padding: 40px;">
           <h2 style="margin-top: 0; color: #111827; font-size: 20px;">Hello ${customerName},</h2>
           <p style="line-height: 1.6; color: #4b5563; margin-bottom: 24px; font-size: 15px;">
-            Thank you for your order! We have received your order <strong style="color: #0089A7;">#${sale.saleNo}</strong> and are currently processing it.
+            Thank you for your order! We have received your order <strong style="color: #00B4D8;">#${sale.saleNo}</strong> and are currently processing it.
           </p>
           
           <h3 style="color: #374151; font-size: 16px; margin-bottom: 12px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">Order Details</h3>
@@ -60,7 +60,7 @@ export const getOrderCreatedEmailTemplate = (sale: any) => {
               </tr>` : ''}
               <tr>
                 <td colspan="2" style="padding: 16px 0; text-align: right; font-weight: 600; color: #111827; font-size: 16px; border-top: 2px solid #e5e7eb;">Total Amount:</td>
-                <td style="padding: 16px 0; text-align: right; font-weight: 700; color: #0089A7; font-size: 18px; border-top: 2px solid #e5e7eb;">৳ ${sale.totalAmount?.toLocaleString() || 0}</td>
+                <td style="padding: 16px 0; text-align: right; font-weight: 700; color: #00B4D8; font-size: 18px; border-top: 2px solid #e5e7eb;">৳ ${sale.totalAmount?.toLocaleString() || 0}</td>
               </tr>
               <tr>
                 <td colspan="2" style="padding: 8px 0; text-align: right; color: #6b7280; font-size: 14px;">Paid Amount:</td>
@@ -97,7 +97,7 @@ export const getOrderStatusEmailTemplate = (sale: any, status: string) => {
   const customerName = sale.customer?.name || "Valued Customer";
   
   let statusMessage = "";
-  let statusColor = "#0089A7";
+  let statusColor = "#00B4D8";
   let title = "Order Update";
 
   if (status === "SHIPPED") {

@@ -169,11 +169,15 @@ export async function PUT(
             : `Order Delivered #${populatedSale.saleNo}`;
             
         const emailHtml = getOrderStatusEmailTemplate(populatedSale, data.status);
-        sendEmail({
-          to: populatedSale.customer.email,
-          subject,
-          html: emailHtml,
-        }).catch((err) => console.error("Failed to send status update email:", err));
+        try {
+          await sendEmail({
+            to: populatedSale.customer.email,
+            subject,
+            html: emailHtml,
+          });
+        } catch (err) {
+          console.error("Failed to send status update email:", err);
+        }
       }
     }
 

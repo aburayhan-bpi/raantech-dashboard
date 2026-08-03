@@ -69,15 +69,15 @@ export async function POST(req: Request) {
       </head>
       <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9fafb; margin: 0; padding: 40px 20px; color: #1f2937;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
-          <div style="background-color: #0089A7; padding: 30px 40px; text-align: center;">
+          <div style="background-color: #00B4D8; padding: 30px 40px; text-align: center;">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Password Change Request</h1>
           </div>
           <div style="padding: 40px;">
             <h2 style="margin-top: 0; color: #111827; font-size: 22px;">Hello ${user.name},</h2>
-            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 24px; font-size: 16px;">You recently requested to change your password for your Raantech Dashboard account. Please use the verification code below to complete the process. This code will expire in <strong style="color: #0089A7;">10 minutes</strong>.</p>
+            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 24px; font-size: 16px;">You recently requested to change your password for your Raantech Dashboard account. Please use the verification code below to complete the process. This code will expire in <strong style="color: #00B4D8;">10 minutes</strong>.</p>
             
-            <div style="background-color: #f8fafc; border: 2px dashed #0089A7; padding: 25px 20px; text-align: center; border-radius: 8px; margin: 35px 0;">
-              <p style="font-size: 36px; font-weight: 700; letter-spacing: 12px; color: #0089A7; margin: 0;">${otpCode}</p>
+            <div style="background-color: #f8fafc; border: 2px dashed #00B4D8; padding: 25px 20px; text-align: center; border-radius: 8px; margin: 35px 0;">
+              <p style="font-size: 36px; font-weight: 700; letter-spacing: 12px; color: #00B4D8; margin: 0;">${otpCode}</p>
             </div>
             
             <p style="font-weight: 600; color: #dc2626; margin-top: 30px; line-height: 1.5;">If you did not request a password change, please ignore this email and your password will remain unchanged.</p>

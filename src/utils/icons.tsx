@@ -69,6 +69,7 @@ import {
   TbLayoutDashboardFilled,
   TbUserCircle,
   TbUserDollar,
+  TbTrashFilled,
 } from "react-icons/tb";
 
 export const Icons = {
@@ -97,6 +98,7 @@ export const Icons = {
   FaTruck,
   HiUserGroup,
   TbBellRingingFilled,
+  TbTrashFilled,
   HiClipboardDocumentList,
   PiCrownSimpleFill,
   Users,

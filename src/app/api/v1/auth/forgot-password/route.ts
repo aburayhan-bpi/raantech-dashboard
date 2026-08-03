@@ -68,15 +68,15 @@ export async function POST(req: Request) {
       </head>
       <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9fafb; margin: 0; padding: 40px 20px; color: #1f2937;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
-          <div style="background-color: #0089A7; padding: 30px 40px; text-align: center;">
+          <div style="background-color: #00B4D8; padding: 30px 40px; text-align: center;">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Password Reset Request</h1>
           </div>
           <div style="padding: 40px;">
             <h2 style="margin-top: 0; color: #111827; font-size: 22px;">Hello ${user.name},</h2>
-            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 24px; font-size: 16px;">We received a request to reset the password for your Raantech Dashboard account (<strong style="color: #0089A7;">${user.email}</strong>).</p>
+            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 24px; font-size: 16px;">We received a request to reset the password for your Raantech Dashboard account (<strong style="color: #00B4D8;">${user.email}</strong>).</p>
             
             <div style="text-align: center; margin: 35px 0;">
-              <a href="${resetUrl}" style="background-color: #0089A7; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;">Reset Password</a>
+              <a href="${resetUrl}" style="background-color: #00B4D8; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;">Reset Password</a>
             </div>
 
             <div style="background-color: #fefce8; border-left: 4px solid #eab308; padding: 15px; border-radius: 4px 8px 8px 4px; margin-bottom: 20px; font-size: 14px; color: #854d0e;">
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
             
             <p style="font-size: 14px; color: #6b7280; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px; line-height: 1.5;">
               If the button above doesn't work, copy and paste this URL into your browser:<br>
-              <a href="${resetUrl}" style="word-break: break-all; color: #0089A7; text-decoration: underline;">${resetUrl}</a>
+              <a href="${resetUrl}" style="word-break: break-all; color: #00B4D8; text-decoration: underline;">${resetUrl}</a>
             </p>
             
             <p style="font-weight: 600; color: #dc2626; margin-top: 20px;">If you did not request a password reset, please safely ignore this email.</p>

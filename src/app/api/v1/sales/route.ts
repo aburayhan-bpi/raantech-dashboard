@@ -284,17 +284,19 @@ export async function POST(request: Request) {
       .populate("items.product")
       .populate("createdBy", "name email");
 
-    // Send order confirmation email asynchronously if customer has email
-    if (populatedSale?.customer?.email) {
-      const emailHtml = getOrderCreatedEmailTemplate(populatedSale);
-      sendEmail({
-        to: populatedSale.customer.email,
-        subject: `Order Confirmation #${populatedSale.saleNo} - Raantech`,
-        html: emailHtml,
-      }).catch((err) =>
-        console.error("Failed to send order creation email:", err),
-      );
-    }
+      // Send order confirmation email and await it so Next.js doesn't kill the process early
+      if (populatedSale?.customer?.email) {
+        const emailHtml = getOrderCreatedEmailTemplate(populatedSale);
+        try {
+          await sendEmail({
+            to: populatedSale.customer.email,
+            subject: `Order Confirmation #${populatedSale.saleNo} - Raantech`,
+            html: emailHtml,
+          });
+        } catch (err) {
+          console.error("Failed to send order creation email:", err);
+        }
+      }
 
     return NextResponse.json(
       {
