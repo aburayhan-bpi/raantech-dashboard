@@ -66,8 +66,8 @@ export function Pagination({
     <div
       className={
         showSummary
-          ? "flex flex-col sm:flex-row items-center justify-between gap-4 py-4"
-          : "flex items-center justify-center gap-2"
+          ? "flex flex-col sm:flex-row items-center justify-between gap-4 py-4 w-full"
+          : "flex items-center justify-center gap-2 w-full"
       }
     >
       {showSummary && (

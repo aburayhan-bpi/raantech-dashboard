@@ -18,9 +18,10 @@ interface SidebarProps {
   isOpen: boolean;
   isCollapsed: boolean;
   onClose: () => void;
+  onExpand?: () => void;
 }
 
-export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, isCollapsed, onClose, onExpand }: SidebarProps) {
   const pathname = usePathname();
   const user = useSelector(selectUser);
 
@@ -211,10 +212,19 @@ export function Sidebar({ isOpen, isCollapsed, onClose }: SidebarProps) {
                         const isActive = isParentActive || isItemActive;
 
                         return (
-                          <div key={item.id} className="flex flex-col">
+                          <div key={item.id} className="flex flex-col relative group/sidebar-item">
                             {hasSubItems ? (
                               <button
-                                onClick={() => toggleMenu(item.id)}
+                                onClick={() => {
+                                  if (isCollapsed && onExpand) {
+                                    onExpand();
+                                    if (!openMenus[item.id]) {
+                                      toggleMenu(item.id);
+                                    }
+                                  } else {
+                                    toggleMenu(item.id);
+                                  }
+                                }}
                                 title={isCollapsed ? item.label : undefined}
                                 className={cn(
                                   "group flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 ease-out cursor-pointer relative overflow-hidden border-0",

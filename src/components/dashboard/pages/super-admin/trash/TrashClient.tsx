@@ -4,11 +4,15 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/features/user/authSlice";
 import { useGetTrashItemsQuery, useRestoreTrashItemMutation, useHardDeleteTrashItemMutation } from "@/redux/api/trash/trashApi";
 import { ITrashItem } from "@/types/global";
-import { ArchiveRestore, Trash2, AlertCircle } from "lucide-react";
+import { ArchiveRestore, Trash2, AlertCircle, Search } from "lucide-react";
 import { toast } from "sonner";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Pagination } from "@/components/dashboard/pagination";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useEffect, useRef } from "react";
 
 type TabType = "products" | "categories" | "suppliers" | "users";
 
@@ -21,9 +25,34 @@ export default function TrashClient() {
     router.push("/dashboard/super-admin");
   }
 
-  const [activeTab, setActiveTab] = useState<TabType>("products");
-  const { data, isLoading, isFetching } = useGetTrashItemsQuery(activeTab);
+  const sp = useSearchParams();
+  const setParams = useSetParamsForPagination();
+
+  const activeTab = (sp.get("type") as TabType) || "products";
+  const [searchTerm, setSearchTerm] = useState(sp.get("search") || "");
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  const previousSearch = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (previousSearch.current === debouncedSearch) return;
+    if (previousSearch.current === null && !debouncedSearch) {
+      previousSearch.current = debouncedSearch;
+      return;
+    }
+    previousSearch.current = debouncedSearch;
+    setParams({ search: debouncedSearch || null, page: "1" });
+  }, [debouncedSearch, setParams]);
+
+  const { data, isLoading, isFetching } = useGetTrashItemsQuery({
+    type: activeTab,
+    page: sp.get("page") || "1",
+    limit: sp.get("limit") || "10",
+    search: debouncedSearch || undefined,
+  });
+
   const items = data?.data || [];
+  const meta = data?.meta;
 
   const [restoreItem] = useRestoreTrashItemMutation();
   const [hardDeleteItem] = useHardDeleteTrashItemMutation();
@@ -81,6 +110,17 @@ export default function TrashClient() {
             Manage deleted items. You can restore them or delete them permanently.
           </p>
         </div>
+        
+        <div className="relative">
+          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search deleted items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 w-full sm:w-64"
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -88,10 +128,13 @@ export default function TrashClient() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setSearchTerm("");
+                setParams({ type: tab.id, search: null, page: "1" });
+              }}
               className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? "border-primary-600 text-primary-600 bg-primary-50/50"
+                  ? "border-primary text-primary bg-primary/5"
                   : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
               }`}
             >
@@ -156,6 +199,17 @@ export default function TrashClient() {
             </tbody>
           </table>
         </div>
+
+        {meta && meta.totalPage > 1 && (
+          <div className="px-6 py-0 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+            <Pagination
+              currentPage={meta.page}
+              totalPages={meta.totalPage}
+              totalItems={meta.total}
+              itemsPerPage={meta.limit}
+            />
+          </div>
+        )}
       </div>
 
       <ConfirmModal

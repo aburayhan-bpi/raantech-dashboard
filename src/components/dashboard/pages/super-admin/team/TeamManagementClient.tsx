@@ -429,7 +429,7 @@ export default function TeamManagementClient() {
         
         {/* Pagination */}
         {meta && meta.total > 0 && (
-          <div className="px-6 py-4 border-t border-slate-200/80 bg-slate-50/50">
+          <div className="px-6 py-0 border-t border-slate-200/80 bg-slate-50/50 rounded-b-2xl">
             <Pagination 
               currentPage={meta.page}
               totalPages={meta.totalPage}

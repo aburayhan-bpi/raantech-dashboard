@@ -1,44 +1,91 @@
-import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Category from "@/models/Category";
 import Supplier from "@/models/Supplier";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import { verifyAuth } from "@/lib/auth";
+import { ApiResponse } from "@/lib/apiResponse";
+import { getPaginationParams } from "@/utils/backendPagination";
 
 export async function GET(req: Request) {
   try {
     const auth = await verifyAuth();
     if (!auth || auth.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+      return ApiResponse.unauthorized("Forbidden");
     }
 
     await dbConnect();
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type"); // categories, suppliers, products, users
+    const search = searchParams.get("search");
+    
+    const { page, limit, skip } = getPaginationParams(req);
 
-    let data = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: any = { isDeleted: true };
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let Model: any;
+    
     switch (type) {
       case "categories":
-        data = await Category.find({ isDeleted: true }).sort({ updatedAt: -1 });
+        Model = Category;
+        if (search) {
+          query.$or = [{ name: { $regex: search, $options: "i" } }];
+        }
         break;
       case "suppliers":
-        data = await Supplier.find({ isDeleted: true }).sort({ updatedAt: -1 });
+        Model = Supplier;
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+            { phone: { $regex: search, $options: "i" } },
+            { company: { $regex: search, $options: "i" } }
+          ];
+        }
         break;
       case "products":
-        data = await Product.find({ isDeleted: true }).sort({ updatedAt: -1 });
+        Model = Product;
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { sku: { $regex: search, $options: "i" } }
+          ];
+        }
         break;
       case "users":
-        data = await User.find({ isDeleted: true }).select("-password").sort({ updatedAt: -1 });
+        Model = User;
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } }
+          ];
+        }
         break;
       default:
-        return NextResponse.json({ message: "Invalid type" }, { status: 400 });
+        return ApiResponse.error("Invalid type", 400);
     }
 
-    return NextResponse.json({ success: true, data });
+    let mongooseQuery = Model.find(query).sort({ updatedAt: -1 }).skip(skip).limit(limit);
+    if (type === "users") {
+      mongooseQuery = mongooseQuery.select("-password");
+    }
+    
+    const [data, total] = await Promise.all([
+      mongooseQuery,
+      Model.countDocuments(query)
+    ]);
+
+    return ApiResponse.success(data, "Trash items retrieved successfully", {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit)
+    });
   } catch (error: unknown) {
     console.error("Trash GET Error:", error);
-    return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
+    return ApiResponse.serverError("Internal Server Error");
   }
 }

@@ -4,6 +4,7 @@ import Customer from '@/models/Customer';
 import { verifyAuth } from '@/lib/auth';
 import { ApiResponse } from '@/lib/apiResponse';
 import ActivityLog from '@/models/ActivityLog';
+import { getPaginationParams, formatPaginatedResponse } from '@/utils/backendPagination';
 
 const CreateCustomerSchema = z.object({
   phone: z.string().min(10, 'Valid phone number is required'),
@@ -22,7 +23,6 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const phone = searchParams.get('phone');
     const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '0', 10);
 
     if (phone) {
       // Search specific customer by phone
@@ -31,23 +31,25 @@ export async function GET(req: Request) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query: any = {};
+    const query: any = { isDeleted: { $ne: true } }; // Ensure we don't fetch deleted if any
     if (search) {
-      query = {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { phone: { $regex: search, $options: 'i' } },
-        ]
-      };
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+      ];
     }
 
-    let queryBuilder = Customer.find(query).sort({ createdAt: -1 });
-    if (limit > 0) {
-      queryBuilder = queryBuilder.limit(limit);
-    }
+    const { page, limit: paginatedLimit, skip } = getPaginationParams(req);
     
-    const customers = await queryBuilder;
-    return ApiResponse.success(customers);
+    // If phone is requested, or specific limit without pagination is requested, we could handle it, 
+    // but standard pagination is best. Let's use standard pagination for all list requests.
+    const [customers, total] = await Promise.all([
+      Customer.find(query).sort({ createdAt: -1 }).skip(skip).limit(paginatedLimit),
+      Customer.countDocuments(query),
+    ]);
+    
+    const paginated = formatPaginatedResponse(customers, total, page, paginatedLimit);
+    return ApiResponse.success(paginated.data, 'Customers retrieved successfully', paginated.meta);
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
   }

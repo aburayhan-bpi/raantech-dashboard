@@ -248,7 +248,7 @@ export default function SuppliersClient() {
 
         {/* Pagination */}
         {meta && meta.totalPage > 1 && (
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="px-6 py-0 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
             <Pagination
               currentPage={meta.page}
               totalPages={meta.totalPage}

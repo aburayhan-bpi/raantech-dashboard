@@ -28,9 +28,6 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search");
     
-    // Check if it's a paginated request or just fetching all for dropdowns
-    const isPaginated = searchParams.has("page") || searchParams.has("limit");
-
     const query: Record<string, unknown> = { isDeleted: false };
     if (search) {
       query.$or = [
@@ -40,18 +37,13 @@ export async function GET(req: Request) {
       ];
     }
 
-    if (isPaginated) {
-      const { page, limit, skip } = getPaginationParams(req);
-      const [suppliers, total] = await Promise.all([
-        Supplier.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
-        Supplier.countDocuments(query),
-      ]);
-      const paginated = formatPaginatedResponse(suppliers, total, page, limit);
-      return ApiResponse.success(paginated.data, "Suppliers retrieved successfully", paginated.meta);
-    } else {
-      const suppliers = await Supplier.find(query).sort({ createdAt: -1 });
-      return ApiResponse.success(suppliers);
-    }
+    const { page, limit, skip } = getPaginationParams(req);
+    const [suppliers, total] = await Promise.all([
+      Supplier.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Supplier.countDocuments(query),
+    ]);
+    const paginated = formatPaginatedResponse(suppliers, total, page, limit);
+    return ApiResponse.success(paginated.data, "Suppliers retrieved successfully", paginated.meta);
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
   }

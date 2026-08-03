@@ -14,7 +14,7 @@ export function formatPaginatedResponse<T>(data: T[], total: number, page: numbe
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPage: Math.ceil(total / limit),
     },
   };
 }

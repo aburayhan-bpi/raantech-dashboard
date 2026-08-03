@@ -103,7 +103,7 @@ export default function CustomerDetailsClient({ id }: { id: string }) {
             Customer Details
           </h1>
           <p className="text-sm text-slate-500">
-            ID: {customer.customerNo || customer.id.slice(-6).toUpperCase()}
+            ID: {customer.customerNo || customer.id}
           </p>
         </div>
       </div>

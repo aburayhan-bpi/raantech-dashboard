@@ -1,31 +1,38 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetActivityLogsQuery } from "@/redux/api/activity-logs/activityLogApi";
-import { useSearchParams } from "next/navigation";
-import useSetParamsForPagination from "@/utils/setParamsForPagination";
-import { formatStatusText } from "@/utils/formatStatusText";
-import { useDebounce } from "@/hooks/useDebounce";
-import ExportModal from "./ExportModal";
-import { format } from "date-fns";
-import {
-  Search,
-  Loader2,
-  Calendar,
-  Activity,
-  Layers,
-  Clock,
-  RefreshCcw,
-  Download,
-} from "lucide-react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { Pagination } from "@/components/dashboard/pagination";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
+import { useDebounce } from "@/hooks/useDebounce";
+import { cn } from "@/lib/utils";
+import { useGetActivityLogsQuery } from "@/redux/api/activity-logs/activityLogApi";
+import { selectUser } from "@/redux/features/user/authSlice";
 import { IActivityLog } from "@/types/global";
+import { formatStatusText } from "@/utils/formatStatusText";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
+import { format } from "date-fns";
+import {
+  Activity,
+  Calendar,
+  Clock,
+  Download,
+  Layers,
+  Loader2,
+  RefreshCcw,
+  Search,
+} from "lucide-react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import ExportModal from "./ExportModal";
 
-const ENTITY_TYPES = ["USER", "PRODUCT", "CATEGORY", "SALE", "EXPENSE", "PROFILE"];
+const ENTITY_TYPES = [
+  "USER",
+  "PRODUCT",
+  "CATEGORY",
+  "SALE",
+  "EXPENSE",
+  "PROFILE",
+];
 const ACTIONS = [
   "LOGIN",
   "LOGOUT",
@@ -39,12 +46,18 @@ const ACTIONS = [
 
 const ENTITY_OPTIONS = [
   { value: "", label: "All Entities" },
-  ...ENTITY_TYPES.map(type => ({ value: type, label: formatStatusText(type) }))
+  ...ENTITY_TYPES.map((type) => ({
+    value: type,
+    label: formatStatusText(type),
+  })),
 ];
 
 const ACTION_OPTIONS = [
   { value: "", label: "All Actions" },
-  ...ACTIONS.map(action => ({ value: action, label: formatStatusText(action) }))
+  ...ACTIONS.map((action) => ({
+    value: action,
+    label: formatStatusText(action),
+  })),
 ];
 
 export default function ActivityLogClient() {
@@ -52,7 +65,9 @@ export default function ActivityLogClient() {
   const searchParams = useSearchParams();
   const setParams = useSetParamsForPagination();
 
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || "",
+  );
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
@@ -68,7 +83,9 @@ export default function ActivityLogClient() {
     setParams({ search: debouncedSearch || null, page: "1" });
   }, [debouncedSearch, setParams]);
 
-  const { data, isLoading, isError } = useGetActivityLogsQuery(searchParams.toString());
+  const { data, isLoading, isError } = useGetActivityLogsQuery(
+    searchParams.toString(),
+  );
   const logs = data?.data || [];
   const meta = data?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
 
@@ -98,7 +115,9 @@ export default function ActivityLogClient() {
         <div className="text-center space-y-4">
           <Activity className="w-12 h-12 text-slate-400 mx-auto" />
           <h2 className="text-xl font-medium text-slate-700">Access Denied</h2>
-          <p className="text-slate-500">Only Super Admins can view activity logs.</p>
+          <p className="text-slate-500">
+            Only Super Admins can view activity logs.
+          </p>
         </div>
       </div>
     );
@@ -135,13 +154,15 @@ export default function ActivityLogClient() {
             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
           />
         </div>
-        
+
         <div className="relative">
           <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
           <CustomDropdown
             options={ENTITY_OPTIONS}
             value={entityTypeFilter}
-            onChange={(val) => setParams({ entityType: val || null, page: "1" })}
+            onChange={(val) =>
+              setParams({ entityType: val || null, page: "1" })
+            }
             placeholder="All Entities"
             triggerClassName="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-slate-200 rounded-xl text-sm"
           />
@@ -164,17 +185,29 @@ export default function ActivityLogClient() {
             <input
               type="date"
               value={startDateFilter}
-              onChange={(e) => setParams({ startDate: e.target.value || null, page: "1" })}
+              onChange={(e) =>
+                setParams({ startDate: e.target.value || null, page: "1" })
+              }
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all cursor-pointer text-slate-700"
             />
           </div>
-          {(searchTerm || entityTypeFilter || actionFilter || startDateFilter) && (
+          {(searchTerm ||
+            entityTypeFilter ||
+            actionFilter ||
+            startDateFilter) && (
             <button
               onClick={() => {
                 setSearchTerm("");
-                setParams({ search: null, entityType: null, action: null, startDate: null, endDate: null, page: "1" });
+                setParams({
+                  search: null,
+                  entityType: null,
+                  action: null,
+                  startDate: null,
+                  endDate: null,
+                  page: "1",
+                });
               }}
-              className="p-2.5 rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-50 transition-colors bg-white shadow-sm flex-shrink-0"
+              className="p-2.5 rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-50 transition-colors bg-white shadow-sm shrink-0"
               title="Reset Filters"
             >
               <RefreshCcw className="w-4 h-4" />
@@ -234,12 +267,14 @@ export default function ActivityLogClient() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-wrap items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm uppercase overflow-hidden relative border border-slate-200/60 shadow-sm group-hover:border-primary/30 transition-colors">
-                          {log.user?.profileImage && log.user.profileImage !== "/logo.png" ? (
-                            <Image draggable={false} 
-                              src={log.user.profileImage} 
-                              alt={log.user.name || "User"} 
+                          {log.user?.profileImage &&
+                          log.user.profileImage !== "/logo.png" ? (
+                            <Image
+                              draggable={false}
+                              src={log.user.profileImage}
+                              alt={log.user.name || "User"}
                               fill
-                              className="object-cover" 
+                              className="object-cover"
                             />
                           ) : (
                             (log.user?.name || "U").charAt(0)
@@ -256,10 +291,12 @@ export default function ActivityLogClient() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn(
-                        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide",
-                        getActionBadge(log.action)
-                      )}>
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide",
+                          getActionBadge(log.action),
+                        )}
+                      >
                         <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
                         {formatStatusText(log.action)}
                       </span>
@@ -271,16 +308,23 @@ export default function ActivityLogClient() {
                       </span>
                     </td>
                     <td className="px-6 py-4 max-w-xs">
-                      <p className="text-sm text-slate-600 truncate" title={log.details}>
+                      <p
+                        className="text-sm text-slate-600 truncate"
+                        title={log.details}
+                      >
                         {log.details}
                       </p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-slate-500">
                       <div className="flex items-center gap-1.5 text-xs">
                         <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{format(new Date(log.createdAt), "MMM dd, yyyy")}</span>
+                        <span>
+                          {format(new Date(log.createdAt), "MMM dd, yyyy")}
+                        </span>
                         <span className="text-slate-400 mx-1">•</span>
-                        <span>{format(new Date(log.createdAt), "hh:mm a")}</span>
+                        <span>
+                          {format(new Date(log.createdAt), "hh:mm a")}
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -292,7 +336,7 @@ export default function ActivityLogClient() {
 
         {/* Pagination */}
         {logs.length > 0 && meta.totalPage > 1 && (
-          <div className="border-t border-slate-200/80 p-4">
+          <div className="px-6 py-0 border-t border-slate-200/80 bg-slate-50/50 rounded-b-2xl">
             <Pagination
               currentPage={meta.page}
               totalPages={meta.totalPage}

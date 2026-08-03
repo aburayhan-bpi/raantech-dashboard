@@ -4,7 +4,7 @@ import Category from '@/models/Category';
 import { verifyAuth } from '@/lib/auth';
 import { ApiResponse } from '@/lib/apiResponse';
 import ActivityLog from '@/models/ActivityLog';
-import { getPaginationParams } from '@/utils/backendPagination';
+import { getPaginationParams, formatPaginatedResponse } from '@/utils/backendPagination';
 
 const CreateCategorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
@@ -24,30 +24,19 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search');
     
-    // Check if it's a paginated request or just fetching all for dropdowns
-    const isPaginated = searchParams.has('page') || searchParams.has('limit');
-
     const query: Record<string, unknown> = { isDeleted: false };
     if (search) {
       query.name = { $regex: search, $options: 'i' };
     }
 
-    if (isPaginated) {
-      const { page, limit, skip } = getPaginationParams(req);
-      const [categories, total] = await Promise.all([
-        Category.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
-        Category.countDocuments(query),
-      ]);
-      return ApiResponse.success(categories, "Categories retrieved successfully", {
-        page,
-        limit,
-        total,
-        totalPage: Math.ceil(total / limit),
-      });
-    } else {
-      const categories = await Category.find(query).sort({ createdAt: -1 });
-      return ApiResponse.success(categories);
-    }
+    const { page, limit, skip } = getPaginationParams(req);
+    const [categories, total] = await Promise.all([
+      Category.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Category.countDocuments(query),
+    ]);
+    
+    const paginated = formatPaginatedResponse(categories, total, page, limit);
+    return ApiResponse.success(paginated.data, 'Categories retrieved successfully', paginated.meta);
   } catch (error: unknown) {
     return ApiResponse.serverError(error);
   }
