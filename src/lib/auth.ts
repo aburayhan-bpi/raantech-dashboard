@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
@@ -8,7 +8,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
 
 export async function verifyAuth(requiredPermission?: TPermission) {
   const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
+  let token = cookieStore.get('auth_token')?.value;
+
+  if (!token) {
+    const headersList = await headers();
+    const authHeader = headersList.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
 
   if (!token) {
     return null;
