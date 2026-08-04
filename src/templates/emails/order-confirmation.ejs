@@ -1,0 +1,85 @@
+<% 
+  // order-confirmation.ejs expects: customerName, saleNo, date, items, subTotal, shippingCharge, discount, totalAmount, paidAmount, dueAmount, address, phone, courierDetails
+%>
+<% const content = `
+<h2>Order Confirmation</h2>
+<p>Hi ${customerName},</p>
+<p>Thanks for your order. We're getting it ready for you. Below is your receipt for order <strong>#${saleNo}</strong>.</p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th style="text-align: right;">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${items.map(item => `
+      <tr>
+        <td>
+          <div style="color: #111827; font-weight: 500;">${item.name}</div>
+          <div style="color: #6B7280; font-size: 14px; margin-top: 4px;">${item.quantity} &times; ${item.unitPrice}</div>
+        </td>
+        <td style="text-align: right; vertical-align: top;">${item.subTotal}</td>
+      </tr>
+    `).join('')}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td style="padding-top: 24px; color: #6B7280;">Subtotal</td>
+      <td style="text-align: right; padding-top: 24px;">${subTotal}</td>
+    </tr>
+    ${(typeof shippingCharge !== 'undefined' && shippingCharge !== null && shippingCharge !== '0' && shippingCharge !== 0) ? `
+    <tr>
+      <td style="color: #6B7280; padding-top: 8px;">Shipping</td>
+      <td style="text-align: right; padding-top: 8px;">${shippingCharge}</td>
+    </tr>
+    ` : ''}
+    ${(typeof discount !== 'undefined' && discount !== null && discount !== '0' && discount !== 0) ? `
+    <tr>
+      <td style="color: #6B7280; padding-top: 8px;">Discount</td>
+      <td style="text-align: right; color: #059669; padding-top: 8px;">- ${discount}</td>
+    </tr>
+    ` : ''}
+    <tr>
+      <td style="font-weight: 600; color: #111827; font-size: 16px; padding-top: 16px;">Total</td>
+      <td style="text-align: right; font-weight: 600; color: #111827; font-size: 16px; padding-top: 16px;">${totalAmount}</td>
+    </tr>
+    ${(typeof paidAmount !== 'undefined' && paidAmount !== null && paidAmount > 0) ? `
+    <tr>
+      <td style="color: #6B7280; padding-top: 16px; font-size: 14px;">Paid Amount</td>
+      <td style="text-align: right; color: #111827; padding-top: 16px; font-size: 14px;">${paidAmount}</td>
+    </tr>
+    <tr>
+      <td style="color: #6B7280; padding-top: 8px; font-size: 14px;">Due Amount</td>
+      <td style="text-align: right; color: #EF4444; padding-top: 8px; font-size: 14px; font-weight: 500;">${dueAmount}</td>
+    </tr>
+    ` : ''}
+  </tfoot>
+</table>
+
+${(typeof address !== 'undefined' && address !== null && address !== 'N/A') ? `
+<div style="margin: 32px 0 0 0; padding-top: 24px; border-top: 1px solid #E5E7EB;">
+  <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600; color: #111827;">Shipping Details</p>
+  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280; width: 120px; vertical-align: top;">Address:</td>
+      <td style="padding: 8px 0; color: #374151;">${address}</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">Phone:</td>
+      <td style="padding: 8px 0; color: #374151;">${phone}</td>
+    </tr>
+    ${(typeof courierDetails !== 'undefined' && courierDetails !== null && courierDetails !== 'N/A') ? `
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">Courier Note:</td>
+      <td style="padding: 8px 0; color: #374151;">${courierDetails}</td>
+    </tr>
+    ` : ''}
+  </table>
+</div>
+` : ''}
+
+<p style="margin-top: 32px;">We'll send another email as soon as your order ships.</p>
+` %>
+<%- include('base', { content }) %>

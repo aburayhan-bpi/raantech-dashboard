@@ -1,12 +1,17 @@
 "use client";
 import { Pagination } from "@/components/dashboard/pagination";
+import ConfirmModal from "@/components/shared/ConfirmModal";
 import CustomButton from "@/components/shared/CustomButton";
 import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useGetSalesQuery } from "@/redux/api/sale/salesApi";
+import {
+  useBulkDeleteSalesMutation,
+  useGetSalesQuery,
+} from "@/redux/api/sale/salesApi";
 import { selectUser } from "@/redux/features/user/authSlice";
-import { PaymentStatus, SaleStatus, ISale } from "@/types/global";
+import { ISale, PaymentStatus, SaleStatus } from "@/types/global";
 import { formatStatusText } from "@/utils/formatStatusText";
 import useSetParamsForPagination from "@/utils/setParamsForPagination";
 import { format } from "date-fns";
@@ -14,15 +19,21 @@ import {
   Calendar,
   Edit2,
   Eye,
+  Facebook,
   FileText,
+  Globe,
   Plus,
   Search,
   ShoppingCart,
+  Smartphone,
+  Store,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 // import ViewSaleModal from "./ViewSaleModal"; // To be implemented
 
 export default function SalesClient() {
@@ -47,6 +58,11 @@ export default function SalesClient() {
 
   // const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   // const [selectedSale, setSelectedSale] = useState<ISale | null>(null);
+
+  const [selectedSales, setSelectedSales] = useState<string[]>([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [bulkDeleteSales, { isLoading: isBulkDeleting }] =
+    useBulkDeleteSalesMutation();
 
   const currentUser = useSelector(selectUser);
   const userPermissions = currentUser?.permissions || [];
@@ -136,6 +152,67 @@ export default function SalesClient() {
     }
   };
 
+  const getSourceDetails = (source: string) => {
+    switch (source) {
+      case "FACEBOOK":
+        return {
+          icon: <Facebook className="w-3 h-3" />,
+          color: "bg-blue-100 text-blue-700",
+          label: "Facebook",
+        };
+      case "WEBSITE":
+        return {
+          icon: <Globe className="w-3 h-3" />,
+          color: "bg-purple-100 text-purple-700",
+          label: "Website",
+        };
+      case "WHATSAPP":
+        return {
+          icon: <Smartphone className="w-3 h-3" />,
+          color: "bg-green-100 text-green-700",
+          label: "WhatsApp",
+        };
+      case "DIRECT_MANUAL":
+        return {
+          icon: <Store className="w-3 h-3" />,
+          color: "bg-slate-100 text-slate-700",
+          label: "Direct/POS",
+        };
+      default:
+        return {
+          icon: <FileText className="w-3 h-3" />,
+          color: "bg-slate-100 text-slate-700",
+          label: source || "Other",
+        };
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedSales(sales.map((sale: ISale) => sale.id));
+    } else {
+      setSelectedSales([]);
+    }
+  };
+
+  const handleSelectOne = (id: string) => {
+    setSelectedSales((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await bulkDeleteSales({ ids: selectedSales }).unwrap();
+      toast.success(`${selectedSales.length} orders deleted successfully!`);
+      setSelectedSales([]);
+      setIsDeleteModalOpen(false);
+    } catch (error: unknown) {
+      const err = error as { data?: { message?: string } };
+      toast.error(err?.data?.message || "Failed to delete orders");
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -146,13 +223,25 @@ export default function SalesClient() {
           </p>
         </div>
         {canCreate && (
-          <Link href={`${basePath}/sales/add`}>
-            <CustomButton
-              icon={<ShoppingCart className="w-4 h-4 mr-1" />}
-              btnText="Create Order (POS)"
-              variant="default"
-            />
-          </Link>
+          <div className="flex items-center gap-3">
+            {selectedSales.length > 0 && isSuperAdmin && (
+              <CustomButton
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={isBulkDeleting}
+                icon={<Trash2 className="w-4 h-4 mr-1" />}
+                btnText={`Delete (${selectedSales.length})`}
+                className="bg-rose-500 hover:bg-rose-600 border-none text-white hover:cursor-pointer"
+              />
+            )}
+            <Link href={`${basePath}/sales/add`} className="">
+              <CustomButton
+                icon={<ShoppingCart className="w-4 h-4 mr-1" />}
+                btnText="Create Order (POS)"
+                variant="default"
+                className="hover:cursor-pointer"
+              />
+            </Link>
+          </div>
         )}
       </div>
 
@@ -171,7 +260,7 @@ export default function SalesClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            <div className="w-full sm:w-[160px]">
+            <div className="w-full sm:w-40">
               <CustomDropdown
                 value={statusFilter}
                 onChange={setStatusFilter}
@@ -189,7 +278,7 @@ export default function SalesClient() {
               />
             </div>
 
-            <div className="w-full sm:w-[160px]">
+            <div className="w-full sm:w-40">
               <CustomDropdown
                 value={paymentStatusFilter}
                 onChange={setPaymentStatusFilter}
@@ -207,10 +296,21 @@ export default function SalesClient() {
         </div>
 
         {/* Table / Content */}
-        <div className="overflow-x-auto min-h-[400px]">
+        <div className="overflow-x-auto min-h-100">
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
+                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-10">
+                  <Checkbox
+                    checked={
+                      sales.length > 0 && selectedSales.length === sales.length
+                    }
+                    onCheckedChange={(checked) =>
+                      handleSelectAll(checked as boolean)
+                    }
+                    className="border border-brand/50 hover:cursor-pointer"
+                  />
+                </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Order Info
                 </th>
@@ -226,6 +326,9 @@ export default function SalesClient() {
                 <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
+                <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Source
+                </th>
                 <th className="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -238,8 +341,15 @@ export default function SalesClient() {
                 sales.map((sale: ISale, index: number) => (
                   <tr
                     key={sale.id || `sale-${index}`}
-                    className="hover:bg-slate-50/80 transition-colors group"
+                    className={`hover:bg-slate-50/80 transition-colors group ${selectedSales.includes(sale.id) ? "bg-primary/5" : ""}`}
                   >
+                    <td className="px-6 py-4">
+                      <Checkbox
+                        checked={selectedSales.includes(sale.id)}
+                        onCheckedChange={() => handleSelectOne(sale.id)}
+                        className="border border-brand/40 hover:cursor-pointer"
+                      />
+                    </td>
                     <td className="px-6 py-4">
                       <div>
                         <p className="font-medium text-sm text-slate-800">
@@ -303,6 +413,21 @@ export default function SalesClient() {
                         {formatStatusText(sale.status)}
                       </span>
                     </td>
+                    <td className="px-6 py-4 text-center">
+                      {(() => {
+                        const sourceData = getSourceDetails(
+                          sale.source || "OTHER",
+                        );
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide ${sourceData.color}`}
+                          >
+                            {sourceData.icon}
+                            {sourceData.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="px-4 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-2">
                         <button
@@ -325,7 +450,7 @@ export default function SalesClient() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6}>
+                  <td colSpan={8}>
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
                       <div className="bg-slate-50 p-6 rounded-full mb-4">
                         <FileText className="w-12 h-12 text-slate-300" />
@@ -374,6 +499,17 @@ export default function SalesClient() {
         onClose={() => setIsViewModalOpen(false)}
         sale={selectedSale}
       /> */}
+      <ConfirmModal
+        open={isDeleteModalOpen}
+        title="Delete Selected Orders"
+        description={`Are you sure you want to delete ${selectedSales.length} selected orders? This will also return the stock for these items if they aren't cancelled or returned.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        tone="danger"
+        loading={isBulkDeleting}
+        onConfirm={handleBulkDelete}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
     </div>
   );
 }

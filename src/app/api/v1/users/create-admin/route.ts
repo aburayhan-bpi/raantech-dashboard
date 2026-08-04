@@ -6,7 +6,7 @@ import User from '@/models/User';
 import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import ActivityLog from '@/models/ActivityLog';
-import { sendEmail } from '@/lib/email'; // assuming it exists from previous
+import { sendTemplateEmail } from '@/lib/email';
 
 const CreateAdminSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -53,22 +53,16 @@ export async function POST(req: Request) {
       permissions: permissions || [],
     });
 
-    // Send welcome email with credentials
-    const emailHtml = `
-      <h2>Welcome to Raantech Dashboard</h2>
-      <p>Hello ${name},</p>
-      <p>An ADMIN account has been created for you.</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Temporary Password:</strong> ${rawPassword}</p>
-      <p>Please login and change your password immediately.</p>
-    `;
-
     try {
-      await sendEmail({
-        to: email,
-        subject: 'Your Raantech Admin Account Credentials',
-        html: emailHtml,
-      });
+      const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const loginUrl = `${origin}/login`;
+      
+      await sendTemplateEmail(
+        'welcome',
+        { name, email, password: rawPassword, loginUrl },
+        email,
+        'Welcome to Raantech Dashboard - Your Admin Credentials'
+      );
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
       // We still return success even if email fails, but log it

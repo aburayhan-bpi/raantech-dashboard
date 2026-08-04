@@ -3,6 +3,7 @@ import dbConnect from "@/lib/mongoose";
 import SaleRefund from "@/models/SaleRefund";
 import Sale from "@/models/Sale";
 import { verifyAuth } from "@/lib/auth";
+import { sendTemplateEmail } from "@/lib/email";
 
 // Get all refunds for a specific sale
 export async function GET(
@@ -27,7 +28,9 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      history: refunds,
+      data: {
+        history: refunds,
+      },
     });
   } catch (error: unknown) {
     console.error("Fetch sale refunds error:", error);
@@ -64,7 +67,7 @@ export async function POST(
       );
     }
 
-    const sale = await Sale.findById(id);
+    const sale = await Sale.findById(id).populate("customer");
     if (!sale) {
       return NextResponse.json(
         { message: "Sale/Order not found" },
@@ -72,7 +75,7 @@ export async function POST(
       );
     }
 
-    const totalRefundable = sale.paidAmount - (sale.refundedAmount || 0);
+    const totalRefundable = sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0);
 
     if (totalRefundable <= 0) {
       return NextResponse.json(
@@ -104,14 +107,37 @@ export async function POST(
     const newRefundedAmount = (sale.refundedAmount || 0) + amount;
     
     let newPaymentStatus = sale.paymentStatus;
+    const overpayment = sale.paidAmount - sale.totalAmount;
+    
     if (newRefundedAmount >= sale.paidAmount) {
       newPaymentStatus = "REFUNDED";
+    } else if (newRefundedAmount >= overpayment) {
+      newPaymentStatus = "PAID";
     }
 
     await Sale.findByIdAndUpdate(id, {
       refundedAmount: newRefundedAmount,
       paymentStatus: newPaymentStatus,
     });
+
+    // Send email
+    if (sale.customer?.email) {
+      await sendTemplateEmail(
+        "sale-refund",
+        {
+          customerName: sale.customer.name,
+          saleNo: sale.saleNo,
+          refundAmount: amount,
+          refundMethod,
+          note,
+          totalPaid: sale.paidAmount,
+          totalRefundedSoFar: newRefundedAmount,
+          remainingRefundDue: Math.max(0, sale.paidAmount - sale.totalAmount - newRefundedAmount)
+        },
+        sale.customer.email,
+        `Refund Processed - Order #${sale.saleNo}`
+      );
+    }
 
     return NextResponse.json(
       {

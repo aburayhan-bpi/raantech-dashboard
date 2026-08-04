@@ -96,6 +96,10 @@ export type SaleRefundMethod = (typeof SALE_REFUND_METHODS)[number];
 export const SALE_STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'CANCELLED', 'REFUNDED', 'RETURNED'] as const;
 export type SaleStatus = (typeof SALE_STATUSES)[number];
 
+export const SALE_SOURCES = ['WEBSITE', 'FACEBOOK', 'WHATSAPP', 'DIRECT_MANUAL', 'OTHER'] as const;
+export type SaleSource = (typeof SALE_SOURCES)[number];
+
 export const DEFAULT_SALE_PAYMENT_STATUS: SalePaymentStatus = 'DUE';
 export const DEFAULT_SALE_PAYMENT_METHOD: SalePaymentMethod = 'CASH';
 export const DEFAULT_SALE_STATUS: SaleStatus = 'PENDING';
+export const DEFAULT_SALE_SOURCE: SaleSource = 'DIRECT_MANUAL';

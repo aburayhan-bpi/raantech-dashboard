@@ -2,7 +2,8 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 import { 
   SalePaymentStatus, SALE_PAYMENT_STATUSES, DEFAULT_SALE_PAYMENT_STATUS,
   SalePaymentMethod, SALE_PAYMENT_METHODS, DEFAULT_SALE_PAYMENT_METHOD,
-  SaleStatus, SALE_STATUSES, DEFAULT_SALE_STATUS
+  SaleStatus, SALE_STATUSES, DEFAULT_SALE_STATUS,
+  SaleSource, SALE_SOURCES, DEFAULT_SALE_SOURCE
 } from "@/types/backend";
 
 export interface ISaleItem {
@@ -34,12 +35,14 @@ export interface ISale extends Document {
   courierDetails?: string;
   note?: string;
   status: SaleStatus;
+  source: SaleSource;
   statusHistory?: {
     status: string;
     note?: string;
     updatedBy?: mongoose.Types.ObjectId;
     date: Date;
   }[];
+  isDeleted: boolean;
   
   createdBy: mongoose.Types.ObjectId;
   
@@ -49,7 +52,7 @@ export interface ISale extends Document {
 
 const saleItemSchema = new Schema<ISaleItem>({
   product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-  quantity: { type: Number, required: true, min: [0.01, "Quantity must be greater than 0"] },
+  quantity: { type: Number, required: true, min: [0, "Quantity cannot be negative"] },
   unitPrice: { type: Number, required: true, min: [0, "Unit price cannot be negative"] },
   total: { type: Number, required: true, min: [0, "Total cannot be negative"] },
 });
@@ -58,7 +61,7 @@ const saleSchema = new Schema<ISale>(
   {
     saleNo: { type: String, required: true, unique: true },
     customer: { type: Schema.Types.ObjectId, ref: "Customer", required: true },
-    items: { type: [saleItemSchema], required: true, validate: [(v: ISaleItem[]) => v.length > 0, "At least one item is required"] },
+    items: { type: [saleItemSchema], required: true },
     
     subTotal: { type: Number, required: true, min: 0 },
     discount: { type: Number, default: 0, min: 0 },
@@ -89,6 +92,11 @@ const saleSchema = new Schema<ISale>(
       enum: SALE_STATUSES,
       default: DEFAULT_SALE_STATUS,
     },
+    source: {
+      type: String,
+      enum: SALE_SOURCES,
+      default: DEFAULT_SALE_SOURCE,
+    },
     statusHistory: [
       {
         status: { type: String, required: true },
@@ -97,6 +105,7 @@ const saleSchema = new Schema<ISale>(
         date: { type: Date, default: Date.now },
       },
     ],
+    isDeleted: { type: Boolean, default: false },
     
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },

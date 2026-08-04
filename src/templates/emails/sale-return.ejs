@@ -1,0 +1,55 @@
+<% 
+  // sale-return.ejs expects: customerName, saleNo, returnItems, newSubTotal, newTotal, refundValue
+%>
+<% const content = `
+<h2>Return Processed</h2>
+<p>Hi ${customerName},</p>
+<p>Your return request for order <strong>#${saleNo}</strong> has been processed successfully. Below are the details of the returned items.</p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th style="text-align: right;">Refund Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${returnItems.map(item => `
+      <tr>
+        <td>
+          <div style="color: #111827; font-weight: 500;">${item.name}</div>
+          <div style="color: #6B7280; font-size: 14px; margin-top: 4px;">Returned Qty: ${item.quantity}</div>
+        </td>
+        <td style="text-align: right; vertical-align: top;">৳ ${item.subTotal.toLocaleString()}</td>
+      </tr>
+    `).join('')}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td style="font-weight: 600; color: #111827; font-size: 16px; padding-top: 16px;">Total Returned Value</td>
+      <td style="text-align: right; font-weight: 600; color: #111827; font-size: 16px; padding-top: 16px;">৳ ${refundValue.toLocaleString()}</td>
+    </tr>
+  </tfoot>
+</table>
+
+<div style="margin: 32px 0 0 0; padding-top: 24px; border-top: 1px solid #E5E7EB;">
+  <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600; color: #111827;">Updated Order Totals</p>
+  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280; width: 150px;">New Subtotal:</td>
+      <td style="padding: 8px 0; color: #374151;">৳ ${newSubTotal.toLocaleString()}</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">New Total Amount:</td>
+      <td style="padding: 8px 0; color: #374151; font-weight: 600;">৳ ${newTotal.toLocaleString()}</td>
+    </tr>
+  </table>
+</div>
+
+<div style="margin: 32px 0; padding: 24px; border: 1px solid #10B98140; background-color: #ECFDF5; border-radius: 8px; text-align: center;">
+  <p style="margin: 0; font-size: 14px; color: #065F46; font-weight: 500;">If any refund is due, our team will process it shortly. You will receive another confirmation email once the refund is sent.</p>
+</div>
+
+<p>If you have any questions, simply reply to this email or reach out to our support team.</p>
+` %>
+<%- include('base', { content }) %>

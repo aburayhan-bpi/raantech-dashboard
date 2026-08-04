@@ -111,6 +111,14 @@ export const salesApi = baseApi.injectEndpoints({
         "Products",
       ],
     }),
+    bulkDeleteSales: builder.mutation<{ success: boolean; message: string }, { ids: string[] }>({
+      query: (data) => ({
+        url: "/sales/bulk",
+        method: "DELETE",
+        body: data,
+      }),
+      invalidatesTags: ["Sale", "Products"],
+    }),
   }),
   overrideExisting: true,
 });
@@ -125,4 +133,5 @@ export const {
   useAddSaleRefundMutation,
   useUpdateSaleMutation,
   usePartialReturnSaleMutation,
+  useBulkDeleteSalesMutation,
 } = salesApi;

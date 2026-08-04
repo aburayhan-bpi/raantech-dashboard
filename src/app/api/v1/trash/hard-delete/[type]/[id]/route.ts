@@ -4,6 +4,7 @@ import Category from "@/models/Category";
 import Supplier from "@/models/Supplier";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import Sale from "@/models/Sale";
 import { verifyAuth } from "@/lib/auth";
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ type: string; id: string }> }) {
@@ -30,6 +31,9 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ type:
         break;
       case "users":
         deletedDoc = await User.findByIdAndDelete(id);
+        break;
+      case "sales":
+        deletedDoc = await Sale.findByIdAndDelete(id);
         break;
       default:
         return NextResponse.json({ message: "Invalid type" }, { status: 400 });

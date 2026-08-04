@@ -3,6 +3,7 @@ import dbConnect from "@/lib/mongoose";
 import Sale from "@/models/Sale";
 import Product from "@/models/Product";
 import { verifyAuth } from "@/lib/auth";
+import { sendTemplateEmail } from "@/lib/email";
 
 export async function POST(
   request: Request,
@@ -24,7 +25,7 @@ export async function POST(
       return NextResponse.json({ message: "No items provided for return" }, { status: 400 });
     }
 
-    const sale = await Sale.findById(id);
+    const sale = await Sale.findById(id).populate("customer").populate("items.product");
     if (!sale) {
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
     }
@@ -34,12 +35,14 @@ export async function POST(
     }
 
     let refundValue = 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const emailReturnItems: any[] = [];
 
     // Process each returned item
     for (const returnItem of returnItems) {
       const saleItem = sale.items.find(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (item: any) => item.product.toString() === returnItem.productId
+        (item: any) => (item.product._id ? item.product._id.toString() : item.product.toString()) === returnItem.productId
       );
 
       if (!saleItem) continue;
@@ -53,11 +56,18 @@ export async function POST(
         const itemRefund = returnQty * saleItem.unitPrice;
         saleItem.total -= itemRefund;
         
+        // Push to email items array
+        emailReturnItems.push({
+          name: saleItem.product.name,
+          quantity: returnQty,
+          subTotal: itemRefund
+        });
+        
         // Add to total refund value for the whole order
         refundValue += itemRefund;
 
         // Restore product stock
-        await Product.findByIdAndUpdate(saleItem.product, {
+        await Product.findByIdAndUpdate(saleItem.product._id || saleItem.product, {
           $inc: { stock: returnQty }
         });
       }
@@ -75,11 +85,8 @@ export async function POST(
       // Recalculate payment status and due/refunded amounts
       if (sale.paidAmount > sale.totalAmount) {
         // We owe the customer a refund
-        const newRefund = sale.paidAmount - sale.totalAmount;
-        sale.refundedAmount = (sale.refundedAmount || 0) + newRefund;
-        sale.paidAmount = sale.totalAmount;
         sale.dueAmount = 0;
-        sale.paymentStatus = sale.paidAmount > 0 ? "PAID" : "DUE";
+        sale.paymentStatus = "REFUND_DUE";
       } else {
         // We just reduce their due amount
         sale.dueAmount = sale.totalAmount - sale.paidAmount;
@@ -98,6 +105,23 @@ export async function POST(
       }
 
       await sale.save();
+
+      // Send Email
+      if (sale.customer?.email) {
+        await sendTemplateEmail(
+          "sale-return",
+          {
+            customerName: sale.customer.name,
+            saleNo: sale.saleNo,
+            returnItems: emailReturnItems,
+            newSubTotal: sale.subTotal,
+            newTotal: sale.totalAmount,
+            refundValue: refundValue
+          },
+          sale.customer.email,
+          `Return Processed - Order #${sale.saleNo}`
+        );
+      }
     }
 
     return NextResponse.json({

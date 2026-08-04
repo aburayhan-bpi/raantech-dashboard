@@ -1,20 +1,23 @@
 "use client";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetTrashItemsQuery, useRestoreTrashItemMutation, useHardDeleteTrashItemMutation } from "@/redux/api/trash/trashApi";
-import { ITrashItem } from "@/types/global";
-import { ArchiveRestore, Trash2, AlertCircle, Search } from "lucide-react";
-import { toast } from "sonner";
-import ConfirmModal from "@/components/shared/ConfirmModal";
-import { format } from "date-fns";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Pagination } from "@/components/dashboard/pagination";
-import useSetParamsForPagination from "@/utils/setParamsForPagination";
+import ConfirmModal from "@/components/shared/ConfirmModal";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect, useRef } from "react";
+import {
+  useGetTrashItemsQuery,
+  useHardDeleteTrashItemMutation,
+  useRestoreTrashItemMutation,
+} from "@/redux/api/trash/trashApi";
+import { selectUser } from "@/redux/features/user/authSlice";
+import { ITrashItem } from "@/types/global";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
+import { format } from "date-fns";
+import { AlertCircle, ArchiveRestore, Search, Trash2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
-type TabType = "products" | "categories" | "suppliers" | "users";
+type TabType = "products" | "categories" | "suppliers" | "users" | "sales";
 
 export default function TrashClient() {
   const user = useSelector(selectUser);
@@ -86,7 +89,7 @@ export default function TrashClient() {
 
   if (!isSuperAdmin) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500">
+      <div className="flex flex-col items-center justify-center min-h-100 text-slate-500">
         <AlertCircle className="w-12 h-12 text-rose-500 mb-4" />
         <p className="text-xl font-semibold">Access Denied</p>
         <p className="text-sm">Only Super Admin can access the Recycle Bin.</p>
@@ -99,6 +102,7 @@ export default function TrashClient() {
     { id: "categories", label: "Categories" },
     { id: "suppliers", label: "Suppliers" },
     { id: "users", label: "Users & Team" },
+    { id: "sales", label: "Sales" },
   ];
 
   return (
@@ -107,14 +111,15 @@ export default function TrashClient() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Recycle Bin</h1>
           <p className="text-slate-500 text-sm mt-1">
-            Manage deleted items. You can restore them or delete them permanently.
+            Manage deleted items. You can restore them or delete them
+            permanently.
           </p>
         </div>
-        
+
         <div className="relative">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
-            type="text"
+            type="search"
             placeholder="Search deleted items..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -132,7 +137,7 @@ export default function TrashClient() {
                 setSearchTerm("");
                 setParams({ type: tab.id, search: null, page: "1" });
               }}
-              className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-6 py-4 text-sm font-medium whitespace-nowrap hover:cursor-pointer border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? "border-primary text-primary bg-primary/5"
                   : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
@@ -161,26 +166,44 @@ export default function TrashClient() {
                 </tr>
               ) : items.length > 0 ? (
                 items.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-slate-50/50 transition-colors"
+                  >
                     <td className="px-6 py-4">
-                      <p className="font-medium text-slate-800">{item.name || item.email || "Unnamed Item"}</p>
-                      {item.phone && <p className="text-xs text-slate-500">{item.phone}</p>}
+                      <p className="font-medium text-slate-800">
+                        {item.name ||
+                          item.email ||
+                          item.saleNo ||
+                          "Unnamed Item"}
+                      </p>
+                      {item.phone && (
+                        <p className="text-xs text-slate-500">{item.phone}</p>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-slate-600">
-                      {item.deletedAt ? format(new Date(item.deletedAt), "dd MMM yyyy, hh:mm a") : format(new Date(item.updatedAt || new Date()), "dd MMM yyyy")}
+                      {item.deletedAt
+                        ? format(
+                            new Date(item.deletedAt),
+                            "dd MMM yyyy, hh:mm a",
+                          )
+                        : format(
+                            new Date(item.updatedAt || new Date()),
+                            "dd MMM yyyy",
+                          )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setItemToRestore(item)}
-                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
+                          className="p-2 text-emerald-600 hover:bg-emerald-50 hover:cursor-pointer rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
                           title="Restore"
                         >
                           <ArchiveRestore className="w-4 h-4" /> Restore
                         </button>
                         <button
                           onClick={() => setItemToDelete(item)}
-                          className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
+                          className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg hover:cursor-pointer transition-colors flex items-center gap-1 text-xs font-medium"
                           title="Delete Permanently"
                         >
                           <Trash2 className="w-4 h-4" /> Delete
@@ -191,7 +214,10 @@ export default function TrashClient() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={3}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     No deleted items found in this category.
                   </td>
                 </tr>

@@ -1,6 +1,5 @@
 import { verifyAuth } from "@/lib/auth";
-import { sendEmail } from "@/lib/email";
-import { getOrderCreatedEmailTemplate } from "@/lib/emailTemplates";
+import { sendTemplateEmail } from "@/lib/email";
 import dbConnect from "@/lib/mongoose";
 import Customer from "@/models/Customer";
 import Product from "@/models/Product";
@@ -284,15 +283,37 @@ export async function POST(request: Request) {
       .populate("items.product")
       .populate("createdBy", "name email");
 
-      // Send order confirmation email and await it so Next.js doesn't kill the process early
-      if (populatedSale?.customer?.email) {
-        const emailHtml = getOrderCreatedEmailTemplate(populatedSale);
+      // 8. Send Order Confirmation Email
+      if (populatedSale.customer?.email) {
         try {
-          await sendEmail({
-            to: populatedSale.customer.email,
-            subject: `Order Confirmation #${populatedSale.saleNo} - Raantech`,
-            html: emailHtml,
-          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const emailItems = populatedSale.items.map((item: any) => ({
+            name: item.product?.name || 'Unknown Product',
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            subTotal: item.total
+          }));
+
+          await sendTemplateEmail(
+            "order-confirmation",
+            {
+              customerName: populatedSale.customer.name,
+              saleNo: populatedSale.saleNo,
+              date: populatedSale.saleDate,
+              items: emailItems,
+              subTotal: populatedSale.subTotal,
+              shippingCharge: populatedSale.shippingCharge || 0,
+              discount: populatedSale.discount || 0,
+              totalAmount: populatedSale.totalAmount,
+              paidAmount: populatedSale.paidAmount,
+              dueAmount: populatedSale.dueAmount,
+              address: populatedSale.customer.address || 'N/A',
+              phone: populatedSale.customer.phone || 'N/A',
+              courierDetails: populatedSale.courierDetails || 'Not assigned yet'
+            },
+            populatedSale.customer.email,
+            `Order Confirmation #${populatedSale.saleNo} - Raantech`
+          );
         } catch (err) {
           console.error("Failed to send order creation email:", err);
         }

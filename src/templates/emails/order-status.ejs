@@ -1,0 +1,51 @@
+<% 
+  // order-status.ejs expects: customerName, saleNo, status, address, phone, courierDetails
+  let statusColor = '#00B4D8';
+  let statusBg = '#F0F9FF';
+  const s = (status || '').toLowerCase();
+  if (s === 'completed' || s === 'delivered') {
+    statusColor = '#10B981'; // Green
+    statusBg = '#ECFDF5';
+  } else if (s === 'cancelled' || s === 'returned') {
+    statusColor = '#EF4444'; // Red
+    statusBg = '#FEF2F2';
+  } else if (s === 'pending' || s === 'processing') {
+    statusColor = '#F59E0B'; // Orange
+    statusBg = '#FFFBEB';
+  }
+%>
+<% const content = `
+<h2>Order Updated</h2>
+<p>Hi ${customerName},</p>
+<p>The status of your order <strong>#${saleNo}</strong> has been updated.</p>
+
+<div style="margin: 32px 0; padding: 24px; border: 1px solid ${statusColor}40; background-color: ${statusBg}; border-radius: 8px; text-align: center;">
+  <p style="margin: 0; font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Current Status</p>
+  <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: ${statusColor}; text-transform: capitalize;">${status}</p>
+</div>
+
+${(locals.address && locals.address !== 'N/A') ? `
+<div style="margin: 32px 0; padding-top: 24px; border-top: 1px solid #E5E7EB;">
+  <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600; color: #111827;">Shipping Details</p>
+  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280; width: 120px; vertical-align: top;">Address:</td>
+      <td style="padding: 8px 0; color: #374151;">${locals.address}</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">Phone:</td>
+      <td style="padding: 8px 0; color: #374151;">${locals.phone}</td>
+    </tr>
+    ${(locals.courierDetails && locals.courierDetails !== 'N/A') ? `
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">Courier Note:</td>
+      <td style="padding: 8px 0; color: #374151;">${locals.courierDetails}</td>
+    </tr>
+    ` : ''}
+  </table>
+</div>
+` : ''}
+
+<p>If you have any questions, simply reply to this email or reach out to our support team.</p>
+` %>
+<%- include('base', { content }) %>

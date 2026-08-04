@@ -20,6 +20,7 @@ import {
   Receipt,
   Truck,
   User, X, Save,
+  Globe, Facebook, Smartphone, Store, FileText
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -139,6 +140,14 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
       toast.error("Please enter a valid refund amount");
       return;
     }
+    if (!refundMethod) {
+      toast.error("Please select a refund method");
+      return;
+    }
+    if (!refundNote.trim()) {
+      toast.error("Please provide a note or reason for the refund");
+      return;
+    }
     try {
       await addRefund({
         id: saleId,
@@ -206,6 +215,21 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
     }
   };
 
+  const getSourceDetails = (source: string) => {
+    switch (source) {
+      case "FACEBOOK":
+        return { icon: <Facebook className="w-3 h-3" />, color: "bg-blue-100 text-blue-700 border-blue-200", label: "Facebook" };
+      case "WEBSITE":
+        return { icon: <Globe className="w-3 h-3" />, color: "bg-purple-100 text-purple-700 border-purple-200", label: "Website" };
+      case "WHATSAPP":
+        return { icon: <Smartphone className="w-3 h-3" />, color: "bg-green-100 text-green-700 border-green-200", label: "WhatsApp" };
+      case "DIRECT_MANUAL":
+        return { icon: <Store className="w-3 h-3" />, color: "bg-slate-100 text-slate-700 border-slate-200", label: "Direct/POS" };
+      default:
+        return { icon: <FileText className="w-3 h-3" />, color: "bg-slate-100 text-slate-700 border-slate-200", label: source || "Other" };
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full mx-auto">
       {/* Header */}
@@ -227,6 +251,17 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               >
                 {sale.status}
               </span>
+              {(() => {
+                const sourceData = getSourceDetails(sale.source || "OTHER");
+                return (
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border uppercase tracking-wide ${sourceData.color}`}
+                  >
+                    {sourceData.icon}
+                    {sourceData.label}
+                  </span>
+                );
+              })()}
             </div>
             <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
@@ -431,7 +466,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
             <div className="bg-slate-50 p-4 rounded-xl space-y-2 mt-4 border border-slate-100">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-medium text-slate-700">Paid Amount:</span>
+                <span className="font-medium text-slate-700">Paid Amount (Advance/Other):</span>
                 <span className="font-medium text-slate-800">
                   ৳ {sale.paidAmount.toLocaleString()}
                 </span>
@@ -462,13 +497,13 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 <div className="flex justify-between items-center text-sm pt-2 border-t border-rose-200 mt-2 bg-rose-50/50 p-2 rounded-lg">
                   <span className="font-medium text-rose-700">Refund Due:</span>
                   <span className="font-bold text-rose-600">
-                    ৳ {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}
+                    ৳ {(sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)).toLocaleString()}
                   </span>
                 </div>
               )}
             </div>
             
-            {canRefund && sale.paymentStatus === "REFUND_DUE" && (
+            {canRefund && sale.paymentStatus === "REFUND_DUE" && (sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)) > 0 && (
               <div className="pt-2">
                 <button
                   onClick={() => setIsRefundOpen(true)}
@@ -682,12 +717,18 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     value={refundAmount}
                     onChange={(e) => {
                       const val = e.target.value ? Number(e.target.value) : "";
-                      setRefundAmount(val !== "" ? Math.max(0, val) : "");
+                      const maxRefund = Math.max(0, sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0));
+                      if (val !== "") {
+                        // Cap the value between 0 and maxRefund
+                        setRefundAmount(Math.min(Math.max(0, val), maxRefund));
+                      } else {
+                        setRefundAmount("");
+                      }
                     }}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     placeholder="e.g. 500"
                   />
-                  <p className="text-[10px] text-slate-400">Max allowed: {(sale.paidAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Max allowed: {Math.max(0, sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-slate-600 uppercase">Refund Method</label>
@@ -705,13 +746,14 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-600 uppercase">Note (Optional)</label>
+                <label className="text-xs font-medium text-slate-600 uppercase">Note *</label>
                 <textarea
                   value={refundNote}
                   onChange={(e) => setRefundNote(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   rows={2}
                   placeholder="Reason for refund..."
+                  required
                 />
               </div>
 
@@ -725,7 +767,14 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                 <CustomButton
                   onClick={handleRefund}
                   loading={isAddingRefund}
-                  disabled={isAddingRefund}
+                  disabled={
+                    isAddingRefund ||
+                    !refundAmount ||
+                    Number(refundAmount) <= 0 ||
+                    Number(refundAmount) > (sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)) ||
+                    !refundMethod ||
+                    !refundNote.trim()
+                  }
                   btnText="Submit Refund"
                   className="bg-rose-600 hover:bg-rose-700 text-white"
                 />
@@ -745,7 +794,9 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     {/* Icon */}
                     <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-primary/10 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
                       <div className="w-2 h-2 rounded-full bg-primary relative">
-                        <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+                        {idx === 0 && (
+                          <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+                        )}
                       </div>
                     </div>
                     {/* Content */}
@@ -787,7 +838,9 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     {/* Icon */}
                     <div className="absolute -left-[1.625rem] flex items-center justify-center w-5 h-5 rounded-full border-[3px] border-white bg-purple-100 shadow-sm shrink-0 top-1 z-10 transition-transform duration-300 group-hover:scale-110">
                       <div className="w-2 h-2 rounded-full bg-purple-600 relative">
-                        <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-75"></div>
+                        {idx === 0 && (
+                          <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-75"></div>
+                        )}
                       </div>
                     </div>
                     {/* Content */}

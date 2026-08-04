@@ -353,6 +353,7 @@ export interface ITrashItem {
   name?: string;
   phone?: string;
   email?: string;
+  saleNo?: string;
   deletedAt?: string;
   updatedAt?: string;
 }
@@ -570,6 +571,7 @@ export interface ISale {
   paymentStatus: SalePaymentStatus;
   paymentMethod: SalePaymentMethod;
   saleDate: string;
+  source?: "FACEBOOK" | "WEBSITE" | "WHATSAPP" | "DIRECT_MANUAL" | "OTHER";
   courierDetails?: string;
   note?: string;
   status: SaleStatus;

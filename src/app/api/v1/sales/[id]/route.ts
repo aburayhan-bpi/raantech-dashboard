@@ -3,9 +3,9 @@ import dbConnect from "@/lib/mongoose";
 import Sale from "@/models/Sale";
 import Product from "@/models/Product";
 import Customer from "@/models/Customer";
+import SalePayment from "@/models/SalePayment";
 import { verifyAuth } from "@/lib/auth";
-import { sendEmail } from "@/lib/email";
-import { getOrderStatusEmailTemplate } from "@/lib/emailTemplates";
+import { sendTemplateEmail } from "@/lib/email";
 
 // Ensure Customer schema is registered for populate
 void Customer;
@@ -91,7 +91,7 @@ export async function PUT(
       }
       
       sale.status = data.status;
-      if (oldStatus !== data.status && ["SHIPPED", "COMPLETED", "DELIVERED", "CANCELLED"].includes(data.status)) {
+      if (oldStatus !== data.status) {
         shouldSendStatusEmail = true;
       }
 
@@ -154,6 +154,24 @@ export async function PUT(
         } else {
           sale.paymentStatus = "PARTIAL";
         }
+
+        // 1. Create a SalePayment record
+        await SalePayment.create({
+          sale: sale._id,
+          amount,
+          paymentMethod: data.paymentMethod,
+          paymentDate: new Date(),
+          createdBy: session.userId,
+        });
+
+        // 2. Add this payment to the Status History timeline
+        sale.statusHistory = sale.statusHistory || [];
+        sale.statusHistory.push({
+          status: sale.status,
+          note: `Payment collected: ৳${amount} via ${data.paymentMethod}`,
+          updatedBy: session.userId,
+          date: new Date(),
+        });
       }
     }
 
@@ -162,19 +180,27 @@ export async function PUT(
     if (shouldSendStatusEmail) {
       const populatedSale = await Sale.findById(sale._id).populate("customer");
       if (populatedSale?.customer?.email) {
-        const subject = data.status === "SHIPPED" 
-          ? `Your Order #${populatedSale.saleNo} has been Shipped!` 
-          : data.status === "CANCELLED"
-            ? `Order Cancelled #${populatedSale.saleNo}`
-            : `Order Delivered #${populatedSale.saleNo}`;
+        let subject = `Order Status Update: #${populatedSale.saleNo}`;
+        if (data.status === "SHIPPED") subject = `Your Order #${populatedSale.saleNo} has been Shipped!`;
+        else if (data.status === "CANCELLED") subject = `Order Cancelled #${populatedSale.saleNo}`;
+        else if (data.status === "DELIVERED") subject = `Order Delivered #${populatedSale.saleNo}`;
+        else if (data.status === "COMPLETED") subject = `Order Completed #${populatedSale.saleNo}`;
+        else if (data.status === "RETURNED") subject = `Order Returned #${populatedSale.saleNo}`;
             
-        const emailHtml = getOrderStatusEmailTemplate(populatedSale, data.status);
         try {
-          await sendEmail({
-            to: populatedSale.customer.email,
-            subject,
-            html: emailHtml,
-          });
+          await sendTemplateEmail(
+            "order-status",
+            {
+              customerName: populatedSale.customer.name,
+              saleNo: populatedSale.saleNo,
+              status: data.status.toLowerCase(),
+              address: populatedSale.customer.address || 'N/A',
+              phone: populatedSale.customer.phone || 'N/A',
+              courierDetails: populatedSale.courierDetails || 'N/A',
+            },
+            populatedSale.customer.email,
+            subject
+          );
         } catch (err) {
           console.error("Failed to send status update email:", err);
         }

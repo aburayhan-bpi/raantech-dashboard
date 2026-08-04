@@ -4,7 +4,7 @@ import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import { useGetProductsQuery } from "@/redux/api/product/productApi";
 import { useGetCustomersQuery } from "@/redux/api/customer/customerApi";
 import { useCreateSaleMutation } from "@/redux/api/sale/salesApi";
-import { SalePaymentMethod } from "@/types/backend";
+import { SalePaymentMethod, SaleSource, SaleStatus } from "@/types/backend";
 import { PaymentMethod, ICustomer, IProduct } from "@/types/global";
 import {
   ArrowLeft,
@@ -108,6 +108,18 @@ export default function AddSaleClient() {
   const [shippingCharge, setShippingCharge] = useState<number | string>(0);
   const [paidAmount, setPaidAmount] = useState<number | string>(0);
   const [paymentMethod, setPaymentMethod] = useState<string>(PaymentMethod.COD);
+  
+  // Sale Source and Status
+  const [source, setSource] = useState<SaleSource>("FACEBOOK");
+  const [status, setStatus] = useState<SaleStatus>("PENDING");
+
+  // Smart Sync for Direct Sale
+  useEffect(() => {
+    if (source === "DIRECT_MANUAL") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStatus("COMPLETED");
+    }
+  }, [source]);
 
   // Filter Products
   const filteredProducts = useMemo(() => {
@@ -242,6 +254,8 @@ export default function AddSaleClient() {
         paymentMethod: paymentMethod as SalePaymentMethod,
         courierDetails: courierName ? `${courierName}${trackingId ? ` - Tracking: ${trackingId}` : ''}` : "",
         note,
+        source,
+        status,
       };
 
       await createSale(payload).unwrap();
@@ -588,6 +602,51 @@ export default function AddSaleClient() {
                   className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sale Settings */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-800 flex items-center mb-4">
+              <ShoppingCart className="w-5 h-5 mr-2 text-primary" />
+              Order Source & Status
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Order Source
+                </label>
+                <CustomDropdown
+                  options={[
+                    { value: "FACEBOOK", label: "Facebook" },
+                    { value: "WEBSITE", label: "Website" },
+                    { value: "WHATSAPP", label: "WhatsApp" },
+                    { value: "DIRECT_MANUAL", label: "Direct Sale / POS" },
+                    { value: "OTHER", label: "Other" },
+                  ]}
+                  value={source}
+                  onChange={(val) => setSource(val as SaleSource)}
+                  placeholder="Select Source"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Order Status
+                </label>
+                <CustomDropdown
+                  options={[
+                    { value: "PENDING", label: "Pending" },
+                    { value: "PROCESSING", label: "Processing" },
+                    { value: "SHIPPED", label: "Shipped" },
+                    { value: "DELIVERED", label: "Delivered" },
+                    { value: "COMPLETED", label: "Completed" },
+                    { value: "CANCELLED", label: "Cancelled" },
+                  ]}
+                  value={status}
+                  onChange={(val) => setStatus(val as SaleStatus)}
+                  placeholder="Select Status"
                 />
               </div>
             </div>

@@ -3,6 +3,7 @@ import Category from "@/models/Category";
 import Supplier from "@/models/Supplier";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import Sale from "@/models/Sale";
 import { verifyAuth } from "@/lib/auth";
 import { ApiResponse } from "@/lib/apiResponse";
 import { getPaginationParams } from "@/utils/backendPagination";
@@ -61,6 +62,14 @@ export async function GET(req: Request) {
           query.$or = [
             { name: { $regex: search, $options: "i" } },
             { email: { $regex: search, $options: "i" } }
+          ];
+        }
+        break;
+      case "sales":
+        Model = Sale;
+        if (search) {
+          query.$or = [
+            { saleNo: { $regex: search, $options: "i" } }
           ];
         }
         break;

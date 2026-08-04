@@ -1,0 +1,15 @@
+<% 
+  // otp.ejs expects: name, otp
+%>
+<% const content = `
+<h2>Verification Code</h2>
+<p>Hi ${name},</p>
+<p>You requested a verification code to perform a secure action. Please use the code below:</p>
+
+<div style="margin: 32px 0;">
+  <p style="font-size: 32px; font-weight: 600; letter-spacing: 0.2em; color: #111827; margin: 0;">${otp}</p>
+</div>
+
+<p>This code will expire in 10 minutes. If you didn't request this code, you can safely ignore this email.</p>
+` %>
+<%- include('base', { content }) %>

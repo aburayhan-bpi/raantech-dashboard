@@ -1,0 +1,30 @@
+<% 
+  // welcome.ejs expects: name, email, password, loginUrl
+%>
+<% const content = `
+<h2>Welcome to Raantech</h2>
+<p>Hi ${name},</p>
+<p>Your account has been successfully provisioned with <strong>ADMIN</strong> access on the Raantech Dashboard.</p>
+
+<div style="margin: 32px 0;">
+  <p style="margin: 0 0 16px 0; font-size: 13px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;">Your Login Details</p>
+  
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280; width: 100px;">Email</td>
+      <td style="padding: 8px 0; color: #111827; font-weight: 500;">${email}</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: #6B7280;">Password</td>
+      <td style="padding: 8px 0; color: #111827; font-weight: 500; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 16px;">${password}</td>
+    </tr>
+  </table>
+</div>
+
+<p>For your security, please log in and change this temporary password immediately.</p>
+
+<div class="btn-container">
+  <a href="${loginUrl}" class="btn">Log In to Dashboard</a>
+</div>
+` %>
+<%- include('base', { content }) %>
