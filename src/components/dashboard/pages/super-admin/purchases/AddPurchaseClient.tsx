@@ -76,8 +76,6 @@ export default function AddPurchaseClient() {
   const [paidAmount, setPaidAmount] = useState(0);
   const [paymentMethod, setPaymentMethod] =
     useState<PurchasePaymentMethod>("CASH");
-  const [paymentStatus, setPaymentStatus] =
-    useState<PurchasePaymentStatus>("PAID");
 
   // Filter Products
   const filteredProducts = useMemo(() => {
@@ -149,6 +147,11 @@ export default function AddPurchaseClient() {
     setCart((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
+  // Derived Payment Status
+  const paymentStatus: PurchasePaymentStatus = totalAmount === 0 ? "DUE" 
+    : paidAmount >= totalAmount ? "PAID" 
+    : (paidAmount > 0 ? "PARTIAL" : "DUE");
+
   const handlePaidAmountChange = (val: number) => {
     setPaidAmount(val);
   };
@@ -160,22 +163,7 @@ export default function AddPurchaseClient() {
     } else if (status === "DUE") {
       setPaidAmount(0);
     }
-    setPaymentStatus(status);
   };
-
-  useEffect(() => {
-    if (totalAmount === 0) {
-      setPaymentStatus("DUE");
-      return;
-    }
-    if (paidAmount >= totalAmount) {
-      setPaymentStatus("PAID");
-    } else if (paidAmount > 0 && paidAmount < totalAmount) {
-      setPaymentStatus("PARTIAL");
-    } else {
-      setPaymentStatus("DUE");
-    }
-  }, [paidAmount, totalAmount]);
 
   const handleSubmit = async () => {
     if (!supplier) {
