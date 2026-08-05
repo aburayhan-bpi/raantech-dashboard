@@ -391,11 +391,11 @@ export default function SalesClient() {
                       <div className="space-y-1.5 flex flex-col items-start">
                         <span
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getPaymentStatusColor(
-                            sale.paymentStatus,
+                            sale.status === 'CANCELLED' ? 'CANCELLED' : sale.paymentStatus,
                           )}`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
-                          {formatStatusText(sale.paymentStatus)}
+                          {formatStatusText(sale.status === 'CANCELLED' ? 'CANCELLED' : sale.paymentStatus)}
                         </span>
                         <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 uppercase">
                           <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
