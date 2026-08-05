@@ -47,6 +47,15 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
 
   const sale = data?.data;
 
+  const calculateRefundDue = () => {
+    if (!sale) return 0;
+    if (sale.status === 'CANCELLED' || sale.status === 'RETURNED') {
+      return sale.paidAmount - (sale.refundedAmount || 0);
+    }
+    return sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0);
+  };
+  const refundDueAmount = calculateRefundDue();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isPartialReturnOpen, setIsPartialReturnOpen] = useState(false);
   const [returnQuantities, setReturnQuantities] = useState<Record<string, number>>({});
@@ -498,17 +507,17 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                   </span>
                 </div>
               ) : null}
-              {sale.paymentStatus === "REFUND_DUE" && (
+              {sale.paymentStatus === "REFUND_DUE" && refundDueAmount > 0 && (
                 <div className="flex justify-between items-center text-sm pt-2 border-t border-rose-200 mt-2 bg-rose-50/50 p-2 rounded-lg">
                   <span className="font-medium text-rose-700">Refund Due:</span>
                   <span className="font-bold text-rose-600">
-                    ৳ {(sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)).toLocaleString()}
+                    ৳ {refundDueAmount.toLocaleString()}
                   </span>
                 </div>
               )}
             </div>
             
-            {canRefund && sale.paymentStatus === "REFUND_DUE" && (sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)) > 0 && (
+            {canRefund && sale.paymentStatus === "REFUND_DUE" && refundDueAmount > 0 && (
               <div className="pt-2">
                 <button
                   onClick={() => setIsRefundOpen(true)}
