@@ -40,6 +40,15 @@ const productSchema = z.object({
   
   status: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  
+  warrantyType: z.string().optional(),
+  warrantyPeriod: z.string().optional(),
+  isReturnable: z.boolean().optional(),
+  returnWindow: z.string().optional(),
+  
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -127,6 +136,13 @@ export default function ProductModal({
           images: [],
           status: product.status,
           tags: product.tags || [],
+          warrantyType: product.warrantyType || "",
+          warrantyPeriod: product.warrantyPeriod || "",
+          isReturnable: product.isReturnable ?? true,
+          returnWindow: product.returnWindow || "",
+          metaTitle: product.metaTitle || "",
+          metaDescription: product.metaDescription || "",
+          metaKeywords: product.metaKeywords || "",
         });
         
         setTimeout(() => {
@@ -154,6 +170,13 @@ export default function ProductModal({
           images: [],
           status: "ACTIVE",
           tags: [],
+          warrantyType: "",
+          warrantyPeriod: "",
+          isReturnable: true,
+          returnWindow: "",
+          metaTitle: "",
+          metaDescription: "",
+          metaKeywords: "",
         });
         setTimeout(() => {
           setImageItems([]);
@@ -436,6 +459,76 @@ export default function ProductModal({
               </div>
             </div>
 
+            {/* Section: Warranty & Policies */}
+            <div>
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                Warranty & Return Policies
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700">
+                    Warranty Type
+                  </label>
+                  <Controller
+                    name="warrantyType"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomDropdown
+                        options={[
+                          { value: "Official Warranty", label: "Official Warranty" },
+                          { value: "Shop Warranty", label: "Shop Warranty" },
+                          { value: "Service Warranty", label: "Service Warranty" },
+                          { value: "Replacement Warranty", label: "Replacement Warranty" },
+                          { value: "Checking Warranty", label: "Checking Warranty" },
+                          { value: "No Warranty", label: "No Warranty" },
+                          { value: "Other", label: "Other" },
+                        ]}
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Select warranty type"
+                      />
+                    )}
+                  />
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700">
+                    Warranty Period
+                  </label>
+                  <input
+                    {...register("warrantyPeriod")}
+                    placeholder="e.g., 6 Months, 1 Year"
+                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700 block mb-2">
+                    Return Policy
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      {...register("isReturnable")}
+                      className="w-5 h-5 rounded border-slate-300 text-brand focus:ring-brand/20 transition-colors"
+                    />
+                    <span className="text-sm text-slate-700 font-medium">This product is returnable</span>
+                  </label>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700">
+                    Return Window
+                  </label>
+                  <input
+                    {...register("returnWindow")}
+                    placeholder="e.g., 3 Days, 7 Days"
+                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Section: Product Images */}
             <div>
               <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
@@ -446,6 +539,48 @@ export default function ProductModal({
                 onChange={setImageItems}
                 maxFiles={5}
               />
+            </div>
+
+            {/* Section: SEO Metadata */}
+            <div>
+              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                SEO Metadata
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Meta Title
+                  </label>
+                  <input
+                    {...register("metaTitle")}
+                    placeholder="SEO title for search engines"
+                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                  />
+                </div>
+                
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Meta Description
+                  </label>
+                  <textarea
+                    {...register("metaDescription")}
+                    rows={2}
+                    placeholder="Brief description for search results"
+                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all resize-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Meta Keywords
+                  </label>
+                  <input
+                    {...register("metaKeywords")}
+                    placeholder="e.g., headphones, wireless, bluetooth"
+                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                  />
+                </div>
+              </div>
             </div>
             
           </form>

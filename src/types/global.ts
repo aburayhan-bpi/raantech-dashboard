@@ -400,9 +400,16 @@ export interface IProduct {
   sku?: string;
   barcode?: string;
   images: string[];
-  status: 'DRAFT' | 'ACTIVE' | 'OUT_OF_STOCK' | 'DISCONTINUED';
+  status: "ACTIVE" | "INACTIVE" | "DRAFT" | "OUT_OF_STOCK" | "DISCONTINUED";
   tags: string[];
   isDeleted: boolean;
+  warrantyType?: string;
+  warrantyPeriod?: string;
+  isReturnable?: boolean;
+  returnWindow?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
   createdBy: {
     id: string;
     name: string;

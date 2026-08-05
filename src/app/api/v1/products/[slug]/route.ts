@@ -6,7 +6,7 @@ import { ApiResponse } from '@/lib/apiResponse';
 import { verifyAuth } from '@/lib/auth';
 import ActivityLog from '@/models/ActivityLog';
 import { generateSlug } from '@/lib/slugify';
-import { PRODUCT_STATUSES, PRODUCT_UNITS } from '@/types/backend';
+import { PRODUCT_STATUSES, PRODUCT_UNITS, WARRANTY_TYPES } from '@/types/backend';
 
 const ProductUpdateSchema = z.object({
   name: z.string().min(1).optional(),
@@ -30,6 +30,16 @@ const ProductUpdateSchema = z.object({
   
   status: z.enum([...PRODUCT_STATUSES] as [string, ...string[]]).optional(),
   tags: z.array(z.string()).optional(),
+  
+  warrantyType: z.enum([...WARRANTY_TYPES] as [string, ...string[]]).optional(),
+  warrantyPeriod: z.string().optional(),
+  isReturnable: z.boolean().optional(),
+  returnWindow: z.string().optional(),
+  
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(),
+  
   isDeleted: z.boolean().optional(),
 });
 

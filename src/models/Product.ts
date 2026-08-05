@@ -3,8 +3,10 @@ import { generateSlug } from '@/lib/slugify';
 import { 
   PRODUCT_STATUSES, 
   PRODUCT_UNITS, 
+  WARRANTY_TYPES,
   ProductStatus, 
   ProductUnit,
+  WarrantyType,
   DEFAULT_PRODUCT_STATUS,
   DEFAULT_PRODUCT_UNIT
 } from '@/types/backend';
@@ -34,7 +36,16 @@ export interface IProduct extends Document {
   // Media
   images: string[];
   
+  // Warranty & Policy
+  warrantyType?: WarrantyType;
+  warrantyPeriod?: string;
+  isReturnable: boolean;
+  returnWindow?: string;
+  
   // Metadata & Status
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
   status: ProductStatus;
   tags: string[];
   
@@ -70,6 +81,17 @@ const ProductSchema = new Schema(
     
     status: { type: String, enum: PRODUCT_STATUSES, default: DEFAULT_PRODUCT_STATUS },
     tags: [{ type: String }],
+    
+    // Warranty & Policy
+    warrantyType: { type: String, enum: WARRANTY_TYPES },
+    warrantyPeriod: { type: String },
+    isReturnable: { type: Boolean, default: true },
+    returnWindow: { type: String },
+    
+    // SEO Metadata
+    metaTitle: { type: String },
+    metaDescription: { type: String },
+    metaKeywords: { type: String },
     
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },

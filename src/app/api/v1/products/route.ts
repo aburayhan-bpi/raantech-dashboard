@@ -9,7 +9,7 @@ import ActivityLog from '@/models/ActivityLog';
 // Ensure Category schema is registered for populate
 void Category;
 
-import { PRODUCT_STATUSES, PRODUCT_UNITS } from '@/types/backend';
+import { PRODUCT_STATUSES, PRODUCT_UNITS, WARRANTY_TYPES } from '@/types/backend';
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
 
 const ProductCreateSchema = z.object({
@@ -34,6 +34,15 @@ const ProductCreateSchema = z.object({
   
   status: z.enum([...PRODUCT_STATUSES] as [string, ...string[]]).optional().default('ACTIVE'),
   tags: z.array(z.string()).optional().default([]),
+  
+  warrantyType: z.enum([...WARRANTY_TYPES] as [string, ...string[]]).optional(),
+  warrantyPeriod: z.string().optional(),
+  isReturnable: z.boolean().optional().default(true),
+  returnWindow: z.string().optional(),
+  
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(),
 });
 
 export async function POST(req: Request) {

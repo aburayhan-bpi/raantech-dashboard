@@ -1,19 +1,31 @@
 "use client";
-import { ISupplier } from "@/types/global";
-import { useState, useEffect, useRef } from "react";
-import { Plus, Search, Edit2, Trash2, Building2, Phone, Mail, MapPin, Download, Upload } from "lucide-react";
-import CustomButton from "@/components/shared/CustomButton";
-import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
 import { Pagination } from "@/components/dashboard/pagination";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchParams } from "next/navigation";
-import useSetParamsForPagination from "@/utils/setParamsForPagination";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetSuppliersQuery } from "@/redux/api/supplier/supplierApi";
-import SupplierModal from "./SupplierModal";
+import CustomButton from "@/components/shared/CustomButton";
 import ExcelImportModal from "@/components/shared/ExcelImportModal";
+import { TableRowsSkeleton } from "@/components/shared/TableRowsSkeleton";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useGetSuppliersQuery } from "@/redux/api/supplier/supplierApi";
+import { selectUser } from "@/redux/features/user/authSlice";
+import { ISupplier } from "@/types/global";
+import { formatStatusText } from "@/utils/formatStatusText";
+import useSetParamsForPagination from "@/utils/setParamsForPagination";
+import {
+  Building2,
+  Download,
+  Edit2,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import DeleteSupplierModal from "./DeleteSupplierModal";
+import SupplierModal from "./SupplierModal";
 
 export default function SuppliersClient() {
   const sp = useSearchParams();
@@ -26,20 +38,27 @@ export default function SuppliersClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState<ISupplier | null>(null);
-  const [supplierToDelete, setSupplierToDelete] = useState<ISupplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<ISupplier | null>(
+    null,
+  );
+  const [supplierToDelete, setSupplierToDelete] = useState<ISupplier | null>(
+    null,
+  );
 
   const currentUser = useSelector(selectUser);
   const userPermissions = currentUser?.permissions || [];
   const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
 
-  const canCreate = isSuperAdmin || userPermissions.includes("suppliers:create");
-  const canUpdate = isSuperAdmin || userPermissions.includes("suppliers:update");
-  const canDelete = isSuperAdmin || userPermissions.includes("suppliers:delete");
+  const canCreate =
+    isSuperAdmin || userPermissions.includes("suppliers:create");
+  const canUpdate =
+    isSuperAdmin || userPermissions.includes("suppliers:update");
+  const canDelete =
+    isSuperAdmin || userPermissions.includes("suppliers:delete");
 
   useEffect(() => {
     if (previousSearch.current === debouncedSearch) return;
-    
+
     if (previousSearch.current === null && !debouncedSearch) {
       previousSearch.current = debouncedSearch;
       return;
@@ -49,7 +68,9 @@ export default function SuppliersClient() {
     setParams({ search: debouncedSearch || null, page: "1" });
   }, [debouncedSearch, setParams]);
 
-  const { data, isLoading, isFetching, refetch } = useGetSuppliersQuery(sp.toString());
+  const { data, isLoading, isFetching, refetch } = useGetSuppliersQuery(
+    sp.toString(),
+  );
 
   const suppliers = data?.data || [];
   const meta = data?.meta;
@@ -86,7 +107,7 @@ export default function SuppliersClient() {
           <div className="flex flex-wrap items-center gap-3">
             <CustomButton
               variant="outline"
-              onClick={() => window.open('/api/v1/suppliers/export', '_blank')}
+              onClick={() => window.open("/api/v1/suppliers/export", "_blank")}
               btnText={
                 <div className="flex items-center text-slate-700">
                   <Download className="w-4 h-4 mr-2" />
@@ -166,7 +187,9 @@ export default function SuppliersClient() {
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-normal text-sm text-slate-800">{supplier.name}</p>
+                          <p className="font-normal text-sm text-slate-800">
+                            {supplier.name}
+                          </p>
                           {supplier.company && (
                             <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                               {supplier.company}
@@ -190,13 +213,21 @@ export default function SuppliersClient() {
                         {supplier.address && (
                           <p className="text-xs text-slate-400 flex items-center gap-1.5">
                             <MapPin className="w-3 h-3 shrink-0" />
-                            <span className="line-clamp-1">{supplier.address}</span>
+                            <span className="line-clamp-1">
+                              {supplier.address}
+                            </span>
                           </p>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-normal">
-                      <span className={supplier.totalDue > 0 ? "text-red-500" : "text-emerald-500"}>
+                      <span
+                        className={
+                          supplier.totalDue > 0
+                            ? "text-red-500"
+                            : "text-emerald-500"
+                        }
+                      >
                         ৳ {supplier.totalDue.toLocaleString()}
                       </span>
                     </td>
@@ -208,7 +239,7 @@ export default function SuppliersClient() {
                             : "bg-rose-50 text-rose-700 border-rose-200"
                         }`}
                       >
-                        {supplier.status}
+                        {formatStatusText(supplier.status || "-")}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -237,7 +268,10 @@ export default function SuppliersClient() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     No suppliers found.
                   </td>
                 </tr>
