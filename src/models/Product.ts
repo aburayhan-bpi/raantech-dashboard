@@ -131,4 +131,9 @@ ProductSchema.set('toJSON', {
   }
 });
 
+// Clear mongoose model cache in development for HMR support
+if (process.env.NODE_ENV !== 'production' && mongoose.models.Product) {
+  delete mongoose.models.Product;
+}
+
 export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);

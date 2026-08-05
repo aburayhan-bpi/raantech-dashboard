@@ -15,7 +15,7 @@ import { selectUser } from "@/redux/features/user/authSlice";
 import { useAppSelector } from "@/redux/hook";
 import { IProduct } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, X } from "lucide-react";
+import { Loader2, Wand2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -474,11 +474,24 @@ export default function ProductModal({
                   <label className="text-sm font-medium text-slate-700">
                     SKU (Stock Keeping Unit)
                   </label>
-                  <input
-                    {...register("sku")}
-                    placeholder="e.g. PRD-001"
-                    className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
-                  />
+                  <div className="relative">
+                    <input
+                      {...register("sku")}
+                      placeholder="e.g. PRD-001"
+                      className="w-full px-4 py-2 pr-10 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const randomId = Math.floor(100000 + Math.random() * 900000);
+                        setValue("sku", `PRD-${randomId}`);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-brand hover:bg-brand/10 rounded-md transition-colors cursor-pointer"
+                      title="Generate Random SKU"
+                    >
+                      <Wand2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
@@ -519,6 +532,7 @@ export default function ProductModal({
                             value: "Official Warranty",
                             label: "Official Warranty",
                           },
+                          { value: "Supplier Warranty", label: "Supplier Warranty" },
                           { value: "Shop Warranty", label: "Shop Warranty" },
                           {
                             value: "Service Warranty",

@@ -3,21 +3,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WEBSITE_DETAILS } from "@/lib/constants";
 import ReduxProvider from "@/redux/ReduxProvider";
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Nunito, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
-// Bricolage Grotesque
-// const inter = Inter({
-//   subsets: ["latin"],
-//   display: "swap",
-// });
 
-// const bricolageGrotesque = Bricolage_Grotesque({
-//   subsets: ["latin"],
-//   display: "swap",
-// });
 const nunito = Nunito({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-nunito",
+});
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-hind-siliguri",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${nunito.className} antialiased`}>
+      <body className={`${nunito.variable} ${hindSiliguri.variable} font-sans antialiased`}>
         <ReduxProvider>
           <TooltipProvider>
             <svg

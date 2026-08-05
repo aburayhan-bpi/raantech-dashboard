@@ -4,6 +4,7 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
+  --font-sans: var(--font-nunito), var(--font-hind-siliguri), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-jetbrains-mono: "JetBrains Mono", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);

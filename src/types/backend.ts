@@ -29,7 +29,7 @@ export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 export const PRODUCT_UNITS = ['pcs', 'kg', 'ltr', 'box', 'pack'] as const;
 export type ProductUnit = (typeof PRODUCT_UNITS)[number];
 
-export const WARRANTY_TYPES = ['Official Warranty', 'Shop Warranty', 'Service Warranty', 'Replacement Warranty', 'Checking Warranty', 'No Warranty', 'Other'] as const;
+export const WARRANTY_TYPES = ['Official Warranty', 'Supplier Warranty', 'Shop Warranty', 'Service Warranty', 'Replacement Warranty', 'Checking Warranty', 'No Warranty', 'Other'] as const;
 export type WarrantyType = (typeof WARRANTY_TYPES)[number];
 
 // Used in Product Schema

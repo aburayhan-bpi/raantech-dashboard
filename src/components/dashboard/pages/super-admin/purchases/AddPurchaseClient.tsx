@@ -151,14 +151,31 @@ export default function AddPurchaseClient() {
 
   const handlePaidAmountChange = (val: number) => {
     setPaidAmount(val);
-    if (val >= totalAmount && totalAmount > 0) {
+  };
+
+  const handleStatusChange = (val: string) => {
+    const status = val as PurchasePaymentStatus;
+    if (status === "PAID") {
+      setPaidAmount(totalAmount);
+    } else if (status === "DUE") {
+      setPaidAmount(0);
+    }
+    setPaymentStatus(status);
+  };
+
+  useEffect(() => {
+    if (totalAmount === 0) {
+      setPaymentStatus("DUE");
+      return;
+    }
+    if (paidAmount >= totalAmount) {
       setPaymentStatus("PAID");
-    } else if (val > 0 && val < totalAmount) {
+    } else if (paidAmount > 0 && paidAmount < totalAmount) {
       setPaymentStatus("PARTIAL");
     } else {
       setPaymentStatus("DUE");
     }
-  };
+  }, [paidAmount, totalAmount]);
 
   const handleSubmit = async () => {
     if (!supplier) {
@@ -547,9 +564,7 @@ export default function AddPurchaseClient() {
                       { value: "DUE", label: "Due" },
                     ]}
                     value={paymentStatus}
-                    onChange={(val: string) =>
-                      setPaymentStatus(val as PurchasePaymentStatus)
-                    }
+                    onChange={handleStatusChange}
                   />
                 </div>
               </div>
