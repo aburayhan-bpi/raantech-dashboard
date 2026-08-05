@@ -25,10 +25,10 @@ export const sendEmail = async ({ to, subject, html }: EmailPayload) => {
       html,
     });
     console.log("Message sent: %s", info.messageId);
-    return true;
-  } catch (error) {
+    return { success: true };
+  } catch (error: any) {
     console.error("Error sending email:", error);
-    return false;
+    return { success: false, error: error.message || String(error) };
   }
 };
 
@@ -50,8 +50,8 @@ export const sendTemplateEmail = async (
     const html = ejs.render(templateContent, templateData, { filename: templatePath });
     
     return await sendEmail({ to, subject, html });
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error rendering/sending template ${templateName}:`, error);
-    return false;
+    return { success: false, error: error.message || String(error) };
   }
 };
