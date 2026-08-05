@@ -398,6 +398,11 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                         </p>
                         <p className="text-xs text-slate-500 mt-0.5">
                           SKU: {item.product.sku}
+                          {item.product.warrantyPeriod && (
+                            <span className="ml-2 pl-2 border-l border-slate-300">
+                              Warranty: {item.product.warrantyPeriod} {item.product.warrantyType ? `(${item.product.warrantyType})` : ""}
+                            </span>
+                          )}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right text-slate-600">

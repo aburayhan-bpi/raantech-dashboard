@@ -19,6 +19,7 @@
         <td>
           <div style="color: #111827; font-weight: 500;">${item.name}</div>
           <div style="color: #6B7280; font-size: 14px; margin-top: 4px;">${item.quantity} &times; ${item.unitPrice}</div>
+          ${item.warrantyPeriod ? `<div style="color: #059669; font-size: 13px; margin-top: 4px; font-weight: 500;">Warranty: ${item.warrantyPeriod} ${item.warrantyType ? `(${item.warrantyType})` : ''}</div>` : ''}
         </td>
         <td style="text-align: right; vertical-align: top;">${item.subTotal}</td>
       </tr>

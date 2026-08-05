@@ -1,21 +1,25 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { X, Loader2 } from "lucide-react";
-import CustomButton from "@/components/shared/CustomButton";
-import { useForm, Controller, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { useCreateProductMutation, useUpdateProductMutation } from "@/redux/api/product/productApi";
-import { IProduct } from "@/types/global";
-import { useAppSelector } from "@/redux/hook";
-import { selectUser } from "@/redux/features/user/authSlice";
-import { useGetCategoriesQuery } from "@/redux/api/category/categoryApi";
-import ImageUploader, { ImageItem } from "@/components/shared/ImageUploader";
-import BarcodeScannerInput from "@/components/shared/BarcodeScannerInput";
-import ProfitCalculatorInput from "@/components/shared/ProfitCalculatorInput";
-import { CustomDropdown } from "@/components/shared/CustomDropdown";
 import CategoryModal from "@/components/dashboard/pages/super-admin/categories/CategoryModal";
+import BarcodeScannerInput from "@/components/shared/BarcodeScannerInput";
+import CustomButton from "@/components/shared/CustomButton";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
+import ImageUploader, { ImageItem } from "@/components/shared/ImageUploader";
+import ProfitCalculatorInput from "@/components/shared/ProfitCalculatorInput";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useGetCategoriesQuery } from "@/redux/api/category/categoryApi";
+import {
+  useCreateProductMutation,
+  useUpdateProductMutation,
+} from "@/redux/api/product/productApi";
+import { selectUser } from "@/redux/features/user/authSlice";
+import { useAppSelector } from "@/redux/hook";
+import { IProduct } from "@/types/global";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 // Schema for frontend validation
 const productSchema = z.object({
@@ -23,29 +27,29 @@ const productSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   brand: z.string().optional(),
-  
+
   buyingPrice: z.number().min(0, "Buying price must be at least 0"),
   sellingPrice: z.number().min(0, "Selling price must be at least 0"),
   discountPrice: z.number().optional(),
   tax: z.number().optional(),
-  
+
   stock: z.number().min(0, "Stock cannot be negative"),
   alertQuantity: z.number().optional(),
   unit: z.string().optional(),
-  
+
   sku: z.string().optional(),
   barcode: z.string().optional(),
-  
+
   images: z.array(z.string()).optional(),
-  
+
   status: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  
+
   warrantyType: z.string().optional(),
   warrantyPeriod: z.string().optional(),
   isReturnable: z.boolean().optional(),
   returnWindow: z.string().optional(),
-  
+
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   metaKeywords: z.string().optional(),
@@ -70,18 +74,23 @@ export default function ProductModal({
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const user = useAppSelector(selectUser);
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
-  const hasCategoryViewPermission = isSuperAdmin || (user?.permissions || []).includes("categories:view");
+  const hasCategoryViewPermission =
+    isSuperAdmin || (user?.permissions || []).includes("categories:view");
 
-  const { data: categoriesData, refetch: refetchCategories, isFetching: isFetchingCategories } = useGetCategoriesQuery(undefined, {
-    skip: !hasCategoryViewPermission
+  const {
+    data: categoriesData,
+    refetch: refetchCategories,
+    isFetching: isFetchingCategories,
+  } = useGetCategoriesQuery(undefined, {
+    skip: !hasCategoryViewPermission,
   });
 
   const categories = categoriesData?.data || [];
-  
+
   const [imageItems, setImageItems] = useState<ImageItem[]>([]);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  
+
   const isLoading = isCreating || isUpdating || isUploadingImages;
 
   const {
@@ -122,7 +131,8 @@ export default function ProductModal({
         reset({
           name: product.name,
           description: product.description || "",
-          category: product.category.id || (product.category as unknown as string), // Handle string/object ID cases
+          category:
+            product.category.id || (product.category as unknown as string), // Handle string/object ID cases
           brand: product.brand || "",
           buyingPrice: product.buyingPrice,
           sellingPrice: product.sellingPrice,
@@ -144,13 +154,15 @@ export default function ProductModal({
           metaDescription: product.metaDescription || "",
           metaKeywords: product.metaKeywords || "",
         });
-        
+
         setTimeout(() => {
-          setImageItems((product.images || []).map((url: string) => ({
-            id: Math.random().toString(36).substring(2, 9),
-            type: "url",
-            url
-          })));
+          setImageItems(
+            (product.images || []).map((url: string) => ({
+              id: Math.random().toString(36).substring(2, 9),
+              type: "url",
+              url,
+            })),
+          );
         }, 0);
       } else {
         reset({
@@ -191,10 +203,12 @@ export default function ProductModal({
   const onSubmit = async (data: any) => {
     try {
       setIsUploadingImages(true);
-      
-      const filesToUpload = imageItems.filter((item: ImageItem) => item.type === "file").map((item: ImageItem) => item.file!);
+
+      const filesToUpload = imageItems
+        .filter((item: ImageItem) => item.type === "file")
+        .map((item: ImageItem) => item.file!);
       const uploadedUrls: string[] = [];
-      
+
       if (filesToUpload.length > 0) {
         for (const file of filesToUpload) {
           const formData = new FormData();
@@ -209,13 +223,13 @@ export default function ProductModal({
           uploadedUrls.push(resData.url);
         }
       }
-      
+
       let uploadIndex = 0;
       const finalUrls = imageItems.map((item: ImageItem) => {
         if (item.type === "url") return item.url;
         return uploadedUrls[uploadIndex++];
       });
-      
+
       data.images = finalUrls;
       setIsUploadingImages(false);
 
@@ -230,18 +244,18 @@ export default function ProductModal({
       onClose();
     } catch (error: unknown) {
       setIsUploadingImages(false);
-      const err = error as { data?: { message?: string }, message?: string };
+      const err = error as { data?: { message?: string }; message?: string };
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={!isLoading ? onClose : undefined}
       />
-      
+
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div>
@@ -249,7 +263,9 @@ export default function ProductModal({
               {isEditing ? "Edit Product" : "Add New Product"}
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              {isEditing ? "Update product details and inventory." : "Fill in the details to add a new product."}
+              {isEditing
+                ? "Update product details and inventory."
+                : "Fill in the details to add a new product."}
             </p>
           </div>
           <button
@@ -262,8 +278,11 @@ export default function ProductModal({
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <form id="product-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            
+          <form
+            id="product-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             {/* Section: Basic Info */}
             <div>
               <h3 className="text-sm font-medium text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
@@ -279,7 +298,9 @@ export default function ProductModal({
                     placeholder="Enter product name"
                     className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
                   />
-                  {errors.name && <p className="text-xs text-error">{errors.name.message}</p>}
+                  {errors.name && (
+                    <p className="text-xs text-error">{errors.name.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -291,10 +312,15 @@ export default function ProductModal({
                     control={control}
                     render={({ field }) => (
                       <CustomDropdown
-                        options={categories.map((cat: { id?: string, name: string }) => ({
-                          value: cat.id || (cat as unknown as { id: string }).id || "",
-                          label: cat.name
-                        }))}
+                        options={categories.map(
+                          (cat: { id?: string; name: string }) => ({
+                            value:
+                              cat.id ||
+                              (cat as unknown as { id: string }).id ||
+                              "",
+                            label: cat.name,
+                          }),
+                        )}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Select a category"
@@ -310,7 +336,9 @@ export default function ProductModal({
                               disabled={isFetchingCategories}
                               className="flex items-center justify-center p-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex-1"
                             >
-                              <Loader2 className={`w-3.5 h-3.5 mr-1.5 ${isFetchingCategories ? "animate-spin" : ""}`} />
+                              <Loader2
+                                className={`w-3.5 h-3.5 mr-1.5 ${isFetchingCategories ? "animate-spin" : ""}`}
+                              />
                               Refresh
                             </button>
                             <button
@@ -328,7 +356,11 @@ export default function ProductModal({
                       />
                     )}
                   />
-                  {errors.category && <p className="text-xs text-error">{errors.category.message}</p>}
+                  {errors.category && (
+                    <p className="text-xs text-error">
+                      {errors.category.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -341,7 +373,7 @@ export default function ProductModal({
                     className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
                   />
                 </div>
-                
+
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-sm font-medium text-slate-700">
                     Description
@@ -364,12 +396,18 @@ export default function ProductModal({
               <ProfitCalculatorInput
                 buyingPrice={buyingPrice}
                 sellingPrice={sellingPrice}
-                onBuyingPriceChange={(val) => setValue("buyingPrice", val, { shouldValidate: true })}
-                onSellingPriceChange={(val) => setValue("sellingPrice", val, { shouldValidate: true })}
+                onBuyingPriceChange={(val) =>
+                  setValue("buyingPrice", val, { shouldValidate: true })
+                }
+                onSellingPriceChange={(val) =>
+                  setValue("sellingPrice", val, { shouldValidate: true })
+                }
               />
               <div className="flex gap-4 mt-2">
                 {(errors.buyingPrice || errors.sellingPrice) && (
-                  <p className="text-xs text-error flex-1">Prices must be valid positive numbers.</p>
+                  <p className="text-xs text-error flex-1">
+                    Prices must be valid positive numbers.
+                  </p>
                 )}
               </div>
             </div>
@@ -391,9 +429,11 @@ export default function ProductModal({
                     disabled={isEditing && !isSuperAdmin}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand/20 outline-none transition-all ${isEditing && !isSuperAdmin ? "bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed" : "bg-white border-border focus:border-brand"}`}
                   />
-                  {errors.stock && <p className="text-xs text-error">{errors.stock.message}</p>}
+                  {errors.stock && (
+                    <p className="text-xs text-error">{errors.stock.message}</p>
+                  )}
                 </div>
-                
+
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-slate-700">
                     Alert Quantity
@@ -429,7 +469,7 @@ export default function ProductModal({
                     )}
                   />
                 </div>
-                
+
                 <div className="space-y-1.5 md:grid-cols-1">
                   <label className="text-sm font-medium text-slate-700">
                     SKU (Stock Keeping Unit)
@@ -475,11 +515,23 @@ export default function ProductModal({
                     render={({ field }) => (
                       <CustomDropdown
                         options={[
-                          { value: "Official Warranty", label: "Official Warranty" },
+                          {
+                            value: "Official Warranty",
+                            label: "Official Warranty",
+                          },
                           { value: "Shop Warranty", label: "Shop Warranty" },
-                          { value: "Service Warranty", label: "Service Warranty" },
-                          { value: "Replacement Warranty", label: "Replacement Warranty" },
-                          { value: "Checking Warranty", label: "Checking Warranty" },
+                          {
+                            value: "Service Warranty",
+                            label: "Service Warranty",
+                          },
+                          {
+                            value: "Replacement Warranty",
+                            label: "Replacement Warranty",
+                          },
+                          {
+                            value: "Checking Warranty",
+                            label: "Checking Warranty",
+                          },
                           { value: "No Warranty", label: "No Warranty" },
                           { value: "Other", label: "Other" },
                         ]}
@@ -490,7 +542,7 @@ export default function ProductModal({
                     )}
                   />
                 </div>
-                
+
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-slate-700">
                     Warranty Period
@@ -506,14 +558,26 @@ export default function ProductModal({
                   <label className="text-sm font-medium text-slate-700 block mb-2">
                     Return Policy
                   </label>
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      {...register("isReturnable")}
-                      className="w-5 h-5 rounded border-slate-300 text-brand focus:ring-brand/20 transition-colors"
-                    />
-                    <span className="text-sm text-slate-700 font-medium">This product is returnable</span>
-                  </label>
+                  <Controller
+                    name="isReturnable"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-3 mt-2">
+                        <Checkbox
+                          id="isReturnable"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="border border-brand/50 data-[state=checked]:bg-brand data-[state=checked]:border-brand"
+                        />
+                        <label
+                          htmlFor="isReturnable"
+                          className="text-sm text-slate-700 font-medium cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          This product is returnable
+                        </label>
+                      </div>
+                    )}
+                  />
                 </div>
 
                 <div className="space-y-1.5">
@@ -557,7 +621,7 @@ export default function ProductModal({
                     className="w-full px-4 py-2 bg-white border border-border rounded-lg focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
                   />
                 </div>
-                
+
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-sm font-medium text-slate-700">
                     Meta Description
@@ -582,7 +646,6 @@ export default function ProductModal({
                 </div>
               </div>
             </div>
-            
           </form>
         </div>
 
@@ -593,7 +656,8 @@ export default function ProductModal({
             onClick={onClose}
             disabled={isLoading}
             className="px-6"
-            icon={<X className="w-4 h-4" />} btnText="Cancel"
+            icon={<X className="w-4 h-4" />}
+            btnText="Cancel"
           />
           <CustomButton
             type="submit"
@@ -615,10 +679,10 @@ export default function ProductModal({
           />
         </div>
       </div>
-      <CategoryModal 
-        isOpen={isCategoryModalOpen} 
-        onClose={() => setIsCategoryModalOpen(false)} 
-        category={null} 
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        category={null}
       />
     </div>
   );

@@ -32,6 +32,13 @@ export async function GET() {
       'SKU': p.sku || '',
       'Barcode': p.barcode || '',
       'Status': p.status || 'ACTIVE',
+      'Warranty Type': p.warrantyType || '',
+      'Warranty Period': p.warrantyPeriod || '',
+      'Returnable': p.isReturnable ? 'Yes' : 'No',
+      'Return Window': p.returnWindow || '',
+      'Meta Title': p.metaTitle || '',
+      'Meta Description': p.metaDescription || '',
+      'Meta Keywords': p.metaKeywords || '',
       'Tags': Array.isArray(p.tags) ? p.tags.join(',') : '',
       'Description': p.description || '',
     }));

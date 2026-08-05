@@ -243,6 +243,66 @@ export default function ProductDetailsClient() {
               </div>
             </div>
           </div>
+          {/* Warranty & SEO */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
+              <h3 className="font-medium text-slate-800 mb-4 border-b border-slate-100 pb-2">
+                Warranty & Return Policy
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Warranty Type</span>
+                  <span className="font-medium text-slate-800">{product.warrantyType || "N/A"}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Warranty Period</span>
+                  <span className="font-medium text-slate-800">{product.warrantyPeriod || "N/A"}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Returnable</span>
+                  <span className={cn(
+                    "px-2.5 py-1 text-xs font-medium rounded-full",
+                    product.isReturnable ? "bg-success/10 text-success" : "bg-error/10 text-error"
+                  )}>
+                    {product.isReturnable ? "Yes" : "No"}
+                  </span>
+                </div>
+
+                {product.isReturnable && product.returnWindow && (
+                  <div>
+                    <span className="text-sm text-slate-500 block mb-1">Return Window</span>
+                    <span className="font-medium text-slate-800">{product.returnWindow}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
+              <h3 className="font-medium text-slate-800 mb-4 border-b border-slate-100 pb-2">
+                SEO Metadata
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Meta Title</span>
+                  <span className="font-medium text-slate-800">{product.metaTitle || "N/A"}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Meta Description</span>
+                  <span className="font-medium text-slate-800 text-sm">{product.metaDescription || "N/A"}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-slate-500 block mb-1">Meta Keywords</span>
+                  <span className="font-medium text-slate-800">{product.metaKeywords || "N/A"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
           
           {/* Description */}
           {product.description && (

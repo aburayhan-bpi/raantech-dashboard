@@ -291,7 +291,9 @@ export async function POST(request: Request) {
             name: item.product?.name || 'Unknown Product',
             quantity: item.quantity,
             unitPrice: item.unitPrice,
-            subTotal: item.total
+            subTotal: item.total,
+            warrantyPeriod: item.product?.warrantyPeriod,
+            warrantyType: item.product?.warrantyType
           }));
 
           await sendTemplateEmail(
