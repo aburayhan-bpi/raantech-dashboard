@@ -20,16 +20,18 @@ export default function ProfitCalculatorInput({
   className,
   disabled = false,
 }: ProfitCalculatorInputProps) {
-  const { margin, profit, isLoss } = useMemo(() => {
+  const { margin, markup, profit, isLoss } = useMemo(() => {
     if (!buyingPrice || !sellingPrice || buyingPrice === 0) {
-      return { margin: 0, profit: 0, isLoss: false };
+      return { margin: 0, markup: 0, profit: 0, isLoss: false };
     }
     
     const profitVal = sellingPrice - buyingPrice;
     const marginVal = (profitVal / sellingPrice) * 100;
+    const markupVal = (profitVal / buyingPrice) * 100;
     
     return {
       margin: parseFloat(marginVal.toFixed(2)),
+      markup: parseFloat(markupVal.toFixed(2)),
       profit: parseFloat(profitVal.toFixed(2)),
       isLoss: profitVal < 0,
     };
@@ -107,9 +109,14 @@ export default function ProfitCalculatorInput({
           </div>
           <div className="flex items-center space-x-4 text-sm font-semibold">
             <span>Profit: ৳{profit}</span>
-            <span className="px-2 py-0.5 rounded-full bg-white/50 border border-success/20">
-              {margin}%
-            </span>
+            <div className="flex space-x-2">
+              <span className="px-2 py-0.5 rounded-full bg-white text-success border border-success/30 shadow-sm" title="Based on Selling Price">
+                Margin: {margin}%
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-white text-success border border-success/30 shadow-sm" title="Based on Buying Price">
+                Markup: {markup}%
+              </span>
+            </div>
           </div>
         </div>
       )}
