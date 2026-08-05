@@ -663,7 +663,7 @@ export default function ProductModal({
             type="submit"
             form="product-form"
             disabled={isLoading}
-            className="px-8 min-w-[140px]"
+            className="px-8 min-w-35"
             btnText={
               isLoading ? (
                 <div className="flex items-center">
