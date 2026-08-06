@@ -49,7 +49,11 @@ export const sendTemplateEmail = async (
     const templatePath = path.join(process.cwd(), "src", "templates", "emails", `${templateName}.ejs`);
     const templateContent = await fs.readFile(templatePath, "utf-8");
     
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    // Vercel auto-populates VERCEL_PROJECT_PRODUCTION_URL in production, or VERCEL_URL in previews.
+    const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+    const fallbackUrl = vercelUrl ? `https://${vercelUrl}` : "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || fallbackUrl;
+    
     const templateData = { ...data, appUrl };
 
     // We pass the filename so EJS can resolve `include()`
