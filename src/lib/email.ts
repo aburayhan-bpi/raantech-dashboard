@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: process.env.CONTACT_EMAIL_USER,
-    pass: process.env.CONTACT_EMAIL_APP_PASSWORD,
+    pass: process.env.CONTACT_EMAIL_APP_PASSWORD?.replace(/[" ]/g, ""),
   },
   connectionTimeout: 10000,
   greetingTimeout: 10000,
