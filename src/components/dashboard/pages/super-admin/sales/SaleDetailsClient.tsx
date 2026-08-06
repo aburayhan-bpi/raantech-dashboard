@@ -731,7 +731,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     value={refundAmount}
                     onChange={(e) => {
                       const val = e.target.value ? Number(e.target.value) : "";
-                      const maxRefund = Math.max(0, sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0));
+                      const maxRefund = Math.max(0, refundDueAmount);
                       if (val !== "") {
                         // Cap the value between 0 and maxRefund
                         setRefundAmount(Math.min(Math.max(0, val), maxRefund));
@@ -742,7 +742,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     placeholder="e.g. 500"
                   />
-                  <p className="text-[10px] text-slate-400">Max allowed: {Math.max(0, sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)).toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Max allowed: {Math.max(0, refundDueAmount).toLocaleString()}</p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-slate-600 uppercase">Refund Method</label>
@@ -785,7 +785,7 @@ export default function SaleDetailsClient({ saleId }: { saleId: string }) {
                     isAddingRefund ||
                     !refundAmount ||
                     Number(refundAmount) <= 0 ||
-                    Number(refundAmount) > (sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0)) ||
+                    Number(refundAmount) > refundDueAmount ||
                     !refundMethod ||
                     !refundNote.trim()
                   }

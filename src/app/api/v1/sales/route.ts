@@ -11,7 +11,7 @@ import {
 } from "@/utils/backendPagination";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-
+import { sendSaleCreatedWebhook } from "@/lib/webhook";
 export async function GET(request: Request) {
   try {
     await dbConnect();
@@ -320,6 +320,9 @@ export async function POST(request: Request) {
           console.error("Failed to send order creation email:", err);
         }
       }
+
+    // 9. Fire automation webhook (e.g., n8n for Telegram notification)
+    sendSaleCreatedWebhook(populatedSale);
 
     return NextResponse.json(
       {

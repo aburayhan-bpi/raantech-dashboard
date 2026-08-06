@@ -75,7 +75,12 @@ export async function POST(
       );
     }
 
-    const totalRefundable = sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0);
+    let totalRefundable = 0;
+    if (sale.status === 'CANCELLED' || sale.status === 'RETURNED') {
+      totalRefundable = sale.paidAmount - (sale.refundedAmount || 0);
+    } else {
+      totalRefundable = sale.paidAmount - sale.totalAmount - (sale.refundedAmount || 0);
+    }
 
     if (totalRefundable <= 0) {
       return NextResponse.json(
@@ -105,14 +110,20 @@ export async function POST(
 
     // Update sale balances
     const newRefundedAmount = (sale.refundedAmount || 0) + amount;
-    
     let newPaymentStatus = sale.paymentStatus;
-    const overpayment = sale.paidAmount - sale.totalAmount;
     
-    if (newRefundedAmount >= sale.paidAmount) {
-      newPaymentStatus = "REFUNDED";
-    } else if (newRefundedAmount >= overpayment) {
-      newPaymentStatus = "PAID";
+    const totalOwed = (sale.status === 'CANCELLED' || sale.status === 'RETURNED') 
+        ? sale.paidAmount 
+        : Math.max(0, sale.paidAmount - sale.totalAmount);
+        
+    if (newRefundedAmount >= totalOwed) {
+       if (sale.status === 'CANCELLED' || sale.status === 'RETURNED') {
+           newPaymentStatus = "REFUNDED";
+       } else {
+           newPaymentStatus = "PAID";
+       }
+    } else {
+       newPaymentStatus = "REFUND_DUE";
     }
 
     await Sale.findByIdAndUpdate(id, {
@@ -132,7 +143,7 @@ export async function POST(
           note,
           totalPaid: sale.paidAmount,
           totalRefundedSoFar: newRefundedAmount,
-          remainingRefundDue: Math.max(0, sale.paidAmount - sale.totalAmount - newRefundedAmount)
+          remainingRefundDue: Math.max(0, totalRefundable - amount)
         },
         sale.customer.email,
         `Refund Processed - Order #${sale.saleNo}`
